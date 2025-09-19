@@ -1,108 +1,156 @@
-# Playwright Project Template
+# DCS E2E Tests
 
-This repository serves as a template for UI test automation using [Playwright](https://playwright.dev) within HMCTS. It provides an accelerated set up with multiple browser support, environmental config and sensible defaults. You can simply clone this repo if starting from scratch or copy the parts you would like to use in your test own test project.
+This repository contains the end-to-end tests for the DCS (Digital Case System) using Playwright.
 
-## Features
+## Table of Contents
 
-- **Cross-browser testing**: Supports Chromium, Firefox, and WebKit.
-- **Responsive testing**: Test on different viewports (tablet/desktop).
-- **Parallel test execution**: Run tests concurrently for faster feedback.
-- **Accessibility tests**: Integrate basic accessibility checks using libraries like Axe Core.
-- **Performance tests**: Provides an implementation of Lighthouse which can be used for quick feedback on UI performance.
-- **CI/CD ready**: Sample Jenkinsfile included for integrating with your CI pipeline.
-- **Test tagging**: Use tags like `@a11y` for accessibility, `@smoke` for smoke tests, and more.
-
-## Project Structure
-
-The repository follows a **Page Object Model (POM)** design pattern, ensuring that locators and actions are well-organized and reusable.
-
-See the [POM docs](https://github.com/hmcts/tcoe-playwright-example/blob/master/docs/PAGE_OBECT_MODEL.md) for more info
-
-```sh
-├── tests/                  # Test files
-├── page-objects/           # Page objects
-├─── components/            # Common components shared across pages
-├─── elements/              # Common elements that could be found in a page or in a component
-├─── pages/                 # Unique pages that may contain their own locators
-├── utils/                  # Utility functions or common tasks (e.g., login, API methods etc)
-```
-
-TCoE Best Practices for setting up playwright in your service can be found in the [playwright-e2e/readme.md](https://github.com/hmcts/tcoe-playwright-example/blob/master/docs/BEST_PRACTICE.md).
-
-## Contributing
-
-We all share the responsibility of ensuring this repo is up to date and accurate in terms of best practice. If you would like to contribute you can raise a github issue with the improvement you are suggesting or raise a PR yourself. See the [contribution guide](https://github.com/hmcts/tcoe-playwright-example/blob/master/CONTRIBUTING.md) for more info.
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Usage](#usage)
+  - [Running Tests](#running-tests)
+  - [Updating Snapshots](#updating-snapshots)
+- [Project Structure](#project-structure)
+- [Configuration](#configuration)
+- [Fixtures](#fixtures)
+- [Page Object Model](#page-object-model)
+- [Visual Testing](#visual-testing)
+- [CI/CD](#cicd)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Getting Started
 
 ### Prerequisites
 
-Ensure you have the following installed on your machine:
-
-- Node.js (v14+)
-- Yarn
+- [Node.js](https://nodejs.org/) (version >=20.11.1)
+- [Yarn](https://yarnpkg.com/) (version 4.x)
 
 ### Installation
 
-Clone the repository and install the dependencies:
+1.  **Clone the repository:**
 
-```bash
-git clone https://github.com/your-username/playwright-template.git
-cd playwright-template
-yarn install
-```
+    ```bash
+    git clone https://github.com/hmcts/dcs-e2e-tests.git
+    cd dcs-e2e-tests
+    ```
+
+2.  **Install dependencies:**
+
+    ```bash
+    yarn install
+    ```
+
+3.  **Install Playwright browsers:**
+
+    ```bash
+    yarn setup
+    ```
+
+## Usage
 
 ### Running Tests
 
-Run all tests using the Playwright test runner:
+The following scripts are available to run the tests:
+
+-   **Run all tests (except a11y, performance, and visual) in Chrome:**
+    ```bash
+    yarn test:chrome
+    ```
+-   **Run all tests (except a11y, performance, and visual) in Firefox:**
+    ```bash
+    yarn test:firefox
+    ```
+-   **Run all tests (except a11y, performance, and visual) in WebKit:**
+    ```bash
+    yarn test:webkit
+    ```
+-   **Run all tests (except a11y, performance, and visual) in Edge:**
+    ```bash
+    yarn test:edge
+    ```
+-   **Run all tests (except a11y, performance, and visual) in Tablet Chrome:**
+    ```bash
+    yarn test:tabletchrome
+    ```
+-   **Run all tests (except a11y, performance, and visual) in Tablet WebKit:**
+    ```bash
+    yarn test:tabletwebkit
+    ```
+-   **Run accessibility tests:**
+    ```bash
+    yarn test:a11y
+    ```
+-   **Run visual tests:**
+    ```bash
+    yarn test:visual
+    ```
+
+### Updating Snapshots
+
+To update the visual snapshots, run:
 
 ```bash
-yarn playwright test
+yarn test:update-snapshots
 ```
 
-To run a specific test file:
+## Project Structure
 
-```bash
-yarn playwright test tests/specific_test_file.spec.ts
+```
+dcs-e2e-tests/
+├── playwright-e2e/
+│   ├── fixtures.ts
+│   ├── global.setup.ts
+│   ├── global.teardown.ts
+│   ├── page-objects/
+│   ├── snapshots/
+│   ├── tests/
+│   └── utils/
+├── playwright.config.ts
+├── package.json
+└── README.md
 ```
 
-To run tests on a specific browser:
+-   `playwright-e2e/`: Contains all the Playwright test-related files.
+    -   `fixtures.ts`: Global fixtures for the tests.
+    -   `global.setup.ts`: Global setup for the tests.
+    -   `global.teardown.ts`: Global teardown for the tests.
+    -   `page-objects/`: Contains the Page Object Model files.
+    -   `snapshots/`: Stores the visual regression snapshots.
+    -   `tests/`: Contains the test files.
+    -   `utils/`: Contains utility functions.
+-   `playwright.config.ts`: Playwright configuration file.
+-   `package.json`: Project dependencies and scripts.
+-   `README.md`: This file.
 
-```bash
-yarn playwright test --project=chrome
-yarn playwright test --project=firefox
-yarn playwright test --project=webkit
-```
+## Configuration
 
-### Test Tagging
+The main configuration for Playwright is in `playwright.config.ts`. This file extends the common configuration from `@hmcts/playwright-common`.
 
-You can use tags to group tests, for example:
+Environment-specific variables are managed through `.env` files. An example can be found in `.env.example`.
 
-```bash
-yarn playwright test --grep @smoke
-```
+## Fixtures
 
-### Debugging Tests
+This project uses Playwright fixtures to set up and tear down the test environment. The global fixtures are defined in `playwright-e2e/fixtures.ts`.
 
-To run tests with tracing, screenshots, and video recording for debugging purposes:
+## Page Object Model
 
-```bash
-yarn playwright test --trace on --video on --screenshot on
-```
+The project follows the Page Object Model (POM) design pattern. The page objects are located in the `playwright-e2e/page-objects/` directory.
 
-Alternatively, you can use `page.pause()` inside your test whilst in `--headed` mode to pause execution at a specific point.
+## Visual Testing
 
-### Accessibility Tests
+Visual regression testing is set up to catch unintended UI changes. The tests are tagged with `@visual` and can be run with `yarn test:visual`.
 
-Run accessibility checks as part of your tests using Axe Core:
+Snapshots are stored in the `playwright-e2e/snapshots/` directory.
 
-```bash
-yarn playwright test --grep @a11y
-```
+## CI/CD
 
-### Running in CI
+The project uses Jenkins for Continuous Integration and Continuous Delivery. The Jenkinsfiles (`Jenkinsfile_CNP`, `Jenkinsfile_nightly`, `Jenkinsfile_nightly_parallel`) are located in the root of the repository.
 
-This project currently provides two sample Jenkinsfile's:
+## Contributing
 
-- Jenkinsfile_CNP: (Cloud Native Platform) This provides your typical "merge" pipeline. When you have a PR, this is the pipeline that will run. Currently it runs typechecks and linting (with eslint playwright plugin) checks.
-- Jenkinsfile_nightly: This is the nightly pipeline that is sheduled to run daily. This will typically be the tests you choose to run as part of your regression suite. You may choose to not run certain types of tests on a daily basis.
+Please refer to the `CODEOWNERS` file for information on who to contact for reviews.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
