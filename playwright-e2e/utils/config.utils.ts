@@ -39,33 +39,9 @@ export const config: Config = {
         `${getEnvVar("CASEMANAGER_USERNAME")}.json`,
       cookieName: "xui-webapp",
     },
-    judge: {
-      username: getEnvVar("JUDGE_USERNAME"),
-      password: getEnvVar("JUDGE_PASSWORD"),
-      sessionFile:
-        path.join(fileURLToPath(import.meta.url), "../../.sessions/") +
-        `${getEnvVar("JUDGE_USERNAME")}.json`,
-      cookieName: "xui-webapp",
-    },
   },
   urls: {
-    exuiDefaultUrl: "https://manage-case.aat.platform.hmcts.net",
-    manageCaseBaseUrl:
-      process.env.MANAGE_CASES_BASE_URL ||
-      "https://manage-case.aat.platform.hmcts.net/cases",
-    citizenUrl:
-      process.env.CITIZEN_FRONTEND_BASE_URL ||
-      "https://privatelaw.aat.platform.hmcts.net/",
-    idamWebUrl:
-      process.env.IDAM_WEB_URL ||
-      "https://idam-web-public.aat.platform.hmcts.net",
-    idamTestingSupportUrl:
-      process.env.IDAM_TESTING_SUPPORT_URL ||
-      "https://idam-testing-support-api.aat.platform.hmcts.net",
-    serviceAuthUrl:
-      process.env.S2S_URL ||
-      "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal/testing-support/lease",
-  },
+    baseUrl: "https://manage-case.aat.platform.hmcts.net",
 };
 
 function getEnvVar(name: string): string {

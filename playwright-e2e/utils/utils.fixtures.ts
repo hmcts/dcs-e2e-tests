@@ -1,18 +1,14 @@
 import {
   AxeUtils,
   BrowserUtils,
-  IdamUtils,
   LighthouseUtils,
   LocaleUtils,
   SessionUtils,
-  TableUtils,
   WaitUtils,
-  ServiceAuthUtils
 } from "@hmcts/playwright-common";
 import os from "os";
 import path from "path";
 import { chromium, Page } from "playwright/test";
-import { CitizenUserUtils } from "./citizen-user.utils";
 import { config, Config } from "./config.utils";
 import { CookieUtils } from "./cookie.utils";
 import { ValidatorUtils } from "./validator.utils";
@@ -22,16 +18,12 @@ export interface UtilsFixtures {
   cookieUtils: CookieUtils;
   validatorUtils: ValidatorUtils;
   waitUtils: WaitUtils;
-  tableUtils: TableUtils;
   axeUtils: AxeUtils;
   SessionUtils: typeof SessionUtils;
   browserUtils: BrowserUtils;
   lighthouseUtils: LighthouseUtils;
   lighthousePage: Page;
-  idamUtils: IdamUtils;
-  citizenUserUtils: CitizenUserUtils;
   localeUtils: LocaleUtils;
-  serviceAuthUtils: ServiceAuthUtils;
 }
 
 export const utilsFixtures = {
@@ -43,9 +35,6 @@ export const utilsFixtures = {
   },
   waitUtils: async ({}, use) => {
     await use(new WaitUtils());
-  },
-  tableUtils: async ({}, use) => {
-    await use(new TableUtils());
   },
   validatorUtils: async ({}, use) => {
     await use(new ValidatorUtils());
@@ -63,16 +52,6 @@ export const utilsFixtures = {
   },
   browserUtils: async ({ browser }, use) => {
     await use(new BrowserUtils(browser));
-  },
-  idamUtils: async ({ config }, use) => {
-    // Set required env vars for IDAM
-    process.env.IDAM_WEB_URL = config.urls.idamWebUrl;
-    process.env.IDAM_TESTING_SUPPORT_URL = config.urls.idamTestingSupportUrl;
-
-    await use(new IdamUtils());
-  },
-  citizenUserUtils: async ({ idamUtils }, use) => {
-    await use(new CitizenUserUtils(idamUtils));
   },
   localeUtils: async ({ page }, use) => {
     await use(new LocaleUtils(page));
@@ -100,10 +79,5 @@ export const utilsFixtures = {
     } else {
       await use(page);
     }
-  },
-  serviceAuthUtils: async ({ config }, use) => {
-    // Set required env vars for Service auth (S2S_URL)
-    process.env.S2S_URL = config.urls.serviceAuthUrl;
-    await use(new ServiceAuthUtils());
   },
 };
