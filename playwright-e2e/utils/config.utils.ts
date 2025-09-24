@@ -10,6 +10,7 @@ export interface UserCredentials {
   username: string;
   password: string;
   sessionFile?: string;
+  cookieName?: string;
 }
 
 export interface Config {
@@ -49,13 +50,14 @@ function sessionPath(username: string): string {
 }
 
 // -------------------- Config Object --------------------
-export const userConfig: Config = {
+export const config: Config = {
   users: {
     hmctsAdmin: {
       group: "HMCTS Admin",
       username: "trainer02",
       password: getEnvVar("HMCTS_ADMIN_PASSWORD"),
       sessionFile: sessionPath("trainer02"),
+      cookieName: ".ASPXAUTH",
     },
     // cpsAdmin: {
     //   group: "CPS Admin",

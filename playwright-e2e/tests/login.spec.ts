@@ -1,24 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { test as base } from "@playwright/test";
-import {
-  pageFixtures,
-  PageFixtures,
-} from "../page-objects/pages/page.fixtures";
-export const test = base.extend<PageFixtures>(pageFixtures);
-export const expect = test.expect;
-import { UserCredentials, userConfig, invalidUsers } from "../utils";
+import { test, expect } from "../fixtures";
+import { UserCredentials, config, invalidUsers } from "../utils";
 
 test.describe("Successful login across User Groups", () => {
-  for (const [roleKey, user] of Object.entries(userConfig.users) as [
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test.beforeEach(async ({ homePage }) => {
+    await homePage.open();
+    await homePage.navigation.navigateTo("LogOn");
+  });
+
+  for (const [roleKey, user] of Object.entries(config.users) as [
     string,
     UserCredentials
   ][]) {
-    test(`Login for User Group: ${user.group}`, async ({
-      homePage,
-      loginPage,
-    }) => {
-      await homePage.open();
-      await homePage.navigation.navigateTo("LogOn");
+    test(`Login for User Group: ${user.group}`, async ({ loginPage }) => {
       await loginPage.login(user);
       await expect(loginPage.navigation.links["LogOff"]).toBeVisible();
       await expect(
@@ -29,13 +25,15 @@ test.describe("Successful login across User Groups", () => {
 });
 
 test.describe("Invalid login attempts", () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test.beforeEach(async ({ homePage }) => {
+    await homePage.open();
+    await homePage.navigation.navigateTo("LogOn");
+  });
+
   for (const { scenario, username, password } of invalidUsers) {
-    test(`Login should fail with ${scenario}`, async ({
-      homePage,
-      loginPage,
-    }) => {
-      await homePage.open();
-      await homePage.navigation.navigateTo("LogOn");
+    test(`Login should fail with ${scenario}`, async ({ loginPage }) => {
       await loginPage.invalidLogin(username, password);
       await expect(loginPage.errorMessage).toContainText(
         "The user name or password provided is incorrect"

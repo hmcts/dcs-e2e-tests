@@ -54,7 +54,7 @@ class CaseListPage extends Base {
       await this.applyFilter.click();
       const caseRow = this.getCaseRowByTextInput(textFieldInput);
       try {
-        await caseRow.waitFor({ state: "visible", timeout: 3000 });
+        await caseRow.waitFor({ state: "visible", timeout: 5000 });
         return; // success
       } catch {
         if (i === 1)

@@ -1,16 +1,13 @@
-import { test as base, expect } from "@playwright/test";
-import { pageFixtures, PageFixtures } from "../page-objects/pages";
-import { userConfig } from "../utils";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { test, expect } from "../fixtures";
+import fs from "fs";
+import { config } from "../utils";
 import ReviewEvidencePage from "../page-objects/pages/reviewEvidence.page";
 
-export const test = base.extend<PageFixtures>(pageFixtures);
-
 test.describe("Search Auto Case 1 (Documents Testing) and navigate into case", () => {
-  test.beforeEach(async ({ homePage, loginPage, caseListPage }) => {
+  test.beforeEach(async ({ homePage, caseListPage }) => {
     await homePage.open();
-    await homePage.navigation.navigateTo("LogOn");
-    await loginPage.login(userConfig.users.hmctsAdmin);
-    await loginPage.navigation.navigateTo("ViewCaseListLink");
+    await homePage.navigation.navigateTo("ViewCaseListLink");
     await caseListPage.searchCaseFile("01AD111111", "Southwark");
   });
 
@@ -55,11 +52,9 @@ test.describe("Search Auto Case 1 (Documents Testing) and navigate into case", (
 });
 
 test.describe("Search Comment Case (Notes Testing) and navigate into case", () => {
-  test.beforeEach(async ({ homePage, loginPage, caseListPage }) => {
+  test.beforeEach(async ({ homePage, caseListPage }) => {
     await homePage.open();
-    await homePage.navigation.navigateTo("LogOn");
-    await loginPage.login(userConfig.users.hmctsAdmin);
-    await loginPage.navigation.navigateTo("ViewCaseListLink");
+    await homePage.navigation.navigateTo("ViewCaseListLink");
     await caseListPage.searchCaseFile("01SJ1111", "Southwark");
   });
 
