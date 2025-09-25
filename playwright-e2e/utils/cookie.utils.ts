@@ -10,7 +10,7 @@ export class CookieUtils {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
-      const domain = (config.urls.preProdBaseUrl as string).replace(
+      const domain = (config.urls.base as string).replace(
         "https://",
         ""
       );
