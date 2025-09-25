@@ -4,6 +4,7 @@ import path from "path";
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
+
 export default defineConfig({
   testDir: "./playwright-e2e",
   snapshotDir: "./playwright-e2e/snapshots",

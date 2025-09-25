@@ -12,7 +12,9 @@ test.describe("Internal navigation links Logged Out", () => {
       await homePage.open();
       await homePage.navigation.navigateTo(link.name);
       await expect(page).toHaveTitle(link.expectedTitle);
-      expect(page.url()).toContain(link.expectedUrl);
+      expect(page.url().toLowerCase()).toContain(
+        link.expectedUrl.toLowerCase()
+      );
     });
   }
 });

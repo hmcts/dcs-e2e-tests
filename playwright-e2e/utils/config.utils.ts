@@ -4,6 +4,15 @@ import { fileURLToPath } from "url";
 
 dotenv.config({ quiet: true });
 
+// -------------------- Environment --------------------
+
+const ENV = process.env.TEST_ENV || "preprod"; // default to preprod
+
+const urls = {
+  preprod: "https://ccdcspreprod.caselines.co.uk/",
+  uat: "https://ccdcsuat.caselines.co.uk/",
+};
+
 // -------------------- Types --------------------
 export interface UserCredentials {
   group: string;
@@ -14,6 +23,7 @@ export interface UserCredentials {
 }
 
 export interface Config {
+  env: "preprod" | "uat";
   users: {
     hmctsAdmin: UserCredentials;
     // cpsAdmin: UserCredentials;
@@ -28,8 +38,9 @@ export interface Config {
     // feePaidJudge: UserCredentials;
   };
   urls: {
-    preProdBaseUrl: string;
-    uatBaseUrl: string;
+    preprod: string;
+    uat: string;
+    base: string;
   };
 }
 
@@ -51,6 +62,12 @@ function sessionPath(username: string): string {
 
 // -------------------- Config Object --------------------
 export const config: Config = {
+  env: ENV as "preprod" | "uat",
+  urls: {
+    preprod: urls.preprod,
+    uat: urls.uat,
+    base: ENV === "uat" ? urls.uat : urls.preprod,
+  },
   users: {
     hmctsAdmin: {
       group: "HMCTS Admin",
@@ -119,10 +136,6 @@ export const config: Config = {
     //   password: getEnvVar("FEE_PAID_JUDGE_PASSWORD"),
     //   sessionFile: sessionPath("trainer47"),
     // },
-  },
-  urls: {
-    preProdBaseUrl: getEnvVar("BASE_URL_PREPROD"),
-    uatBaseUrl: getEnvVar("BASE_URL_UAT"),
   },
 };
 
