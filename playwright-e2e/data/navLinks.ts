@@ -26,22 +26,22 @@ export const internalLinksLoggedOut: {
   {
     name: "Home",
     expectedTitle: "CCDCS",
-    expectedUrl: `${config.urls.preProdBaseUrl}`,
+    expectedUrl: `${config.urls.base}`,
   },
   {
     name: "LogOn",
     expectedTitle: "Log On",
-    expectedUrl: `${config.urls.preProdBaseUrl}Account/LogOn`,
+    expectedUrl: `${config.urls.base}Account/logon`, //partial lowercase match due to two possible urls /Logon and /logon?IsSecure=yes
   },
   {
     name: "Register",
     expectedTitle: "Register",
-    expectedUrl: `${config.urls.preProdBaseUrl}Account/Register`,
+    expectedUrl: `${config.urls.base}Account/Register`,
   },
   {
     name: "ContactUs",
     expectedTitle: "ContactUs",
-    expectedUrl: `${config.urls.preProdBaseUrl}Home/ContactUs`,
+    expectedUrl: `${config.urls.base}Home/ContactUs`,
   },
 ];
 
@@ -53,16 +53,16 @@ export const internalLinksLoggedIn: {
   {
     name: "AccountDetails",
     expectedTitle: "My Details",
-    expectedUrl: `${config.urls.preProdBaseUrl}Person/Details?personKey=`,
+    expectedUrl: `${config.urls.base}Person/Details?personKey=`,
   },
   {
     name: "LogOff",
     expectedTitle: "CCDCS",
-    expectedUrl: `${config.urls.preProdBaseUrl}`,
+    expectedUrl: `${config.urls.base}`,
   },
   {
     name: "ViewCaseListLink",
     expectedTitle: "Case List",
-    expectedUrl: `${config.urls.preProdBaseUrl}Case/CaseIndex`,
+    expectedUrl: `${config.urls.base}Case/CaseIndex`,
   },
 ];

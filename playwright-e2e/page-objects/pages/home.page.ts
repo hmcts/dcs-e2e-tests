@@ -7,7 +7,7 @@ class HomePage extends Base {
   }
 
   async open() {
-    await this.page.goto(config.urls.preProdBaseUrl); //Aim to update this to be more interchangeable based on environment
+    await this.page.goto(config.urls.base); 
   }
 }
 
