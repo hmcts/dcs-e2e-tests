@@ -1,32 +1,30 @@
 import { test, expect } from "../fixtures";
-import { UserCredentials, config, invalidUsers } from "../utils";
 
-test.describe("Create New Case in CCDCS", () => {
+test.describe.serial("Create & Update New Case in CCDCS", () => {
+
 test.beforeEach(async ({ homePage, loginPage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");
     await loginPage.acceptCookies();
   });
 
-test("Create New Case", async ({
-    loginPage,
-    createCasePage
+test("Create New Case & Change Case Details", async ({
+    createCasePage,
+    caseDetailsPage,
 }) => {
-    await expect(loginPage.navigation.links["LogOff"]).toBeVisible();
-    await expect(
-    loginPage.navigation.links["ViewCaseListLink"]).toBeVisible();
     await createCasePage.createCaseLink.click();
-    await createCasePage.createNewCase('TestCase','TestURN');
-    await expect (createCasePage.caseTitle).toBeVisible();
+    const caseUrn = await createCasePage.createNewCase('TestCase','TestURN');
+    await expect (caseDetailsPage.caseNameHeading).toBeVisible();
     
     const defDetails = [
     { surName: 'One', dobMonth: 'January' },
     { surName: 'Two', dobMonth: 'February' },
     ]
-      for (const defDetail of defDetails) {
-      await createCasePage.addDefendants(defDetail.surName, defDetail.dobMonth);
-      await expect (createCasePage.caseTitle).toBeVisible();
-      }
+    for (const defDetail of defDetails) {
+      await createCasePage.addDefendants(defDetail.surName, defDetail.dobMonth,caseUrn);
+      await expect (caseDetailsPage.caseNameHeading).toBeVisible();
+    }
+    await expect (caseDetailsPage.caseNameHeading).toBeVisible();
+    await createCasePage.changeCaseDetails();
   });
-  
 });

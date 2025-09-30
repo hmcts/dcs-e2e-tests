@@ -1,20 +1,18 @@
-import { expect, Locator } from "@playwright/test";
+import { Locator } from "@playwright/test";
 import { Base } from "../base";
-import { link } from "fs";
 
 class CreateCasePage extends Base {
   createCaseLink: Locator;
   caseName: Locator;
   caseUrn: Locator;
-  courtHouse: Locator;
+  ddCourtHouse: Locator;
   hearingDateDay: Locator;
   hearingDateMonth: Locator;
   hearingDateYear: Locator;  
   frontPgDesc: Locator;
   submitCreateBtn: Locator;
   ddCaseProsecutedBy: Locator;
-  caseTitle: Locator;
-  addDefButton: Locator;
+  addDefBtn: Locator;
   dOBDay: Locator;
   dOBMonth: Locator;
   dOBYear: Locator;
@@ -26,6 +24,17 @@ class CreateCasePage extends Base {
   defTwo: Locator;
   addBtn: Locator;
   FpgBtn: Locator;
+  changeCaseBtn: Locator;
+  ddIsInvitationOnly: Locator;
+  ddCategory: Locator;
+  otherCategory: Locator;
+  isCompleteCheckBox: Locator;
+  additionalNotes: Locator;
+  saveChangeCaseBtn: Locator;
+  updateMemo: Locator;
+  memoText: Locator;
+  submitMemo: Locator;
+
 
 constructor(page) {
     super(page);
@@ -33,14 +42,13 @@ constructor(page) {
     this.caseName = page.locator('#Name');
     this.ddCaseProsecutedBy = page.locator('#ddCaseProsecutedBy')
     this.caseUrn =  page.locator('#txtUrn');
-    this.courtHouse =  page.locator('#CourtHouse');
+    this.ddCourtHouse =  page.locator('#CourtHouse');
     this.hearingDateDay =  page.locator('#HearingDateDay');
     this.hearingDateMonth =  page.locator('#HearingDateMonth');
     this.hearingDateYear =  page.locator('#HearingDateYear');
     this.frontPgDesc =  page.locator('#Description_ifr');
     this.submitCreateBtn =  page.locator("//input[@value='Create']");
-    this.caseTitle = page.locator('.heading-medium');
-    this.addDefButton = page.getByRole("link", {name: "Add Defendant"});
+    this.addDefBtn = page.getByRole("link", {name: "Add Defendant"});
     this.dOBDay = page.locator('#DobDay');
     this.dOBMonth = page.locator('#DobMonth');
     this.dOBYear = page.locator('#DobYear');
@@ -51,11 +59,21 @@ constructor(page) {
     this.defTwo = page.locator('[name="Defendant Two  - 01.02.70"]')
     this.defUrn = page.locator('#Urn')
     this.addBtn = page.locator('#add-p')
-    this.FpgBtn = page.getByRole("text", {name:"Back to Front Page"})
+    this.FpgBtn = page.getByRole('button', {name:"Back to Front Page"})
+    this.changeCaseBtn = page.locator("xpath=(//a[@class='button-level-one'])[1]")
+    this.ddIsInvitationOnly = page.locator('#ddIsInvitationOnly')
+    this.ddCategory = page.locator('#categoryDropDown')
+    this.otherCategory = page.locator('#otherCategory')
+    this.isCompleteCheckBox = page.locator('#IsComplete')
+    this.additionalNotes = page.locator('#AdditionalNotes')
+    this.updateMemo = page.getByRole('link', { name: 'Update Memoranda' })
+    this.memoText = page.locator('#Text')
+    this.submitMemo = page.locator('input[value="Add Memorandum"]')
 
+    this.saveChangeCaseBtn = page.locator('input[value="Save"]')
 }
 
-async createCaseRandom(caseName: string, caseUrn: string){
+async generateCaseNameAndUrn (caseName: string, caseUrn: string){
     const randomNumber = Math.floor(Math.random() * 10000) + 100;
     const caseRandom = caseName+randomNumber;
     const urnRandom = caseUrn+randomNumber;
@@ -63,22 +81,27 @@ async createCaseRandom(caseName: string, caseUrn: string){
     return {caseRandom, urnRandom};
 }
 
-async selectRandomOptionByLabel(): Promise<string> {
-    const labels = await this.ddCaseProsecutedBy.locator('option').allTextContents();
+// Move this function in a utility or a base page class
+async  selectRandomOptionFromDropdown(dropdown: Locator): Promise<string> {
+    const labels = await dropdown.locator('option').allTextContents();
     const valid = labels.filter(l => l.trim() !== '');
-    const randomLabel = valid[Math.floor(Math.random() * valid.length)];
-    await this.ddCaseProsecutedBy.selectOption({ label: randomLabel });
-    console.log(randomLabel);
+    if (valid.length === 0) {
+        throw new Error('No valid options found in the dropdown.');
+    }
+    const randomIndex = Math.floor(Math.random() * valid.length);
+    const randomLabel = valid[randomIndex];
+    await dropdown.selectOption({ label: randomLabel });
+    console.log(`Selected option: ${randomLabel}`);
     return randomLabel;
 }
 
 async createNewCase(caseName: string, caseUrn: string) {
-    const {caseRandom, urnRandom} = await this.createCaseRandom(caseName,caseUrn);
+    const {caseRandom, urnRandom} = await this.generateCaseNameAndUrn(caseName,caseUrn);
     await this.caseName.fill(caseRandom.toString());
     await this.caseUrn.fill(urnRandom.toString());
-    const label = await this.selectRandomOptionByLabel();
+    const label = await this.selectRandomOptionFromDropdown(this.ddCaseProsecutedBy);
     await this.ddCaseProsecutedBy.selectOption({ label });
-    await this.courtHouse.selectOption({ label: 'Southwark' });
+    await this.ddCourtHouse.selectOption({ label: 'Southwark' });
     const today = new Date();
     const date = today.getDate();
     const monthName = today.toLocaleString('default', {month : 'long' });
@@ -87,17 +110,33 @@ async createNewCase(caseName: string, caseUrn: string) {
     await this.hearingDateMonth.selectOption({ label: monthName.toString() });
     await this.hearingDateYear.selectOption({ label: year.toString() });
     await this.submitCreateBtn.click();
-    return urnRandom;
+    return caseUrn;
 }
 
-async addDefendants(surName: string, dOBMonth: string){
-    await this.addDefButton.click();
+async addDefendants(surName: string, dOBMonth: string,caseUrn: string){
+    await this.addDefBtn.click();
     await this.firstName.fill("Defendant");
     await this.surName.fill(surName.toString());
     await this.dOBDay.selectOption("1");
     await this.dOBMonth.selectOption(dOBMonth.toString());
     await this.dOBYear.selectOption("1990");
+    if (await this.defUrn.isEnabled()) {
+    await this.defUrn.fill(caseUrn);
+    } else {
+    console.log('Text box is disabled, skipping fill action.');
+    }
     await this.addBtn.click();
+}
+
+
+async changeCaseDetails(){
+    await this.changeCaseBtn.click();
+    await this.ddIsInvitationOnly.selectOption({ label: 'Yes' });
+    await this.ddCategory.selectOption({ label: 'Other ...' });
+    await this.otherCategory.fill('Test')
+    await this.isCompleteCheckBox.check();
+    await this.additionalNotes.fill('Test additional notes');
+    await this.saveChangeCaseBtn.click(); 
 }
 
 }
