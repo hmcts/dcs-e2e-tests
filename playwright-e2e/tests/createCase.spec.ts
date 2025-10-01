@@ -6,6 +6,7 @@ test.beforeEach(async ({ homePage, loginPage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");
     await loginPage.acceptCookies();
+
   });
 
 test("Create New Case & Change Case Details", async ({
@@ -26,5 +27,7 @@ test("Create New Case & Change Case Details", async ({
     }
     await expect (caseDetailsPage.caseNameHeading).toBeVisible();
     await createCasePage.changeCaseDetails();
+    await expect (caseDetailsPage.caseNameHeading).toBeVisible();
   });
+
 });

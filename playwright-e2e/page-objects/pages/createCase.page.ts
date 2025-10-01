@@ -5,13 +5,13 @@ class CreateCasePage extends Base {
   createCaseLink: Locator;
   caseName: Locator;
   caseUrn: Locator;
-  ddCourtHouse: Locator;
+  dropdownCourtHouse: Locator;
   hearingDateDay: Locator;
   hearingDateMonth: Locator;
   hearingDateYear: Locator;  
   frontPgDesc: Locator;
   submitCreateBtn: Locator;
-  ddCaseProsecutedBy: Locator;
+  dropdownCaseProsecutedBy: Locator;
   addDefBtn: Locator;
   dOBDay: Locator;
   dOBMonth: Locator;
@@ -25,24 +25,21 @@ class CreateCasePage extends Base {
   addBtn: Locator;
   FpgBtn: Locator;
   changeCaseBtn: Locator;
-  ddIsInvitationOnly: Locator;
-  ddCategory: Locator;
+  dropdownIsInvitationOnly: Locator;
+  dropdownCategory: Locator;
   otherCategory: Locator;
   isCompleteCheckBox: Locator;
   additionalNotes: Locator;
   saveChangeCaseBtn: Locator;
-  updateMemo: Locator;
-  memoText: Locator;
-  submitMemo: Locator;
-
+  
 
 constructor(page) {
     super(page);
     this.createCaseLink = page.getByRole("link", { name: "Create a Case" });
     this.caseName = page.locator('#Name');
-    this.ddCaseProsecutedBy = page.locator('#ddCaseProsecutedBy')
+    this.dropdownCaseProsecutedBy = page.locator('#ddCaseProsecutedBy')
     this.caseUrn =  page.locator('#txtUrn');
-    this.ddCourtHouse =  page.locator('#CourtHouse');
+    this.dropdownCourtHouse =  page.locator('#CourtHouse');
     this.hearingDateDay =  page.locator('#HearingDateDay');
     this.hearingDateMonth =  page.locator('#HearingDateMonth');
     this.hearingDateYear =  page.locator('#HearingDateYear');
@@ -61,16 +58,13 @@ constructor(page) {
     this.addBtn = page.locator('#add-p')
     this.FpgBtn = page.getByRole('button', {name:"Back to Front Page"})
     this.changeCaseBtn = page.locator("xpath=(//a[@class='button-level-one'])[1]")
-    this.ddIsInvitationOnly = page.locator('#ddIsInvitationOnly')
-    this.ddCategory = page.locator('#categoryDropDown')
+    this.dropdownIsInvitationOnly = page.locator('#ddIsInvitationOnly')
+    this.dropdownCategory = page.locator('#categoryDropDown')
     this.otherCategory = page.locator('#otherCategory')
     this.isCompleteCheckBox = page.locator('#IsComplete')
     this.additionalNotes = page.locator('#AdditionalNotes')
-    this.updateMemo = page.getByRole('link', { name: 'Update Memoranda' })
-    this.memoText = page.locator('#Text')
-    this.submitMemo = page.locator('input[value="Add Memorandum"]')
-
     this.saveChangeCaseBtn = page.locator('input[value="Save"]')
+
 }
 
 async generateCaseNameAndUrn (caseName: string, caseUrn: string){
@@ -99,9 +93,9 @@ async createNewCase(caseName: string, caseUrn: string) {
     const {caseRandom, urnRandom} = await this.generateCaseNameAndUrn(caseName,caseUrn);
     await this.caseName.fill(caseRandom.toString());
     await this.caseUrn.fill(urnRandom.toString());
-    const label = await this.selectRandomOptionFromDropdown(this.ddCaseProsecutedBy);
-    await this.ddCaseProsecutedBy.selectOption({ label });
-    await this.ddCourtHouse.selectOption({ label: 'Southwark' });
+    const label = await this.selectRandomOptionFromDropdown(this.dropdownCaseProsecutedBy);
+    await this.dropdownCaseProsecutedBy.selectOption({ label });
+    await this.dropdownCourtHouse.selectOption({ label: 'Southwark' });
     const today = new Date();
     const date = today.getDate();
     const monthName = today.toLocaleString('default', {month : 'long' });
@@ -131,15 +125,15 @@ async addDefendants(surName: string, dOBMonth: string,caseUrn: string){
 
 async changeCaseDetails(){
     await this.changeCaseBtn.click();
-    await this.ddIsInvitationOnly.selectOption({ label: 'Yes' });
-    await this.ddCategory.selectOption({ label: 'Other ...' });
+    await this.dropdownIsInvitationOnly.selectOption({ label: 'Yes' });
+    await this.dropdownCategory.selectOption({ label: 'Other ...' });
     await this.otherCategory.fill('Test')
     await this.isCompleteCheckBox.check();
     await this.additionalNotes.fill('Test additional notes');
     await this.saveChangeCaseBtn.click(); 
 }
-
 }
+
 export default CreateCasePage;
 
 
