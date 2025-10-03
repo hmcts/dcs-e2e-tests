@@ -22,11 +22,11 @@ test("Create New Case & Change Case Details", async ({
     { surName: 'Two', dobMonth: 'February' },
     ]
     for (const defDetail of defDetails) {
-      await createCasePage.addDefendants(defDetail.surName, defDetail.dobMonth,caseUrn);
+      await caseDetailsPage.addDefendants(defDetail.surName, defDetail.dobMonth,caseUrn);
       await expect (caseDetailsPage.caseNameHeading).toBeVisible();
     }
     await expect (caseDetailsPage.caseNameHeading).toBeVisible();
-    await createCasePage.changeCaseDetails();
+    await caseDetailsPage.changeCaseDetails();
     await expect (caseDetailsPage.caseNameHeading).toBeVisible();
   });
 
