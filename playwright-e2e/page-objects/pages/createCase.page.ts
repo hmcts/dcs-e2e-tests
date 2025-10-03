@@ -29,7 +29,7 @@ constructor(page) {
 }
 
 async generateCaseNameAndUrn (caseName: string, caseUrn: string){
-    const randomNumber = Math.floor(Math.random() * 10000) + 100;
+    const randomNumber = Math.floor(Math.random() * 10000) + 1000;
     const caseRandom = caseName+randomNumber;
     const urnRandom = caseUrn+randomNumber;
     console.log(caseRandom);

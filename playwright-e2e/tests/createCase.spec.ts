@@ -1,6 +1,6 @@
 import { test, expect } from "../fixtures";
 
-test.describe.serial("Create & Update New Case in CCDCS", () => {
+test.describe("Create & Update New Case in CCDCS", () => {
 
 test.beforeEach(async ({ homePage, loginPage }) => {
     await homePage.open();
