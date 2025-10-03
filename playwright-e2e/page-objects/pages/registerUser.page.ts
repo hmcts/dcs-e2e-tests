@@ -25,13 +25,8 @@ class RegisterUserPage extends Base {
   changeIsVerifiedUser: Locator;
   verifiedUserFlag: Locator;
     
-  private readonly loginPage: LoginPage; // Declare a variable for it
-
-
 constructor(page) {
     super(page);
-    this.loginPage = new LoginPage(page); 
-
     this.registerLink = page.locator('a[title="Click here to register."]')
     this.registerTitle = page.locator('.heading-medium')
     this.title = page.locator('#Title')
@@ -54,9 +49,8 @@ constructor(page) {
     
     this.changeIsVerifiedUser = page.locator("xpath=(//a[contains(text(),'Change')])[5]")
     this.verifiedUserFlag = page.locator("xpath=//*[@id=\"personListDiv\"]/table/tbody/tr[2]/td[12]")
- 
-}
 
+}
 
 async generateUserName (userName: string){
     const randomNumber = Math.floor(Math.random() * 10000) + 100;
@@ -72,7 +66,6 @@ async enterUserRegDetails() {
     await this.userName.clear();
     const userRandom = await this.generateUserName("UserReg");
     await this.userName.fill(userRandom.toString());
-
     await this.email.fill(userRandom.toString()+"@cps.gov.uk");
     await this.role.selectOption({ label: 'CPS Administrator' });
     await this.location.selectOption({ label: 'Southwark' });
@@ -96,9 +89,6 @@ async updateVerifyUserFlag(){
     await this.changeIsVerifiedUser.click();
     const verifiedFlag = this.verifiedUserFlag.textContent;
     return verifiedFlag;
-}
-
-
-}
+}}
 
 export default RegisterUserPage;

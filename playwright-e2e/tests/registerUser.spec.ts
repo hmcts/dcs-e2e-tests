@@ -6,7 +6,7 @@ test.beforeEach(async ({ homePage, loginPage }) => {
     await homePage.open();
   });
 
-test("Approve New user", async ({
+test("Approve New user registration", async ({
     registerUserPage,
     homePage,
     loginPage
@@ -18,11 +18,8 @@ test("Approve New user", async ({
     await homePage.navigation.navigateTo("LogOn");
     await loginPage.invalidLogin("SJagadeesan", "suganDCSTen10")
     await registerUserPage.checkUserStatus(userName);
-    await registerUserPage.updateVerifyUserFlag();  // Verify Email to AC for approval
+    await registerUserPage.updateVerifyUserFlag();  // Verify Email to AC for approval 
     await expect(registerUserPage.verifiedUserFlag).toHaveText('Y');
-
-   
-     })
-
+ })
 
 });
