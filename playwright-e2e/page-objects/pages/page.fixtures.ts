@@ -4,7 +4,6 @@ import CaseDetailsPage from "./caseDetails.page";
 import LoginPage from "./login.page";
 import ReviewEvidencePage from "./reviewEvidence.page";
 import UpdateFrontPage from "./updateFront.page";
-import CreateCasePage from "./createCase.page";
 
 export interface PageFixtures {
   homePage: HomePage;
@@ -13,7 +12,6 @@ export interface PageFixtures {
   loginPage: LoginPage;
   reviewEvidencePage: ReviewEvidencePage;
   updateFrontPage: UpdateFrontPage;
-  createCasePage: CreateCasePage;
 }
 
 export const pageFixtures = {
@@ -40,10 +38,5 @@ export const pageFixtures = {
   updateFrontPage: async ({ page }, use) => {
     await use(new UpdateFrontPage(page));
   },
-
-  createCasePage: async ({ page }, use) => {
-    await use(new CreateCasePage(page));
-  },
-
 
 };
