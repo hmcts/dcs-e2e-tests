@@ -2,7 +2,6 @@ import { Locator } from "@playwright/test";
 import { Base } from "../base";
 
 class CreateCasePage extends Base {
-  createCaseLink: Locator;
   caseName: Locator;
   dropdownCaseProsecutedBy: Locator;
   caseUrn: Locator;
@@ -15,7 +14,6 @@ class CreateCasePage extends Base {
   
 constructor(page) {
     super(page);
-    this.createCaseLink = page.getByRole("link", { name: "Create a Case" });
     this.caseName = page.locator('#Name');
     this.dropdownCaseProsecutedBy = page.locator('#ddCaseProsecutedBy')
     this.caseUrn =  page.locator('#txtUrn');

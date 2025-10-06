@@ -2,8 +2,10 @@ import { Base } from "../base";
 import { config } from "../../utils";
 
 class HomePage extends Base {
+  
   constructor(page) {
     super(page);
+
   }
 
   async open() {
