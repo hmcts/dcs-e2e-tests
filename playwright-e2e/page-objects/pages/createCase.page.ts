@@ -28,10 +28,10 @@ constructor(page) {
 
 async generateCaseNameAndUrn (caseName: string, caseUrn: string){
     const randomNumber = Math.floor(Math.random() * 10000) + 1000;
-    const caseRandom = caseName+randomNumber;
-    const urnRandom = caseUrn+randomNumber;
-    console.log(caseRandom);
-    return {caseRandom, urnRandom};
+    const newCaseName = caseName+randomNumber;
+    const newCaseUrn = caseUrn+randomNumber;
+    console.log(newCaseName);
+    return {newCaseName, newCaseUrn};
 }
 
 // Move this function in a utility or a base page class
@@ -48,9 +48,9 @@ async  selectRandomOptionFromDropdown(dropdown: Locator): Promise<string> {
 }
 
 async createNewCase(caseName: string, caseUrn: string) {
-    const {caseRandom, urnRandom} = await this.generateCaseNameAndUrn(caseName,caseUrn);
-    await this.caseName.fill(caseRandom.toString());
-    await this.caseUrn.fill(urnRandom.toString());
+    const {newCaseName, newCaseUrn} = await this.generateCaseNameAndUrn(caseName,caseUrn);
+    await this.caseName.fill(newCaseName.toString());
+    await this.caseUrn.fill(newCaseUrn.toString());
     const label = await this.selectRandomOptionFromDropdown(this.dropdownCaseProsecutedBy);
     await this.dropdownCaseProsecutedBy.selectOption({ label });
     await this.dropdownCourtHouse.selectOption({ label: 'Southwark' });
@@ -62,7 +62,7 @@ async createNewCase(caseName: string, caseUrn: string) {
     await this.hearingDateMonth.selectOption({ label: monthName.toString() });
     await this.hearingDateYear.selectOption({ label: year.toString() });
     await this.submitCreateBtn.click();
-    return {caseUrn, caseName};
+    return {newCaseName, newCaseUrn};
 }}
 
 export default CreateCasePage;

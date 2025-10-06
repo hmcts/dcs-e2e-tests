@@ -1,5 +1,4 @@
 import { test, expect } from "../fixtures";
-import CaseListPage from "../page-objects/pages/caseList.page";
 
 test.describe("Create & Update New Case in CCDCS", () => {
 
@@ -17,9 +16,8 @@ test("Create New Case & Change Case Details", async ({
     addDefendantsPage
 }) => {
     await caseListPage.goToCreateCase();
-    const {caseUrn, caseName} = await createCasePage.createNewCase('TestCase','TestURN');
-    await expect (caseDetailsPage.caseNameHeading).toContainText(caseName);
-    
+    const {newCaseName, newCaseUrn} = await createCasePage.createNewCase('TestCase','TestURN');
+    await expect (caseDetailsPage.caseNameHeading).toContainText(newCaseName);
     const defDetails = [
     { surName: 'One', dobMonth: 'January' },
     { surName: 'Two', dobMonth: 'February' },
@@ -27,12 +25,13 @@ test("Create New Case & Change Case Details", async ({
     for (const defDetail of defDetails) {
       await caseDetailsPage.goToAddDefendant();
       await expect (addDefendantsPage.addDefHeading).toHaveText('Add Defendant')
-      await addDefendantsPage.addDefendants(defDetail.surName, defDetail.dobMonth,caseUrn);
-      await expect (caseDetailsPage.caseNameHeading).toContainText(caseName);
+      await addDefendantsPage.addDefendants(defDetail.surName, defDetail.dobMonth,newCaseUrn);
+      await expect (caseDetailsPage.caseNameHeading).toContainText(newCaseName);
     }
-    await expect (caseDetailsPage.caseNameHeading).toContainText(caseName);
+    await expect (caseDetailsPage.caseNameHeading).toContainText(newCaseName);
     await caseDetailsPage.changeCaseDetails();
-    await expect (caseDetailsPage.caseNameHeading).toContainText(caseName)
+    await expect (caseDetailsPage.caseNameHeading).toContainText(newCaseName)
+
   });
 
 });
