@@ -62,7 +62,7 @@ async createNewCase(caseName: string, caseUrn: string) {
     await this.hearingDateMonth.selectOption({ label: monthName.toString() });
     await this.hearingDateYear.selectOption({ label: year.toString() });
     await this.submitCreateBtn.click();
-    return caseUrn;
+    return {caseUrn, caseName};
 }}
 
 export default CreateCasePage;
