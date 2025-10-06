@@ -2,7 +2,7 @@ import { Locator } from "@playwright/test";
 import { Base } from "../base";
 
 class RegisterUserPage extends Base {
-  registerLink: Locator;
+  registerTitle: Locator;
   title: Locator;
   firstName: Locator;
   lastName: Locator;
@@ -14,12 +14,10 @@ class RegisterUserPage extends Base {
   confirmPassword: Locator;
   agreeTermsCheckBox: Locator
   saveRegisterForm: Locator;
-  registerTitle: Locator;
 
     
 constructor(page) {
     super(page);
-    this.registerLink = page.locator('a[title="Click here to register."]')
     this.registerTitle = page.locator('.heading-medium')
     this.title = page.locator('#Title')
     this.firstName = page.locator('#FirstName')

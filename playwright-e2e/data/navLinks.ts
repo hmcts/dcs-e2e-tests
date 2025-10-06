@@ -65,9 +65,14 @@ export const internalLinksLoggedIn: {
     expectedTitle: "Case List",
     expectedUrl: `${config.urls.base}Case/CaseIndex`,
   },
-   {
-    name: "ApprovalRequestsLink",
+  {
+    name: "ApprovalRequests",
     expectedTitle: "Approval Requests",
     expectedUrl: `${config.urls.base}Home/ApprovalRequest`,
+  },
+    {
+    name: "Admin",
+    expectedTitle: "Administration Options",
+    expectedUrl: `${config.urls.base}Admin`,
   },
 ];
