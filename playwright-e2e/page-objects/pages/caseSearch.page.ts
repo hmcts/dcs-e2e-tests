@@ -1,7 +1,7 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../base";
 
-class CaseListPage extends Base {
+class CaseSearchPage extends Base {
   textField: Locator;
   viewCaseListLink: Locator;
   locationField: Locator;
@@ -79,4 +79,4 @@ class CaseListPage extends Base {
   }
 }
 
-export default CaseListPage;
+export default CaseSearchPage;
