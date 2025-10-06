@@ -7,6 +7,10 @@ import UpdateFrontPage from "./updateFront.page";
 import CreateCasePage from "./createCase.page";
 import MemoPage from "./memo.page";
 import RegisterUserPage from "./registerUser.page";
+import UserSettingsPage from "./userSettings.page";
+import AprrovalRequestsPage from "./approvalRequests.page";
+import AprroveAccessRequestPage from "./approveAccessRequest.page";
+import RejectAccessRequestPage from "./rejectAccessRequest.page";
 
 export interface PageFixtures {
   homePage: HomePage;
@@ -18,6 +22,11 @@ export interface PageFixtures {
   createCasePage: CreateCasePage;
   memoPage: MemoPage;
   registerUserPage: RegisterUserPage;
+  userSettingsPage: UserSettingsPage;
+  approvalRequestsPage: AprrovalRequestsPage;
+  approveAccessRequestPage: AprroveAccessRequestPage;
+  rejectAccessRequestPage: RejectAccessRequestPage;
+
 }
 
 export const pageFixtures = {
@@ -55,5 +64,21 @@ export const pageFixtures = {
 
   registerUserPage: async ({ page }, use) => {
     await use(new RegisterUserPage(page));
+  },
+
+  userSettingsPage: async ({ page }, use) => {
+    await use(new UserSettingsPage(page));
+  },
+
+  approvalRequestsPage: async ({ page }, use) => {
+    await use(new AprrovalRequestsPage(page));
+  },
+  
+  approveAccessRequestPage: async ({ page }, use) => {
+    await use(new AprroveAccessRequestPage(page));
+  },
+
+  rejectAccessRequestPage: async ({ page }, use) => {
+    await use(new RejectAccessRequestPage(page));
   },
 };

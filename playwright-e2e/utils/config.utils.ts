@@ -26,6 +26,8 @@ export interface Config {
   env: "preprod" | "uat";
   users: {
     hmctsAdmin: UserCredentials;
+    accessCoordinator: UserCredentials;
+    // newUserRegistered: UserCredentials;
     // cpsAdmin: UserCredentials;
     // cpsProsecutor: UserCredentials;
     // associateProsecutor: UserCredentials;
@@ -74,6 +76,13 @@ export const config: Config = {
       username: "trainer02",
       password: getEnvVar("HMCTS_ADMIN_PASSWORD"),
       sessionFile: sessionPath("trainer02"),
+      cookieName: ".ASPXAUTH",
+    },
+    accessCoordinator: {
+      group: "Access coordinator",
+      username: "SJagadeesan",
+      password: getEnvVar("AC_PASSWORD"),
+      sessionFile: sessionPath("suganDCSTen10"),
       cookieName: ".ASPXAUTH",
     },
     // cpsAdmin: {

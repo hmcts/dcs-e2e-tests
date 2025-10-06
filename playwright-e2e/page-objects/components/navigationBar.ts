@@ -25,6 +25,8 @@ class NavigationBar {
       }),
       LogOff: page.getByRole("link", { name: "Log Off" }),
       ViewCaseListLink: page.getByRole("link", { name: "View Case List" }),
+      ApprovalRequestsLink: page.getByRole('link', { name: 'Approval Requests' })
+
     };
   }
 

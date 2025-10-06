@@ -1,0 +1,39 @@
+import { Locator } from "@playwright/test";
+import { Base } from "../base";
+
+class UserSettingsPage extends Base {
+  adminLink: Locator;
+  userLink: Locator;
+  searchText: Locator;
+  applyFilter: Locator;
+  changeIsVerifiedUser: Locator;
+  verifiedUserFlag: Locator;
+
+      
+constructor(page) {
+    super(page);
+    this.adminLink = page.getByRole('link', { name: 'Admin' })
+    this.userLink = page.getByRole('link', { name: 'Users' })
+    this.searchText = page.locator('#searchText')
+    this.applyFilter = page.getByRole('link', { name: 'Apply Filter' })
+    this.changeIsVerifiedUser = page.locator("xpath=(//a[contains(text(),'Change')])[5]")
+    this.verifiedUserFlag = page.locator("xpath=//*[@id=\"personListDiv\"]/table/tbody/tr[2]/td[12]")
+
+}
+
+async checkUserStatus(userName: string){
+    await this.adminLink.click();
+    await this.userLink.click();
+    await this.searchText.clear();
+    await this.searchText.fill(userName);
+    await this.applyFilter.click();
+}
+
+async updateVerifyUserFlag(){
+    await this.changeIsVerifiedUser.click();
+    const verifiedFlag = this.verifiedUserFlag.textContent;
+    return verifiedFlag;
+}
+
+}
+export default UserSettingsPage;

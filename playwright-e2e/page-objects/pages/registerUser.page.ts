@@ -1,7 +1,5 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../base";
-import LoginPage from "./login.page";
-
 
 class RegisterUserPage extends Base {
   registerLink: Locator;
@@ -16,14 +14,8 @@ class RegisterUserPage extends Base {
   confirmPassword: Locator;
   agreeTermsCheckBox: Locator
   saveRegisterForm: Locator;
-  logOffLink: Locator;
   registerTitle: Locator;
-  adminLink: Locator;
-  userLink: Locator;
-  searchText: Locator;
-  applyFilter: Locator;
-  changeIsVerifiedUser: Locator;
-  verifiedUserFlag: Locator;
+
     
 constructor(page) {
     super(page);
@@ -40,15 +32,6 @@ constructor(page) {
     this.confirmPassword = page.locator('#ConfirmPassword')
     this.agreeTermsCheckBox = page.locator('#agreeTermsCheckBox')
     this.saveRegisterForm = page.locator('#saveRegisterForm')
-    this.logOffLink = page.getByRole('link', { name: 'Log Off' })
-
-    this.adminLink = page.getByRole('link', { name: 'Admin' })
-    this.userLink = page.getByRole('link', { name: 'Users' })
-    this.searchText = page.locator('#searchText')
-    this.applyFilter = page.getByRole('link', { name: 'Apply Filter' })
-    
-    this.changeIsVerifiedUser = page.locator("xpath=(//a[contains(text(),'Change')])[5]")
-    this.verifiedUserFlag = page.locator("xpath=//*[@id=\"personListDiv\"]/table/tbody/tr[2]/td[12]")
 
 }
 
@@ -73,22 +56,7 @@ async enterUserRegDetails() {
     await this.confirmPassword.fill('UserReg2025')
     await this.agreeTermsCheckBox.check();
     await this.saveRegisterForm.click();
-    await this.logOffLink.click();
     return userRandom;
-}
-
-async checkUserStatus(userName: string){
-    await this.adminLink.click();
-    await this.userLink.click();
-    await this.searchText.clear();
-    await this.searchText.fill(userName);
-    await this.applyFilter.click();
-}
-
-async updateVerifyUserFlag(){
-    await this.changeIsVerifiedUser.click();
-    const verifiedFlag = this.verifiedUserFlag.textContent;
-    return verifiedFlag;
 }}
 
 export default RegisterUserPage;
