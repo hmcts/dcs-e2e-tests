@@ -7,7 +7,8 @@ class UserSettingsPage extends Base {
   applyFilter: Locator;
   changeIsVerifiedUser: Locator;
   verifiedUserFlag: Locator;
-
+  approvedUserFlag: Locator;
+  deniedUserFlag: Locator;
       
 constructor(page) {
     super(page);
@@ -16,10 +17,12 @@ constructor(page) {
     this.applyFilter = page.getByRole('link', { name: 'Apply Filter' })
     this.changeIsVerifiedUser = page.locator("xpath=(//a[contains(text(),'Change')])[5]")
     this.verifiedUserFlag = page.locator("xpath=//*[@id=\"personListDiv\"]/table/tbody/tr[2]/td[12]")
+    this.approvedUserFlag = page.locator("xpath=//*[@id=\"personListDiv\"]/table/tbody/tr[2]/td[7]")
+    this.deniedUserFlag = page.locator("xpath=//*[@id=\"personListDiv\"]/table/tbody/tr[2]/td[14]")
 
 }
 
-async checkUserStatus(userName: string){
+async searchUser(userName: string){
     await this.usersLink.click();
     await this.searchText.clear();
     await this.searchText.fill(userName);

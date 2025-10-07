@@ -42,7 +42,7 @@ class LoginPage extends Base {
     await this.page.context().storageState({ path: user.sessionFile });
   }
 
-  async loginAsNewUserRegistered(username: string) {
+  async loginAsNewUserRegistered(username: string) {    // move to config
     await this.username.fill(username);
     await this.password.fill('UserReg2025');
     await this.loginButton.click();

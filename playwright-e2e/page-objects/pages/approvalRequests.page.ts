@@ -24,30 +24,13 @@ constructor(page) {
     this.rejectButton = page.getByRole('link', { name: 'Reject' }).nth(0)
     this.approvalRequestsHeading = page.locator('div#content h2')
     this.returnMessage = page.locator('.ReturnMessage')
-   
+
 }
 
-async approveUserRequest(userName: string)
-{
+async newApprovalRequests(userName: string){
    await expect(this.userEmail).toContainText(new RegExp(userName + "@cps.gov.uk", "i"));
    await expect(this.userLocation).toHaveText("Southwark");
    await expect(this.userRole).toHaveText("CPS Administrator");
-   await this.approveButton.click();
 }
- 
-async rejectUserRequest(userName: string)
-{
-   await expect(this.userEmail).toContainText(new RegExp(userName + "@cps.gov.uk", "i"));
-   await expect(this.userLocation).toHaveText("Southwark");
-   await expect(this.userRole).toHaveText("CPS Administrator");
-   await this.rejectButton.click();
-}
-
 }
 export default AprrovalRequestsPage;
-
-
-
- 
-
- 
