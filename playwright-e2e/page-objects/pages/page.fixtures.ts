@@ -40,7 +40,4 @@ export const pageFixtures = {
   updateFrontPage: async ({ page }, use) => {
     await use(new UpdateFrontPage(page));
   },
-  notesPage: async ({ page }, use) => {
-    await use(new NotesPage(page));
-  },
 };

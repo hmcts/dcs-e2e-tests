@@ -268,33 +268,48 @@ class ReviewEvidencePage extends Base {
     return image;
   }
 
-  async trackHighResImageLoad() {
-    // Expose a function to the page that updates the last high resolution loaded document
-    await this.page.exposeFunction("notifyHighResLoaded", (docId: string) => {
-      (window as any).__lastHighResDoc = docId;
-    });
+  async waitForHighResImageLoad(docId: string, timeoutMs = 15000) {
+    const result = await this.page.evaluate(
+      ({ documentId, timeout }) => {
+        const img = document.querySelector<HTMLImageElement>(
+          `img.documentPageImage[data-documentrowkey="${documentId}"]`
+        );
+        if (!img)
+          return {
+            success: false,
+            message: `❌ Image not found for docID: ${documentId}`,
+          };
 
-    // Override the page's highResImageLoaded function to track docId
-    await this.page.evaluate(() => {
-      const original = (window as any).highResImageLoaded;
-      (window as any).highResImageLoaded = function (
-        docId: string,
-        sectionId: string,
-        pageNumber: string
-      ) {
-        if (original) original(docId, sectionId, pageNumber); // Call original function
-        (window as any).notifyHighResLoaded(docId); // Track docId
-        (window as any).__lastHighResDoc = docId; // Store last docId
-      };
-    });
-  }
+        return new Promise<{ success: boolean; message: string }>((resolve) => {
+          const handler = () => {
+            if (img.src.includes("r=i")) {
+              img.removeEventListener("load", handler);
+              resolve({
+                success: true,
+                message: `✅ High-res image loaded for docId: ${documentId}`,
+              });
+            }
+          };
+          img.addEventListener("load", handler);
 
-  async waitForHighResImageLoad(docId: string) {
-    await this.page.waitForFunction(
-      (targetDocId) => (window as any).__lastHighResDoc === targetDocId,
-      docId,
-      { timeout: 20000 }
+          setTimeout(() => {
+            img.removeEventListener("load", handler);
+            resolve({
+              success: false,
+              message: `⚠️ Timeout (${timeout}ms) waiting for high-res image for docId: ${documentId}`,
+            });
+          }, timeout);
+        });
+      },
+      { documentId: docId, timeout: timeoutMs } // <-- pass args as object
     );
+
+    // Node-side console log
+    console.log(result.message);
+
+    if (!result.success) {
+      throw new Error(result.message);
+    }
   }
 }
 
