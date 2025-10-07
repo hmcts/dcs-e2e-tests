@@ -301,7 +301,7 @@ class ReviewEvidencePage extends Base {
           }, timeout);
         });
       },
-      { documentId: docId, timeout: timeoutMs } // <-- pass args as object
+      { documentId: docId, timeout: timeoutMs }
     );
 
     // Node-side console log
