@@ -1509,6 +1509,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dcs-e2e-tests@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "dcs-e2e-tests@workspace:."
+  dependencies:
+    "@axe-core/playwright": "npm:^4.10.0"
+    "@eslint/js": "npm:^9.11.1"
+    "@hmcts/playwright-common": "npm:^1.0.36"
+    "@playwright/test": "npm:^1.48.2"
+    "@types/node": "npm:^22.15.34"
+    "@typescript-eslint/eslint-plugin": "npm:^8.8.0"
+    axios: "npm:^1.7.4"
+    dotenv: "npm:^17.0.0"
+    eslint: "npm:^9.11.1"
+    eslint-plugin-playwright: "npm:^2.0.0"
+    get-port: "npm:^7.1.0"
+    globals: "npm:^16.0.0"
+    lighthouse: "npm:^12.2.1"
+    playwright: "npm:^1.48.2"
+    playwright-core: "npm:^1.48.2"
+    playwright-lighthouse: "npm:^4.0.0"
+    typescript: "npm:^5.6.2"
+    typescript-eslint: "npm:^8.8.0"
+    uuid: "npm:^11.1.0"
+  languageName: unknown
+  linkType: soft
+
 "debug@npm:4, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.3.5, debug@npm:^4.4.1":
   version: 4.4.1
   resolution: "debug@npm:4.4.1"
@@ -3581,32 +3607,6 @@ __metadata:
   checksum: 10/12a2a4fc6dee23e07cc47f1aeb3a14a1afd3f16397e1350036a8f4cdfee8dcac7ef5978337a4e7b2ac2c27a9a6d46388fc2088ea7c80cb6878c814b1425f8ecf
   languageName: node
   linkType: hard
-
-"tcoe-playwright-example@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "tcoe-playwright-example@workspace:."
-  dependencies:
-    "@axe-core/playwright": "npm:^4.10.0"
-    "@eslint/js": "npm:^9.11.1"
-    "@hmcts/playwright-common": "npm:^1.0.36"
-    "@playwright/test": "npm:^1.48.2"
-    "@types/node": "npm:^22.15.34"
-    "@typescript-eslint/eslint-plugin": "npm:^8.8.0"
-    axios: "npm:^1.7.4"
-    dotenv: "npm:^17.0.0"
-    eslint: "npm:^9.11.1"
-    eslint-plugin-playwright: "npm:^2.0.0"
-    get-port: "npm:^7.1.0"
-    globals: "npm:^16.0.0"
-    lighthouse: "npm:^12.2.1"
-    playwright: "npm:^1.48.2"
-    playwright-core: "npm:^1.48.2"
-    playwright-lighthouse: "npm:^4.0.0"
-    typescript: "npm:^5.6.2"
-    typescript-eslint: "npm:^8.8.0"
-    uuid: "npm:^11.1.0"
-  languageName: unknown
-  linkType: soft
 
 "text-decoder@npm:^1.1.0":
   version: 1.2.3

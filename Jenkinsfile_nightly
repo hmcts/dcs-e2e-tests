@@ -6,7 +6,7 @@ properties([
   parameters([
     string(
       name: 'BASE_URL',
-      defaultValue: 'https://privatelaw.aat.platform.hmcts.net/',
+      defaultValue: 'https://ccdcspreprod.caselines.co.uk/',
       description: 'The Base URL to test against'
     ),
     string(
