@@ -9,7 +9,7 @@ dotenv.config({ quiet: true });
 const ENV = process.env.TEST_ENV || "preprod"; // default to preprod
 
 const urls = {
-  preprod: "https://ccdcspreprod.caselines.co.uk/",
+  preprod: process.env.BASE_URL_PREPROD as string || "https://ccdcp.preprod.caselines.co.uk/",
   uat: "https://ccdcsuat.caselines.co.uk/",
 };
 
@@ -45,13 +45,13 @@ export interface Config {
 }
 
 // -------------------- Helpers --------------------
-function getEnvVar(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
-}
+// function getEnvVar(name: string): string {
+//   const value = process.env[name];
+//   if (!value) {
+//     throw new Error(`Missing environment variable: ${name}`);
+//   }
+//   return value;
+// }
 
 function sessionPath(username: string): string {
   return path.join(
@@ -72,7 +72,7 @@ export const config: Config = {
     hmctsAdmin: {
       group: "HMCTS Admin",
       username: "trainer02",
-      password: getEnvVar("HMCTS_ADMIN_PASSWORD"),
+      password: process.env.HMCTS_ADMIN_PASSWORD as string,
       sessionFile: sessionPath("trainer02"),
       cookieName: ".ASPXAUTH",
     },
@@ -147,7 +147,7 @@ export const invalidUsers: {
   {
     scenario: "wrong username",
     username: "wrongUser",
-    password: getEnvVar("HMCTS_ADMIN_PASSWORD"),
+    password: process.env.HMCTS_ADMIN_PASSWORD as string,
   },
   //   {
   //     scenario: "wrong password",
