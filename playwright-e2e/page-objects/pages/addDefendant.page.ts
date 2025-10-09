@@ -13,14 +13,14 @@ class AddDefendantPage extends Base {
 
 constructor(page) {
     super(page);
-    this.addDefHeading = page.locator("xpath= //div[@id='content']//h2[1]")
+    this.addDefHeading = page.getByRole('heading', { name: 'Add Defendant' })
     this.dOBDay = page.locator('#DobDay');
     this.dOBMonth = page.locator('#DobMonth');
     this.dOBYear = page.locator('#DobYear');
     this.defSurName = page.locator('#Surname');
     this.defFirstName = page.locator('#FirstName');
     this.defUrn = page.locator('#Urn')
-    this.addBtn = page.locator('#add-p')
+    this.addBtn = page.getByRole('button', { name: 'Add' })
 
 }
 

@@ -17,7 +17,7 @@ constructor(page) {
     this.otherCategory = page.locator('#otherCategory')
     this.isCompleteCheckBox = page.locator('#IsComplete')
     this.additionalNotes = page.locator('#AdditionalNotes')
-    this.saveChangeCaseButton = page.locator('input[value="Save"]')
+    this.saveChangeCaseButton = page.getByRole('button', { name: 'Save' })
 }
 
 

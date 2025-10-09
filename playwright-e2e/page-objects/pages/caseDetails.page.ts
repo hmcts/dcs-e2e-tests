@@ -15,10 +15,10 @@ constructor(page) {
     this.caseNameHeading = page.locator(".heading-medium");
     this.caseDetailsHeading = page.locator("legend.heading-small");
     this.addDefButton = page.getByRole("link", {name: "Add Defendant"});
-    this.changeCaseButton = page.locator("xpath=(//a[@class='button-level-one'])[1]")
+    this.changeCaseButton = page.getByRole('link', { name: 'Change Case Details' }).first()
     this.nameDefOne = page. getByRole('cell', { name: 'Defendant One', exact: true })
     this.nameDefTwo = page.getByRole('cell', { name: 'Defendant Two', exact: true })
-    this.verifyAdditionalNotes = page.locator("xpath= //td[normalize-space()='Test additional notes']")
+    this.verifyAdditionalNotes = page.getByRole('cell', { name: 'Test additional notes' })
 }
 
 async goToAddDefendant(){

@@ -22,7 +22,7 @@ constructor(page) {
     this.hearingDateMonth =  page.locator('#HearingDateMonth');
     this.hearingDateYear =  page.locator('#HearingDateYear');
     this.frontPgDesc =  page.locator('#Description_ifr');
-    this.submitCreateBtn =  page.locator("//input[@value='Create']");
+    this.submitCreateBtn =  page.getByRole('button', { name: 'Create' })
 
 }
 
