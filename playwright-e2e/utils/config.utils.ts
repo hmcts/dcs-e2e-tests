@@ -9,7 +9,9 @@ dotenv.config({ quiet: true });
 const ENV = process.env.TEST_ENV || "preprod"; // default to preprod
 
 const urls = {
-  preprod: process.env.BASE_URL_PREPROD as string || "https://ccdcp.preprod.caselines.co.uk/",
+  preprod:
+    (process.env.BASE_URL_PREPROD as string) ||
+    "https://ccdcp.preprod.caselines.co.uk/",
   uat: "https://ccdcsuat.caselines.co.uk/",
 };
 
@@ -26,16 +28,16 @@ export interface Config {
   env: "preprod" | "uat";
   users: {
     hmctsAdmin: UserCredentials;
-    // cpsAdmin: UserCredentials;
-    // cpsProsecutor: UserCredentials;
-    // associateProsecutor: UserCredentials;
-    // defenceAdvocateA: UserCredentials;
-    // defenceAdvocateB: UserCredentials;
-    // defenceAdvocateC: UserCredentials;
-    // fullTimeJudge: UserCredentials;
-    // probationStaff: UserCredentials;
+    cpsAdmin: UserCredentials;
+    cpsProsecutor: UserCredentials;
+    defenceAdvocateA: UserCredentials;
+    defenceAdvocateB: UserCredentials;
+    defenceAdvocateC: UserCredentials;
+    fullTimeJudge: UserCredentials;
+    probationStaff: UserCredentials;
     // outsideProsecutingAdvocate: UserCredentials;
     // feePaidJudge: UserCredentials;
+    // associateProsecutor: UserCredentials;
   };
   urls: {
     preprod: string;
@@ -76,54 +78,48 @@ export const config: Config = {
       sessionFile: sessionPath("trainer02"),
       cookieName: ".ASPXAUTH",
     },
-    // cpsAdmin: {
-    //   group: "CPS Admin",
-    //   username: "trainer11",
-    //   password: getEnvVar("CPS_ADMIN_PASSWORD"),
-    //   sessionFile: sessionPath("trainer11"),
-    // },
-    // cpsProsecutor: {
-    //   group: "CPS Prosecutor",
-    //   username: "trainer16",
-    //   password: getEnvVar("CPS_PROSECUTOR_PASSWORD"),
-    //   sessionFile: sessionPath("trainer16"),
-    // },
-    // associateProsecutor: {
-    //   group: "Associate Prosecutor",
-    //   username: "trainer19",
-    //   password: getEnvVar("ASSOCIATE_PROSECUTOR_PASSWORD"),
-    //   sessionFile: sessionPath("trainer19"),
-    // },
-    // defenceAdvocateA: {
-    //   group: "Defence Advocate A",
-    //   username: "trainer21",
-    //   password: getEnvVar("DEFENCE_ADVOCATE_A_PASSWORD"),
-    //   sessionFile: sessionPath("trainer21"),
-    // },
-    // defenceAdvocateB: {
-    //   group: "Defence Advocate B",
-    //   username: "trainer22",
-    //   password: getEnvVar("DEFENCE_ADVOCATE_B_PASSWORD"),
-    //   sessionFile: sessionPath("trainer22"),
-    // },
-    // defenceAdvocateC: {
-    //   group: "Defence Advocate C",
-    //   username: "trainer23",
-    //   password: getEnvVar("DEFENCE_ADVOCATE_C_PASSWORD"),
-    //   sessionFile: sessionPath("trainer23"),
-    // },
-    // fullTimeJudge: {
-    //   group: "Full Time Judge",
-    //   username: "trainer27",
-    //   password: getEnvVar("FULL_TIME_JUDGE_PASSWORD"),
-    //   sessionFile: sessionPath("trainer27"),
-    // },
-    // probationStaff: {
-    //   group: "Probation Staff",
-    //   username: "trainer38",
-    //   password: getEnvVar("PROBATION_STAFF_PASSWORD"),
-    //   sessionFile: sessionPath("trainer38"),
-    // },
+    cpsAdmin: {
+      group: "CPS Admin",
+      username: "trainer11",
+      password: process.env.CPS_ADMIN_PASSWORD as string,
+      sessionFile: sessionPath("trainer11"),
+    },
+    cpsProsecutor: {
+      group: "CPS Prosecutor",
+      username: "trainer16",
+      password: process.env.CPS_PROSECUTOR_PASSWORD as string,
+      sessionFile: sessionPath("trainer16"),
+    },
+    defenceAdvocateA: {
+      group: "Defence Advocate A",
+      username: "trainer21",
+      password: process.env.DEFENCE_ADVOCATE_A_PASSWORD as string,
+      sessionFile: sessionPath("trainer21"),
+    },
+    defenceAdvocateB: {
+      group: "Defence Advocate B",
+      username: "trainer22",
+      password: process.env.DEFENCE_ADVOCATE_B_PASSWORD as string,
+      sessionFile: sessionPath("trainer22"),
+    },
+    defenceAdvocateC: {
+      group: "Defence Advocate C",
+      username: "trainer23",
+      password: process.env.DEFENCE_ADVOCATE_C_PASSWORD as string,
+      sessionFile: sessionPath("trainer23"),
+    },
+    fullTimeJudge: {
+      group: "Full Time Judge",
+      username: "trainer27",
+      password: process.env.FULL_TIME_JUDGE_PASSWORD as string,
+      sessionFile: sessionPath("trainer27"),
+    },
+    probationStaff: {
+      group: "Probation Staff",
+      username: "trainer38",
+      password: process.env.PROBATION_STAFF_PASSWORD as string,
+      sessionFile: sessionPath("trainer38"),
+    },
     // outsideProsecutingAdvocate: {
     //   group: "Outside Prosecuting Advocate",
     //   username: "trainer41",
@@ -135,6 +131,12 @@ export const config: Config = {
     //   username: "trainer47",
     //   password: getEnvVar("FEE_PAID_JUDGE_PASSWORD"),
     //   sessionFile: sessionPath("trainer47"),
+    // },
+    // associateProsecutor: {
+    //   group: "Associate Prosecutor",
+    //   username: "trainer19",
+    //   password: getEnvVar("ASSOCIATE_PROSECUTOR_PASSWORD"),
+    //   sessionFile: sessionPath("trainer19"),
     // },
   },
 };
