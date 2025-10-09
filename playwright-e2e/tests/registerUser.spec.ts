@@ -46,6 +46,7 @@ test("Approve/Reject New user registration", async ({
     if (isApproved)
     {
       await approvalRequestsPage.approveButton.click();
+      await expect (approveAccessRequestPage.approveRequestHeading).toHaveText('Approve Access Request')
       await approveAccessRequestPage.confirmApproval();
       await expect (approvalRequestsPage.returnMessage).toContainText('successfully approved!')
       await homePage.navigation.navigateTo("Admin");
@@ -60,6 +61,7 @@ test("Approve/Reject New user registration", async ({
     else 
     {
       await approvalRequestsPage.rejectButton.click();
+      await expect (rejectAccessRequestPage.rejectRequestHeading).toHaveText('Reject Access Request')
       await rejectAccessRequestPage.confirmReject();
       await expect (approvalRequestsPage.returnMessage).toContainText('Rejection confirmed!')
       await homePage.navigation.navigateTo("Admin");

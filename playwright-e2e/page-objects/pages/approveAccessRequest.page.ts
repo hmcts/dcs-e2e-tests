@@ -3,10 +3,12 @@ import { Base } from "../base";
 
 class AprroveAccessRequestPage extends Base {
   confirmButton: Locator;
+  approveRequestHeading: Locator;
 
   constructor(page) {
     super(page);
     this.confirmButton = page.getByRole('button', { name: 'Confirm' });
+    this.approveRequestHeading = page.locator('div#content h2')
 
 }
 
