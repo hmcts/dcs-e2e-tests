@@ -10,10 +10,7 @@ export class CookieUtils {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
-      const domain = (config.urls.base as string).replace(
-        "https://",
-        ""
-      );
+      const domain = (config.urls.base as string).replace("https://", "");
 
       const state = fs.existsSync(sessionPath)
         ? JSON.parse(fs.readFileSync(sessionPath, "utf-8"))
