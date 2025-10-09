@@ -1,20 +1,15 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../base";
 
-class AddDefendantsPage extends Base {
+class AddDefendantPage extends Base {
   addDefHeading: Locator;
   dOBDay: Locator;
   dOBMonth: Locator;
   dOBYear: Locator;
   defSurName: Locator;
   defFirstName: Locator;
-  roleSelect: Locator;
   defUrn: Locator;
-  defOne: Locator;
-  defTwo: Locator;
   addBtn: Locator;
-  FpgBtn: Locator;
-
 
 constructor(page) {
     super(page);
@@ -24,30 +19,26 @@ constructor(page) {
     this.dOBYear = page.locator('#DobYear');
     this.defSurName = page.locator('#Surname');
     this.defFirstName = page.locator('#FirstName');
-    this.roleSelect = page.locator('[name="roleSelector"]')
-    this.defOne = page.locator('[name="Defendant One  - 01.01.70"]')
-    this.defTwo = page.locator('[name="Defendant Two  - 01.02.70"]')
     this.defUrn = page.locator('#Urn')
     this.addBtn = page.locator('#add-p')
-    this.FpgBtn = page.getByRole('button', {name:"Back to Front Page"})
 
 }
 
-async addDefendants(surName: string, dOBMonth: string,caseUrn: string){
+async addDefendant(surName: string, dOBMonth: string,caseUrn: string){
+    await this.defSurName.fill(surName);
     await this.defFirstName.fill("Defendant");
-    await this.defSurName.fill(surName.toString());
     await this.dOBDay.selectOption("1");
-    await this.dOBMonth.selectOption(dOBMonth.toString());
+    await this.dOBMonth.selectOption(dOBMonth);
     await this.dOBYear.selectOption("1990");
     if (await this.defUrn.isEnabled()) {
     await this.defUrn.fill(caseUrn);
     } else {
-    console.log('Text box is disabled, skipping fill action.');
+    console.log('URN Text box is disabled as case is not prosecuted by CPS');
     }
     await this.addBtn.click();
 }}
 
-export default AddDefendantsPage;
+export default AddDefendantPage;
 
 
 

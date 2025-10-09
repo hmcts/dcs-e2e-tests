@@ -5,14 +5,10 @@ class CaseDetailsPage extends Base {
   caseNameHeading: Locator;
   caseDetailsHeading: Locator;
   addDefButton: Locator;
-  changeCaseButton: Locator;
-  dropdownIsInvitationOnly: Locator;
-  dropdownCategory: Locator;
-  otherCategory: Locator;
-  isCompleteCheckBox: Locator;
-  additionalNotes: Locator;
-  saveChangeCaseButton: Locator;
-  
+  changeCaseButton: Locator
+  nameDefOne: Locator;
+  nameDefTwo: Locator;
+  verifyAdditionalNotes: Locator;
 
 constructor(page) {
     super(page);
@@ -20,26 +16,17 @@ constructor(page) {
     this.caseDetailsHeading = page.locator("legend.heading-small");
     this.addDefButton = page.getByRole("link", {name: "Add Defendant"});
     this.changeCaseButton = page.locator("xpath=(//a[@class='button-level-one'])[1]")
-    this.dropdownIsInvitationOnly = page.locator('#ddIsInvitationOnly')
-    this.dropdownCategory = page.locator('#categoryDropDown')
-    this.otherCategory = page.locator('#otherCategory')
-    this.isCompleteCheckBox = page.locator('#IsComplete')
-    this.additionalNotes = page.locator('#AdditionalNotes')
-    this.saveChangeCaseButton = page.locator('input[value="Save"]')
+    this.nameDefOne = page. getByRole('cell', { name: 'Defendant One', exact: true })
+    this.nameDefTwo = page.getByRole('cell', { name: 'Defendant Two', exact: true })
+    this.verifyAdditionalNotes = page.locator("xpath= //td[normalize-space()='Test additional notes']")
 }
 
 async goToAddDefendant(){
     await this.addDefButton.click();
 }
 
-async changeCaseDetails(){
-    await this.changeCaseButton.click();
-    await this.dropdownIsInvitationOnly.selectOption({ label: 'Yes' });
-    await this.dropdownCategory.selectOption({ label: 'Other ...' });
-    await this.otherCategory.fill('Test')
-    await this.isCompleteCheckBox.check();
-    await this.additionalNotes.fill('Test additional notes');
-    await this.saveChangeCaseButton.click(); 
+async goToChangeCaseDetails(){
+    await this.changeCaseButton.click(); 
 }}
 
 export default CaseDetailsPage;
