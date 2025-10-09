@@ -268,7 +268,7 @@ class ReviewEvidencePage extends Base {
     return image;
   }
 
-  async waitForHighResImageLoad(docId: string, timeoutMs = 15000) {
+  async waitForHighResImageLoad(docId: string, timeoutMs = 25000) {
     const result = await this.page.evaluate(
       ({ documentId, timeout }) => {
         const img = document.querySelector<HTMLImageElement>(

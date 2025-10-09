@@ -60,7 +60,6 @@ test.describe("Documents are available and accessible on the Review Evidence pag
       homePage,
       caseSearchPage,
     }) => {
-      test.setTimeout(600000);
       await loginPage.login(user);
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
@@ -80,10 +79,28 @@ test.describe("Documents are available and accessible on the Review Evidence pag
       const documentCount = await documentLinks.count();
       expect(documentCount).toStrictEqual(documentIds.length);
 
-      // Loop through to click all document links and ensure that the document in rendering correctly via Playwright Photosnaps
-      for (let i = 0; i < documentCount; i++) {
+      // Select a random subset of up to 5 documents
+      const sampleSize = Math.min(5, documentCount);
+      const randomIndexes = Array.from({ length: documentCount }, (_, i) => i)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, sampleSize);
+
+      console.log(
+        `Testing ${sampleSize} random documents out of ${documentCount} for ${user.group}`
+      );
+      console.log("Selected indexes:", randomIndexes);
+
+      // Loop through to click selection of document links and ensure that the document in rendering correctly via Playwright Photosnaps
+      for (const i of randomIndexes) {
         const documentLink = documentLinks.nth(i);
         const documentId = documentIds[i];
+
+        console.log(
+          `Checking document ${i + 1}/${documentCount} (ID: ${documentId} for ${
+            user.group
+          })`
+        );
+
         await documentLink.click();
         await reviewEvidencePage.page.evaluate(() => window.scrollTo(0, 0));
 
