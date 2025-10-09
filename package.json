@@ -27,7 +27,7 @@
   },
   "scripts": {
     "lint": "yarn tsc -p tsconfig.json && yarn eslint .",
-    "setup": "yarn playwright install --with-deps && yarn load-secrets",
+    "setup": "yarn playwright install --with-deps",
     "setup:edge": "PLAYWRIGHT_BROWSERS_PATH=0 yarn playwright install msedge --with-deps",
     "load-secrets": "yarn get-secrets dcs-automation-bts-stg",
     "test:chrome": "yarn playwright test tests/ --project=chrome --grep-invert='(@a11y)|(@performance)|(@visual)'",

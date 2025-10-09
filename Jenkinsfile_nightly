@@ -43,7 +43,6 @@ static Map < String, Object > secret(String secretName, String envVariable) {
   ]
 }
 
-// Replace the key vault name with your own service
 def secrets = [
   'dcs-automation-bts-stg': [
     secret('HMCTS-ADMIN-PASSWORD', 'HMCTS_ADMIN_PASSWORD'),
