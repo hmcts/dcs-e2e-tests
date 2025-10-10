@@ -66,3 +66,89 @@ export const internalLinksLoggedIn: {
     expectedUrl: `${config.urls.base}Case/CaseIndex`,
   },
 ];
+
+export const caseLinks: {
+  name: string;
+  expectedUrl: string;
+}[] = [
+  {
+    name: "CaseHome",
+    expectedUrl: `${config.urls.base}Case/Details?caseKey=`,
+  },
+  {
+    name: "Review",
+    expectedUrl: `${config.urls.base}Case/Review3/`,
+  },
+  {
+    name: "Index",
+    expectedUrl: `${config.urls.base}Case/FullIndex?caseKey=`,
+  },
+  {
+    name: "Sections",
+    expectedUrl: `${config.urls.base}Section?caseKey=`,
+  },
+  {
+    name: "People",
+    expectedUrl: `${config.urls.base}Person?caseKey=`,
+  },
+  {
+    name: "Access",
+    expectedUrl: `${config.urls.base}CaseAccess/Index/`,
+  },
+  {
+    name: "Bundle",
+    expectedUrl: `${config.urls.base}Case/CompleteBundle?caseKey=`,
+  },
+  {
+    name: "Search",
+    expectedUrl: `${config.urls.base}Case/Search?caseKey=`,
+  },
+  {
+    name: "Memos",
+    expectedUrl: `${config.urls.base}Comment/Create?caseKey=`,
+  },
+  {
+    name: "Notes",
+    expectedUrl: `${config.urls.base}Case/Notes?caseKey=`,
+  },
+  {
+    name: "Hyperlinks",
+    expectedUrl: `${config.urls.base}Case/Hyperlinks?caseKey=`,
+  },
+  {
+    name: "Ingest",
+    expectedUrl: `${config.urls.base}Case/UpdateCaseFromFile/`,
+  },
+  {
+    name: "LinkedCases",
+    expectedUrl: `${config.urls.base}Case/CaseGroup/`,
+  },
+  {
+    name: "ShownToJury",
+    expectedUrl: `${config.urls.base}Case/ShownToJury/`,
+  },
+  {
+    name: "ROCA",
+    expectedUrl: `${config.urls.base}Case/Roca/`,
+  },
+  {
+    name: "LAA",
+    expectedUrl: `${config.urls.base}Case/LegalAidAgency/`,
+  },
+  {
+    name: "PTPH",
+    expectedUrl: `${config.urls.base}OnlineForms/Index2/`,
+  },
+  {
+    name: "Indictment",
+    expectedUrl: `${config.urls.base}Case/Indictment?caseKey=`,
+  },
+  {
+    name: "Split",
+    expectedUrl: `${config.urls.base}Case/Split?caseKey=`,
+  },
+  {
+    name: "Merge",
+    expectedUrl: `${config.urls.base}Case/Merge?caseKey=`,
+  },
+];
