@@ -35,10 +35,33 @@ test.describe("Invalid login attempts", () => {
   for (const { scenario, username, password } of invalidUsers) {
     test(`Login should fail with ${scenario}`, async ({ loginPage }) => {
       await loginPage.invalidLogin(username, password);
-      await expect(loginPage.errorMessage).toContainText(
-        "The user name or password provided is incorrect"
-      );
+      await expect(loginPage.loginErrorMessage).toBeVisible();
       await expect(loginPage.navigation.links["LogOn"]).toBeVisible();
     });
   }
+});
+
+test.describe("Missing login fields", () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test.beforeEach(async ({ homePage }) => {
+    await homePage.open();
+    await homePage.navigation.navigateTo("LogOn");
+  });
+
+  test(`Blank username generates error that field is missing`, async ({
+    loginPage,
+  }) => {
+    await loginPage.invalidLogin("", "password");
+    await expect(loginPage.usernameErrorMessage).toBeVisible();
+    await expect(loginPage.navigation.links["LogOn"]).toBeVisible();
+  });
+
+  test(`Blank password generates error that field is missing`, async ({
+    loginPage,
+  }) => {
+    await loginPage.invalidLogin("username", "");
+    await expect(loginPage.passwordErrorMessage).toBeVisible();
+    await expect(loginPage.navigation.links["LogOn"]).toBeVisible();
+  });
 });
