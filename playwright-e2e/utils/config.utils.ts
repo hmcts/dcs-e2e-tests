@@ -32,8 +32,8 @@ export interface Config {
     // defenceAdvocateA: UserCredentials;
     // defenceAdvocateB: UserCredentials;
     // defenceAdvocateC: UserCredentials;
-    // fullTimeJudge: UserCredentials;
-    // probationStaff: UserCredentials;
+    fullTimeJudge: UserCredentials;
+    probationStaff: UserCredentials;
     // outsideProsecutingAdvocate: UserCredentials;
     // feePaidJudge: UserCredentials;
   };
@@ -70,68 +70,68 @@ export const config: Config = {
   },
   users: {
     hmctsAdmin: {
-      group: "HMCTS Admin",
+      group: "HMCTSAdmin",
       username: "trainer02",
       password: getEnvVar("HMCTS_ADMIN_PASSWORD"),
       sessionFile: sessionPath("trainer02"),
       cookieName: ".ASPXAUTH",
     },
     // cpsAdmin: {
-    //   group: "CPS Admin",
-    //   username: "trainer11",
+    //   group: "CPSAdmin",
+    //   username: "trainer12",
     //   password: getEnvVar("CPS_ADMIN_PASSWORD"),
-    //   sessionFile: sessionPath("trainer11"),
+    //   sessionFile: sessionPath("trainer12"),
     // },
     // cpsProsecutor: {
-    //   group: "CPS Prosecutor",
-    //   username: "trainer16",
+    //   group: "CPSProsecutor",
+    //   username: "trainer17",
     //   password: getEnvVar("CPS_PROSECUTOR_PASSWORD"),
-    //   sessionFile: sessionPath("trainer16"),
+    //   sessionFile: sessionPath("trainer17"),
     // },
     // associateProsecutor: {
-    //   group: "Associate Prosecutor",
+    //   group: "AssociateProsecutor",
     //   username: "trainer19",
     //   password: getEnvVar("ASSOCIATE_PROSECUTOR_PASSWORD"),
     //   sessionFile: sessionPath("trainer19"),
     // },
     // defenceAdvocateA: {
-    //   group: "Defence Advocate A",
+    //   group: "DefenceAdvocateA",
     //   username: "trainer21",
     //   password: getEnvVar("DEFENCE_ADVOCATE_A_PASSWORD"),
     //   sessionFile: sessionPath("trainer21"),
     // },
     // defenceAdvocateB: {
-    //   group: "Defence Advocate B",
+    //   group: "DefenceAdvocateB",
     //   username: "trainer22",
     //   password: getEnvVar("DEFENCE_ADVOCATE_B_PASSWORD"),
     //   sessionFile: sessionPath("trainer22"),
     // },
     // defenceAdvocateC: {
-    //   group: "Defence Advocate C",
+    //   group: "DefenceAdvocateC",
     //   username: "trainer23",
     //   password: getEnvVar("DEFENCE_ADVOCATE_C_PASSWORD"),
     //   sessionFile: sessionPath("trainer23"),
     // },
-    // fullTimeJudge: {
-    //   group: "Full Time Judge",
-    //   username: "trainer27",
-    //   password: getEnvVar("FULL_TIME_JUDGE_PASSWORD"),
-    //   sessionFile: sessionPath("trainer27"),
-    // },
-    // probationStaff: {
-    //   group: "Probation Staff",
-    //   username: "trainer38",
-    //   password: getEnvVar("PROBATION_STAFF_PASSWORD"),
-    //   sessionFile: sessionPath("trainer38"),
-    // },
+    fullTimeJudge: {
+      group: "FullTimeJudge",
+      username: "trainer28",
+      password: getEnvVar("FULL_TIME_JUDGE_PASSWORD"),
+      sessionFile: sessionPath("trainer28"),
+    },
+    probationStaff: {
+      group: "ProbationStaff",
+      username: "trainer39",
+      password: getEnvVar("PROBATION_STAFF_PASSWORD"),
+      sessionFile: sessionPath("trainer39"),
+    },
     // outsideProsecutingAdvocate: {
-    //   group: "Outside Prosecuting Advocate",
+    //   group: "OutsideProsecutingAdvocate",
     //   username: "trainer41",
     //   password: getEnvVar("OUTSIDE_PROSECUTING_ADVOCATE_PASSWORD"),
     //   sessionFile: sessionPath("trainer41"),
     // },
     // feePaidJudge: {
-    //   group: "Fee Paid Judge",
+    //   group: "FeePaidJudge",
     //   username: "trainer47",
     //   password: getEnvVar("FEE_PAID_JUDGE_PASSWORD"),
     //   sessionFile: sessionPath("trainer47"),

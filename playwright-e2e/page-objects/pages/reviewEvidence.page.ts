@@ -6,12 +6,14 @@ class ReviewEvidencePage extends Base {
   readonly sectionPanel: Locator;
   documentTextName: Locator;
   sections: Locator;
+  caseName: Locator;
 
   constructor(page) {
     super(page);
     this.sectionPanel = page.locator("#bundleIndexDiv");
     this.documentTextName = page.locator(".docTextName");
     this.sections = page.locator("li.sectionLi");
+    this.caseName = page.locator(".caseName");
   }
 
   // Review Evidence Index: Section Methods
@@ -118,14 +120,15 @@ class ReviewEvidencePage extends Base {
     const sectionCount = await this.getSectionsCount();
 
     for (let sectionIndex = 0; sectionIndex < sectionCount; sectionIndex++) {
-      const sectionID = await this.getSectionID(sectionIndex);
-      const sectionName = await this.getSectionName(sectionID);
+      const sectionId = await this.getSectionID(sectionIndex);
+      const sectionName = await this.getSectionName(sectionId);
 
-      const documentCount = await this.getDocumentCountPerSection(sectionID);
+      const documentCount = await this.getDocumentCountPerSection(sectionId);
 
       if (documentCount === 0) {
         documents.push({
           sectionTitle: sectionName,
+          sectionId,
           documentName: "No available document: name",
           documentNumber: "No available document: number",
           roles: [user],
@@ -138,17 +141,20 @@ class ReviewEvidencePage extends Base {
         ) {
           const documentName = await this.getDocumentName(
             documentIndex,
-            sectionID
+            sectionId
           );
           const documentNumber = await this.getDocumentNumber(
             documentIndex,
-            sectionID
+            sectionId
           );
+          const documentId = await this.getDocumentID(documentIndex, sectionId);
 
           documents.push({
             sectionTitle: sectionName,
+            sectionId,
             documentName: documentName,
             documentNumber: documentNumber,
+            documentId: documentId,
             roles: [user],
           });
         }
@@ -217,50 +223,15 @@ class ReviewEvidencePage extends Base {
     }
   }
 
-  async getAllDocumentNames() {
-    const documentLinks = this.documentTextName;
-    return documentLinks;
-  }
-
-  async getAllDocumentIds(): Promise<string[]> {
-    const documentIds: string[] = [];
-
-    const sectionCount = await this.getSectionsCount();
-
-    for (let sectionIndex = 0; sectionIndex < sectionCount; sectionIndex++) {
-      const sectionID = await this.getSectionID(sectionIndex);
-      const sectionName = await this.getSectionName(sectionID);
-      const documentCount = await this.getDocumentCountPerSection(sectionID);
-
-      if (documentCount === 0) {
-        console.log(`no document id available for section: ${sectionName}`);
-      } else {
-        for (let i = 0; i < documentCount; i++) {
-          const documentId = await this.getDocumentID(i, sectionID);
-
-          documentIds.push(documentId);
-        }
-      }
-    }
-
-    return documentIds;
-  }
-
+  // Document render methods
+  
   async standardiseFileName(documentLink: Locator): Promise<string> {
-    const name = await documentLink.innerText();
+    const nameLocator = documentLink.locator(".docTextName");
+    const name = await nameLocator.innerText();
+    name.replace(/^\s*\d+[:\-\s]*/, "");
     name.replace(/[^a-z0-9_\-]/gi, "_").toLowerCase();
     const screenshotName = `${name}_page1.png`;
     return screenshotName;
-  }
-
-  async waitForAllDocumentLinksToLoad(documentLinks: Locator) {
-    await documentLinks.first().waitFor({ state: "visible" });
-    let lastCount = 0;
-    for (let i = 0; i < 10; i++) {
-      const count = await documentLinks.count();
-      if (count === lastCount && count > 0) break;
-      lastCount = count;
-    }
   }
 
   getImageLocator(docId: string): Locator {

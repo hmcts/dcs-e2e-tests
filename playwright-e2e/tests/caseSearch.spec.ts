@@ -44,7 +44,7 @@ test.describe("Search Auto Case 1 (Documents Testing) and navigate into case", (
     ]);
 
     const reviewEvidencePage = new ReviewEvidencePage(popup);
-    await expect(reviewEvidencePage.caseNameHeading).toContainText(
+    await expect(reviewEvidencePage.caseName).toContainText(
       "Auto Case1 - DO NOT AMEND"
     );
     await popup.close();
@@ -91,7 +91,7 @@ test.describe("Search Comment Case (Notes Testing) and navigate into case", () =
     ]);
 
     const reviewEvidencePage = new ReviewEvidencePage(popup);
-    await expect(reviewEvidencePage.caseNameHeading).toContainText(
+    await expect(reviewEvidencePage.caseName).toContainText(
       "Comment Case - DO NOT AMEND"
     );
     await popup.close();

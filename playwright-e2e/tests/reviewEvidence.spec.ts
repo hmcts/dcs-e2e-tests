@@ -70,53 +70,55 @@ test.describe("Documents are available and accessible on the Review Evidence pag
 
       const reviewEvidencePage = new ReviewEvidencePage(popup);
 
-      // Get all Document Link Names and IDs
-      const documentLinks = await reviewEvidencePage.getAllDocumentNames();
-      await reviewEvidencePage.waitForAllDocumentLinksToLoad(documentLinks);
-      const documentIds = await reviewEvidencePage.getAllDocumentIds();
+      // Get all Documents by user
+      const availableDocuments = await reviewEvidencePage.getDocuments(
+        user.group
+      );
+      const filteredDocuments = availableDocuments.filter(
+        (doc) => doc.documentName !== "No available document: name"
+      );
+      console.log("Filtered documents", filteredDocuments);
 
-      // Assert the count for both are equal
-      const documentCount = await documentLinks.count();
-      expect(documentCount).toStrictEqual(documentIds.length);
+      // Get document count
+      const documentCount = filteredDocuments.length;
+      expect(documentCount).toBeGreaterThan(0);
 
-      // Select a random subset of up to 5 documents
-      const sampleSize = Math.min(5, documentCount);
-      const randomIndexes = Array.from({ length: documentCount }, (_, i) => i)
+      // Pick up to 5 random documents to test
+      const sampleDocs = filteredDocuments
         .sort(() => Math.random() - 0.5)
-        .slice(0, sampleSize);
+        .slice(0, Math.min(5, documentCount));
 
       console.log(
-        `Testing ${sampleSize} random documents out of ${documentCount} for ${user.group}`
+        `Testing ${sampleDocs.length} random documents out of ${documentCount}`
       );
-      console.log("Selected indexes:", randomIndexes);
 
-      // Loop through to click selection of document links and ensure that the document in rendering correctly via Playwright Photosnaps
-      for (const i of randomIndexes) {
-        const documentLink = documentLinks.nth(i);
-        const documentId = documentIds[i];
-
+      // Loop through to click sample of document links and ensure that the document in rendering correctly via Playwright Photosnaps
+      for (const [index, doc] of sampleDocs.entries()) {
         console.log(
-          `Checking document ${i + 1}/${documentCount} (ID: ${documentId} for ${
-            user.group
-          })`
+          `[${index + 1}/${sampleDocs.length}] Checking "${
+            doc.documentName
+          }" (${doc.documentId}) in section "${doc.sectionTitle}"`
+        );
+
+        const documentLink = reviewEvidencePage.page.locator(
+          `[id='${doc.documentId}']`
         );
 
         await documentLink.click();
         await reviewEvidencePage.page.evaluate(() => window.scrollTo(0, 0));
 
         // Wait for the high-resolution image to be loaded
-        await reviewEvidencePage.waitForHighResImageLoad(documentId);
+        await reviewEvidencePage.waitForHighResImageLoad(doc.documentId ?? "");
 
         // Target document image for screenshot
         const documentImage = await reviewEvidencePage.getImageLocator(
-          documentId
+          doc.documentId ?? ""
         );
 
         // Prepare standardised screenshot name
         const screenshotName = await reviewEvidencePage.standardiseFileName(
-          documentLink
+          reviewEvidencePage.page.locator(`[id='${doc.documentId}']`)
         );
-
         // Take and compare screenshot to expected document image
         await expect(documentImage).toHaveScreenshot(screenshotName, {
           maxDiffPixelRatio: 0.01,
