@@ -26,6 +26,7 @@
     "typescript-eslint": "^8.8.0"
   },
   "scripts": {
+    "tsc": "tsc",
     "lint": "yarn tsc -p tsconfig.json && yarn eslint .",
     "setup": "yarn playwright install --with-deps",
     "setup:edge": "PLAYWRIGHT_BROWSERS_PATH=0 yarn playwright install msedge --with-deps",
