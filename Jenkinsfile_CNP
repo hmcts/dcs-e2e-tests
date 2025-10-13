@@ -1,11 +1,10 @@
 #!groovy
 @Library("Infrastructure")
 
-// Need to replace these with TCoE team once available
 def type = "nodejs"
-def product = "dtsse"
-def component = "e2e-tests"
-def channel = "#tcoe-builds"
+def product = "dcs-automation"
+def component = "sds"
+def channel = "#dcs-automation"
 
 def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
