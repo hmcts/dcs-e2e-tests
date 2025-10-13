@@ -4,9 +4,7 @@ test.describe("Create & Update New Case in CCDCS", () => {
 
 test.beforeEach(async ({ homePage, loginPage }) => {
     await homePage.open();
-    await homePage.navigation.navigateTo("ViewCaseListLink");
-    await loginPage.acceptCookies();
-
+    await homePage.navigation.navigateTo("ViewCaseListLink");  
   });
 
 test("Create New Case & Change Case Details", async ({
