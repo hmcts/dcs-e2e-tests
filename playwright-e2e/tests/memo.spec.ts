@@ -11,11 +11,12 @@ test.beforeEach(async ({ homePage, loginPage }) => {
 test("Add, Change and Remove Memos", async ({
     createCasePage,
     caseDetailsPage,
+    caseListPage,
     memoPage
     
 }) => {
-    await createCasePage.createCaseLink.click();
-    const caseUrn = await createCasePage.createNewCase('TestCase','TestURN');
+    await caseListPage.goToCreateCase();
+    await createCasePage.createNewCase('TestCase','TestURN');
     await expect (caseDetailsPage.caseNameHeading).toBeVisible();
     await memoPage.addUpdateRemoveMemo();
     await expect(memoPage.memoHeading).toContainText('Memoranda');

@@ -1,21 +1,13 @@
 #!groovy
 
 properties([
-  // Currently, we run this pipeline on the first monday of every month (for resources sake)
-  // If you want to run this nightly, uncomment the below line
-  // pipelineTriggers([cron('H 8 * * 1-5')]),
-  pipelineTriggers([cron('H 8 1-7 * 1')]),
+  pipelineTriggers([cron('H 8 * * 1-5')]),
   disableConcurrentBuilds(),
   parameters([
     string(
-      name: 'CITIZEN_FRONTEND_BASE_URL',
-      defaultValue: 'https://privatelaw.aat.platform.hmcts.net/',
-      description: 'The Citizen URL to test against'
-    ),
-    string(
-      name: 'MANAGE_CASES_BASE_URL',
-      defaultValue: 'https://manage-case.aat.platform.hmcts.net/cases',
-      description: 'The Manage Cases URL to test against'
+      name: 'BASE_URL',
+      defaultValue: 'https://ccdcspreprod.caselines.co.uk/',
+      description: 'The Base URL to test against'
     ),
     string(
       name: 'FUNCTIONAL_TESTS_WORKERS',
@@ -37,11 +29,10 @@ properties([
 
 @Library("Infrastructure")
 
-// Replace these with your own teams info
 def type = "nodejs"
-def product = "dtsse"
-def component = "e2e-tests"
-def channel = "#tcoe-builds"
+def product = "dcs-automation"
+def component = "sds"
+def channel = "#dcs-automation"
 
 static Map < String, Object > secret(String secretName, String envVariable) {
   [
@@ -52,15 +43,19 @@ static Map < String, Object > secret(String secretName, String envVariable) {
   ]
 }
 
-// Replace the key vault name with your own service
 def secrets = [
-  'prl-${env}': [
-    secret('case-manager-swansea-username', 'CASEMANAGER_USERNAME'),
-    secret('case-manager-swansea-password', 'CASEMANAGER_PASSWORD'),
-    secret('judge-testuser-one', 'JUDGE_USERNAME'),
-    secret('judge-testpassword', 'JUDGE_PASSWORD'),
-    secret('prl-cos-idam-client-secret', 'IDAM_SECRET'),
-    secret('idam-citizen-password', 'IDAM_CITIZEN_USER_PASSWORD'),
+  'dcs-automation-bts-stg': [
+    secret('HMCTS-ADMIN-PASSWORD', 'HMCTS_ADMIN_PASSWORD'),
+    secret('BASE-URL-PREPROD', 'BASE_URL_PREPROD'),
+    secret('BASE-URL-UAT', 'BASE_URL_UAT'),
+    secret('CPS-ADMIN-PASSWORD', 'CPS_ADMIN_PASSWORD'),
+    secret('COOKIE', 'COOKIE'),
+    secret('CPS-PROSECUTOR-PASSWORD', 'CPS_PROSECUTOR_PASSWORD'),
+    secret('DEFENCE-A-PASSWORD', 'DEFENCE_ADVOCATE_A_PASSWORD'),
+    secret('DEFENCE-B-PASSWORD', 'DEFENCE_ADVOCATE_B_PASSWORD'),
+    secret('DEFENCE-C-PASSWORD', 'DEFENCE_ADVOCATE_C_PASSWORD'),
+    secret('JUDGE-PASSWORD', 'FULL_TIME_JUDGE_PASSWORD'),
+    secret('NOMS-PROBATION-PASSWORD', 'PROBATION_STAFF_PASSWORD'),
   ]
 ]
 
@@ -88,15 +83,14 @@ def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
 withNightlyPipeline(type, product, component, 600) {
   loadVaultSecrets(secrets)
-  env.CITIZEN_FRONTEND_BASE_URL = params.CITIZEN_FRONTEND_BASE_URL
-  env.MANAGE_CASES_BASE_URL = params.MANAGE_CASES_BASE_URL
+  env.BASE_URL = params.BASE_URL
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
   enableSlackNotifications(channel)
 
   afterAlways('DependencyCheckNightly') {
     stage('Delete nightly dev branch') {
       try {
-        yarnBuilder.yarn('delete-nightly-dev-branch tcoe-playwright-example')
+        yarnBuilder.yarn('delete-nightly-dev-branch dcs-e2e-tests')
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       }
