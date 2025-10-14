@@ -8,9 +8,6 @@ properties([
       name: 'BASE_URL',
       defaultValue: 'https://ccdcspreprod.caselines.co.uk/',
       description: 'The Base URL to test against'
-      name: 'BASE_URL',
-      defaultValue: 'https://ccdcspreprod.caselines.co.uk/',
-      description: 'The Base URL to test against'
     ),
     string(
       name: 'FUNCTIONAL_TESTS_WORKERS',
