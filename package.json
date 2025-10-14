@@ -1,5 +1,5 @@
 {
-  "name": "tcoe-playwright-example",
+  "name": "dcs-e2e-tests",
   "version": "1.0.0",
   "engines": {
     "node": ">=20.11.1"
@@ -29,7 +29,7 @@
     "lint": "yarn tsc -p tsconfig.json && yarn eslint .",
     "setup": "yarn playwright install --with-deps",
     "setup:edge": "PLAYWRIGHT_BROWSERS_PATH=0 yarn playwright install msedge --with-deps",
-    "load-secrets": "yarn get-secrets prl-aat",
+    "load-secrets": "yarn get-secrets dcs-automation-bts-stg",
     "test:chrome": "yarn playwright test tests/ --project=chrome --grep-invert='(@a11y)|(@performance)|(@visual)'",
     "test:firefox": "yarn playwright test tests/ --project=firefox --grep-invert='(@a11y)|(@performance)|(@visual)'",
     "test:webkit": "yarn playwright test tests/ --project=webkit --grep-invert='(@a11y)|(@performance)|(@visual)'",
