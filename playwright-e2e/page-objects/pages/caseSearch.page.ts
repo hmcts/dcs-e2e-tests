@@ -18,7 +18,6 @@ class CaseSearchPage extends Base {
   constructor(page) {
     super(page);
     this.createCaseButton = page.getByRole("link", { name: "Create a Case" });
-    this.createCaseButton = page.getByRole("link", { name: "Create a Case" });
     this.textField = page.locator("#searchText");
     this.viewCaseListLink = page.getByRole("link", { name: "View Case List" });
     this.locationField = page.locator("#locationSelect");
@@ -73,7 +72,6 @@ class CaseSearchPage extends Base {
     await this.createCaseButton.click();
   }
   
-
   async goToUpdateCase() {
     await this.updateCaseButton.click();
   }

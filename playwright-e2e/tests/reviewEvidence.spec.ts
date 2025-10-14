@@ -98,7 +98,7 @@ test.describe("Sections and Documents availability", () => {
       (result) => result.issues.length > 0
     );
 
-    // Include the formatted summary in the expect failure message
+    // Include the summary in the expect failure message
     const message = [
       "User had missing or unexpected documents:",
       "",
