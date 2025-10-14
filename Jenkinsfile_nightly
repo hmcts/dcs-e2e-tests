@@ -2,7 +2,6 @@
 
 properties([
   pipelineTriggers([cron('H 8 * * 1-5')]),
-  pipelineTriggers([cron('H 8 * * 1-5')]),
   disableConcurrentBuilds(),
   parameters([
     string(
@@ -34,9 +33,6 @@ properties([
 @Library("Infrastructure")
 
 def type = "nodejs"
-def product = "dcs-automation"
-def component = "sds"
-def channel = "#dcs-automation"
 def product = "dcs-automation"
 def component = "sds"
 def channel = "#dcs-automation"
@@ -91,14 +87,12 @@ def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 withNightlyPipeline(type, product, component, 600) {
   loadVaultSecrets(secrets)
   env.BASE_URL = params.BASE_URL
-  env.BASE_URL = params.BASE_URL
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
   enableSlackNotifications(channel)
 
   afterAlways('DependencyCheckNightly') {
     stage('Delete nightly dev branch') {
       try {
-        yarnBuilder.yarn('delete-nightly-dev-branch dcs-e2e-tests')
         yarnBuilder.yarn('delete-nightly-dev-branch dcs-e2e-tests')
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
