@@ -21,7 +21,7 @@ test.describe("Sections and Documents availability", () => {
 
   const documentResults: { user: string; issues: string[] }[] = [];
 
-  for (const [roleKey, user] of Object.entries(config.users) as [
+  for (const [_, user] of Object.entries(config.users) as [
     string,
     UserCredentials
   ][]) {
@@ -76,23 +76,36 @@ test.describe("Sections and Documents availability", () => {
   }
 
   test.afterAll(() => {
-    console.log("\n===== SECTION & DOCUMENT AVAILABILITY SUMMARY =====");
+    // Build a readable summary string
+    const summaryLines: string[] = [];
+    summaryLines.push("===== SECTION & DOCUMENT AVAILABILITY SUMMARY =====");
+
     documentResults.forEach(({ user, issues }) => {
       if (issues.length === 0) {
-        console.log(`✅ ${user}: All checks passed`);
+        summaryLines.push(
+          `✅ ${user}: All correct sections and documents are available`
+        );
       } else {
-        console.log(`❌ ${user}:`);
-        issues.forEach((i) => console.log(`   - ${i}`));
+        summaryLines.push(`❌ ${user}:`);
+        issues.forEach((i) => summaryLines.push(`   - ${i}`));
       }
     });
-    console.log("===================================================\n");
 
+    summaryLines.push("===================================================");
+
+    // Check if any user has issues
     const anyIssues = documentResults.some(
-      (results) => results.issues.length > 0
+      (result) => result.issues.length > 0
     );
-    expect(anyIssues, "Some users had missing or unexpected documents").toBe(
-      false
-    );
+
+    // Include the formatted summary in the expect failure message
+    const message = [
+      "User had missing or unexpected documents:",
+      "",
+      ...summaryLines,
+    ].join("\n");
+
+    expect(anyIssues, message).toBe(false);
   });
 });
 
@@ -114,7 +127,7 @@ test.describe("Document rendering / photosnaps", () => {
 
   const renderResults: { user: string; issues: string[] }[] = [];
 
-  for (const [roleKey, user] of Object.entries(config.users) as [
+  for (const [_, user] of Object.entries(config.users) as [
     string,
     UserCredentials
   ][]) {
@@ -212,18 +225,32 @@ test.describe("Document rendering / photosnaps", () => {
   }
 
   test.afterAll(() => {
-    console.log("\n===== DOCUMENT RENDERING SUMMARY =====");
+    const summaryLines: string[] = [];
+    summaryLines.push("===== DOCUMENT RENDERING SUMMARY =====");
+
     renderResults.forEach(({ user, issues }) => {
       if (issues.length === 0) {
-        console.log(`✅ ${user}: All documents rendered correctly`);
+        summaryLines.push(
+          `✅ ${user}: All sample documents rendered correctly`
+        );
       } else {
-        console.log(`❌ ${user}:`);
-        issues.forEach((i) => console.log(`   - ${i}`));
+        summaryLines.push(`❌ ${user}:`);
+        issues.forEach((i) => summaryLines.push(`   - ${i}`));
       }
     });
-    console.log("======================================\n");
 
+    summaryLines.push("======================================");
+
+    // Check if any user has issues
     const anyIssues = renderResults.some((result) => result.issues.length > 0);
-    expect(anyIssues, "Some users had document rendering issues").toBe(false);
+
+    // Include formatted summary in expect message
+    const message = [
+      "User had document rendering issues:",
+      "",
+      ...summaryLines,
+    ].join("\n");
+
+    expect(anyIssues, message).toBe(false);
   });
 });

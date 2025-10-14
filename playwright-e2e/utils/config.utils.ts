@@ -29,12 +29,12 @@ export interface Config {
   users: {
     hmctsAdmin: UserCredentials;
     cpsAdmin: UserCredentials;
-    cpsProsecutor: UserCredentials;
-    defenceAdvocateA: UserCredentials;
-    defenceAdvocateB: UserCredentials;
-    defenceAdvocateC: UserCredentials;
-    fullTimeJudge: UserCredentials;
-    probationStaff: UserCredentials;
+    // cpsProsecutor: UserCredentials;
+    // defenceAdvocateA: UserCredentials;
+    // defenceAdvocateB: UserCredentials;
+    // defenceAdvocateC: UserCredentials;
+    // fullTimeJudge: UserCredentials;
+    // probationStaff: UserCredentials;
     // outsideProsecutingAdvocate: UserCredentials;
     // feePaidJudge: UserCredentials;
     // associateProsecutor: UserCredentials;
@@ -55,7 +55,6 @@ export interface Config {
 //   return value;
 // }
 
-
 function sessionPath(username: string): string {
   return path.join(
     path.dirname(fileURLToPath(import.meta.url)),
@@ -73,54 +72,54 @@ export const config: Config = {
   },
   users: {
     hmctsAdmin: {
-      group: "HMCTS Admin",
+      group: "HMCTSAdmin",
       username: "trainer02",
       password: process.env.HMCTS_ADMIN_PASSWORD as string,
       sessionFile: sessionPath("trainer02"),
       cookieName: ".ASPXAUTH",
     },
     cpsAdmin: {
-      group: "CPS Admin",
-      username: "trainer11",
+      group: "CPSAdmin",
+      username: "trainer12",
       password: process.env.CPS_ADMIN_PASSWORD as string,
-      sessionFile: sessionPath("trainer11"),
+      sessionFile: sessionPath("trainer12"),
     },
-    cpsProsecutor: {
-      group: "CPS Prosecutor",
-      username: "trainer16",
-      password: process.env.CPS_PROSECUTOR_PASSWORD as string,
-      sessionFile: sessionPath("trainer16"),
-    },
-    defenceAdvocateA: {
-      group: "Defence Advocate A",
-      username: "trainer21",
-      password: process.env.DEFENCE_ADVOCATE_A_PASSWORD as string,
-      sessionFile: sessionPath("trainer21"),
-    },
-    defenceAdvocateB: {
-      group: "Defence Advocate B",
-      username: "trainer22",
-      password: process.env.DEFENCE_ADVOCATE_B_PASSWORD as string,
-      sessionFile: sessionPath("trainer22"),
-    },
-    defenceAdvocateC: {
-      group: "Defence Advocate C",
-      username: "trainer23",
-      password: process.env.DEFENCE_ADVOCATE_C_PASSWORD as string,
-      sessionFile: sessionPath("trainer23"),
-    },
-    fullTimeJudge: {
-      group: "Full Time Judge",
-      username: "trainer27",
-      password: process.env.FULL_TIME_JUDGE_PASSWORD as string,
-      sessionFile: sessionPath("trainer27"),
-    },
-    probationStaff: {
-      group: "Probation Staff",
-      username: "trainer38",
-      password: process.env.PROBATION_STAFF_PASSWORD as string,
-      sessionFile: sessionPath("trainer38"),
-    },
+    // cpsProsecutor: {
+    //   group: "CPSProsecutor",
+    //   username: "trainer17",
+    //   password: process.env.CPS_PROSECUTOR_PASSWORD as string,
+    //   sessionFile: sessionPath("trainer17"),
+    // },
+    // defenceAdvocateA: {
+    //   group: "DefenceAdvocateA",
+    //   username: "trainer21",
+    //   password: process.env.DEFENCE_ADVOCATE_A_PASSWORD as string,
+    //   sessionFile: sessionPath("trainer21"),
+    // },
+    // defenceAdvocateB: {
+    //   group: "DefenceAdvocateB",
+    //   username: "trainer22",
+    //   password: process.env.DEFENCE_ADVOCATE_B_PASSWORD as string,
+    //   sessionFile: sessionPath("trainer22"),
+    // },
+    // defenceAdvocateC: {
+    //   group: "DefenceAdvocateC",
+    //   username: "trainer23",
+    //   password: process.env.DEFENCE_ADVOCATE_C_PASSWORD as string,
+    //   sessionFile: sessionPath("trainer23"),
+    // },
+    // fullTimeJudge: {
+    //   group: "FullTimeJudge",
+    //   username: "trainer28",
+    //   password: process.env.FULL_TIME_JUDGE_PASSWORD as string,
+    //   sessionFile: sessionPath("trainer28"),
+    // },
+    // probationStaff: {
+    //   group: "ProbationStaff",
+    //   username: "trainer39",
+    //   password: process.env.PROBATION_STAFF_PASSWORD as string,
+    //   sessionFile: sessionPath("trainer39"),
+    // },
     // outsideProsecutingAdvocate: {
     //   group: "Outside Prosecuting Advocate",
     //   username: "trainer41",
