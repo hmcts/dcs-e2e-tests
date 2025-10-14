@@ -5,11 +5,10 @@ test.describe.serial("Memo Functionality", () => {
 test.beforeEach(async ({ homePage, loginPage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");
-    await loginPage.acceptCookies();
-    });
+});
 
 
-test("Add, Change and remove Memos", async ({
+test("Add, Change and Remove Memos", async ({
     createCasePage,
     caseDetailsPage,
     memoPage
@@ -18,7 +17,7 @@ test("Add, Change and remove Memos", async ({
     await createCasePage.createCaseLink.click();
     const caseUrn = await createCasePage.createNewCase('TestCase','TestURN');
     await expect (caseDetailsPage.caseNameHeading).toBeVisible();
-    await memoPage.addAndUpdateMemo();
+    await memoPage.addUpdateRemoveMemo();
     await expect(memoPage.memoHeading).toContainText('Memoranda');
     });
 });

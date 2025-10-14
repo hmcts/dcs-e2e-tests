@@ -3,7 +3,6 @@ import { Base } from "../base";
 
 class MemoPage extends Base {
   memoLink: Locator;
-  updateMemo: Locator;
   memoText: Locator;
   addMemo: Locator;
   changeMemo: Locator;
@@ -14,7 +13,6 @@ class MemoPage extends Base {
 constructor(page) {
     super(page);
     this.memoLink = page.locator('a[title="View the memoranda for your role."]')
-    this.updateMemo = page.getByRole('link', { name: 'Update Memoranda' })
     this.memoText = page.locator('#Text')
     this.addMemo = page.locator('input[value="Add Memorandum"]')
     this.changeMemo = page.locator('a[title="Change this memorandum."]')
@@ -25,10 +23,10 @@ constructor(page) {
 
 async acceptDialog(){
     this.page.on('dialog', async dialog => {
-    await dialog.accept(); // Confirms the action
+    await dialog.accept(); 
 })};
 
-async addAndUpdateMemo(){
+async addUpdateRemoveMemo(){
     await this.memoLink.click();
     await this.memoText.fill('Test add memo')
     await this.addMemo.click();
@@ -40,6 +38,5 @@ async addAndUpdateMemo(){
     await this.removeMemo.click()
     await this.memoText.fill('Tested Memo functionality')
     await this.addMemo.click();
-
 }}
 export default MemoPage;
