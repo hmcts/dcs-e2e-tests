@@ -25,7 +25,7 @@ test.describe("Sections and Documents availability", () => {
     string,
     UserCredentials
   ][]) {
-    test(`Sections and Documents are correctly available in the Index for user group: ${user.group}`, async ({
+    test(`Verify Sections & Documents in Navigation Panel for: ${user.group}`, async ({
       loginPage,
       homePage,
       caseSearchPage,
@@ -56,8 +56,7 @@ test.describe("Sections and Documents availability", () => {
         const { missingDocuments, unexpectedDocuments } =
           await reviewEvidencePage.compareExpectedVsAvailableSectionsAndDocuments(
             expectedDocuments,
-            availableDocuments,
-            user.group
+            availableDocuments
           );
 
         // If there are any section or document issues, push to currentUserIssues
@@ -81,11 +80,7 @@ test.describe("Sections and Documents availability", () => {
     summaryLines.push("===== SECTION & DOCUMENT AVAILABILITY SUMMARY =====");
 
     documentResults.forEach(({ user, issues }) => {
-      if (issues.length === 0) {
-        summaryLines.push(
-          `✅ ${user}: All correct sections and documents are available`
-        );
-      } else {
+      if (issues.length > 0) {
         summaryLines.push(`❌ ${user}:`);
         issues.forEach((i) => summaryLines.push(`   - ${i}`));
       }
@@ -131,7 +126,7 @@ test.describe("Document rendering / photosnaps", () => {
     string,
     UserCredentials
   ][]) {
-    test(`Render a sample of documents for user group: ${user.group}`, async ({
+    test(`Render a sample of documents for: ${user.group}`, async ({
       loginPage,
       homePage,
       caseSearchPage,
@@ -166,19 +161,9 @@ test.describe("Document rendering / photosnaps", () => {
           .sort(() => Math.random() - 0.5)
           .slice(0, Math.min(5, documentCount));
 
-        console.log(
-          `Testing ${sampleDocs.length} random documents out of ${documentCount}`
-        );
-
         // Loop through to click sample of document links and ensure that the document is rendering correctly via Playwright Photosnaps
         for (const [index, doc] of sampleDocs.entries()) {
           try {
-            console.log(
-              `[${index + 1}/${sampleDocs.length}] Checking "${
-                doc.documentName
-              }" in section "${doc.sectionTitle}"`
-            );
-
             const documentLink = reviewEvidencePage.page.locator(
               `[id='${doc.documentId}']`
             );
@@ -189,7 +174,11 @@ test.describe("Document rendering / photosnaps", () => {
             // Wait for the high-resolution image to be loaded
             await reviewEvidencePage.waitForHighResImageLoad(
               doc.documentId ?? "",
-              doc.documentName ?? ""
+              doc.documentName,
+              user.group,
+              index,
+              doc.sectionTitle,
+              sampleDocs.length
             );
 
             // Target document image for screenshot
@@ -208,7 +197,7 @@ test.describe("Document rendering / photosnaps", () => {
             });
           } catch {
             currentUserIssues.push(
-              `User ${user.group}: Screenshot mismatch for "${doc.documentName}" in section "${doc.sectionTitle}"`
+              `Screenshot mismatch for "${doc.documentName}" in section "${doc.sectionTitle}"`
             );
           }
         }
@@ -229,11 +218,7 @@ test.describe("Document rendering / photosnaps", () => {
     summaryLines.push("===== DOCUMENT RENDERING SUMMARY =====");
 
     renderResults.forEach(({ user, issues }) => {
-      if (issues.length === 0) {
-        summaryLines.push(
-          `✅ ${user}: All sample documents rendered correctly`
-        );
-      } else {
+      if (issues.length > 0) {
         summaryLines.push(`❌ ${user}:`);
         issues.forEach((i) => summaryLines.push(`   - ${i}`));
       }

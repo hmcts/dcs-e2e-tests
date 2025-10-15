@@ -173,8 +173,7 @@ class ReviewEvidencePage extends Base {
 
   async compareExpectedVsAvailableSectionsAndDocuments(
     userExpectedDocuments: DocumentModel[],
-    userAvailableDocuments: DocumentModel[],
-    user: string
+    userAvailableDocuments: DocumentModel[]
   ) {
     const missingDocuments: string[] = [];
     const unexpectedDocuments: string[] = [];
@@ -190,7 +189,7 @@ class ReviewEvidencePage extends Base {
       );
       if (availableMatches.length === 0) {
         missingDocuments.push(
-          `For User: ${user}, Section Title: ${expectedDocument.sectionTitle}, Document Name: ${expectedDocument.documentName} - is missing`
+          `Section Title: ${expectedDocument.sectionTitle}, Document Name: ${expectedDocument.documentName} - is missing`
         );
       }
     }
@@ -206,7 +205,7 @@ class ReviewEvidencePage extends Base {
       );
       if (expectedMatches.length === 0) {
         unexpectedDocuments.push(
-          `For User: ${user}, Section Title: ${availableDocument.sectionTitle}, Document Name: ${availableDocument.documentName} - is unexpectedly showing`
+          `Section Title: ${availableDocument.sectionTitle}, Document Name: ${availableDocument.documentName} - is unexpectedly showing`
         );
       }
     }
@@ -232,17 +231,31 @@ class ReviewEvidencePage extends Base {
   async waitForHighResImageLoad(
     docId: string,
     docName: string,
+    user: string,
+    index: number,
+    sectionTitle: string,
+    sampleSize: number,
     timeoutMs = 25000
   ) {
     const result = await this.page.evaluate(
-      ({ documentId, documentName, timeout }) => {
+      ({
+        documentId,
+        documentName,
+        user,
+        index,
+        sectionTitle,
+        sampleSize,
+        timeout,
+      }) => {
         const img = document.querySelector<HTMLImageElement>(
           `img.documentPageImage[data-documentrowkey="${documentId}"]`
         );
         if (!img)
           return {
             success: false,
-            message: `❌ Image not found for: ${documentName}`,
+            message: `${user}: ${
+              index + 1
+            }/${sampleSize} ❌ Image not found for Document: ${documentName} in Section: ${sectionTitle}`,
           };
 
         return new Promise<{ success: boolean; message: string }>((resolve) => {
@@ -251,7 +264,9 @@ class ReviewEvidencePage extends Base {
               img.removeEventListener("load", handler);
               resolve({
                 success: true,
-                message: `✅ High-res image loaded for: ${documentName}`,
+                message: `${user}: ${
+                  index + 1
+                }/${sampleSize} ✅ High-res image loaded for Document: ${documentName} in Section: ${sectionTitle}`,
               });
             }
           };
@@ -261,12 +276,22 @@ class ReviewEvidencePage extends Base {
             img.removeEventListener("load", handler);
             resolve({
               success: false,
-              message: `⚠️ Timeout (${timeout}ms) waiting for high-res image for: ${documentName}`,
+              message: `${user}: ${
+                index + 1
+              }/${sampleSize} ⚠️ Timeout (${timeout}ms) waiting for high-res image for Document: ${documentName} in Section: ${sectionTitle}`,
             });
           }, timeout);
         });
       },
-      { documentId: docId, documentName: docName, timeout: timeoutMs }
+      {
+        documentId: docId,
+        documentName: docName,
+        user: user,
+        index: index,
+        sectionTitle: sectionTitle,
+        sampleSize: sampleSize,
+        timeout: timeoutMs,
+      }
     );
 
     // Node-side console log
