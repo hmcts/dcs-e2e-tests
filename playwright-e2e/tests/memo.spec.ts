@@ -11,12 +11,12 @@ test.beforeEach(async ({ homePage }) => {
 test("Add, Change and Remove Memos", async ({
     createCasePage,
     caseDetailsPage,
-    caseListPage,
+    caseSearchPage,
     memoPage, 
     homePage
     
 }) => {
-    await caseListPage.goToCreateCase();
+    await caseSearchPage.goToCreateCase();
     await createCasePage.createNewCase('TestCase','TestURN');
     await expect (caseDetailsPage.caseNameHeading).toBeVisible();   
     await homePage.caseNavigation.navigateTo('Memos')
