@@ -1,6 +1,6 @@
 import { test, expect } from "../fixtures";
 
-test.describe.serial("Memo Functionality", () => {
+test.describe("Memo Functionality", () => {
 
 test.beforeEach(async ({ homePage }) => {
     await homePage.open();
@@ -12,13 +12,21 @@ test("Add, Change and Remove Memos", async ({
     createCasePage,
     caseDetailsPage,
     caseListPage,
-    memoPage
+    memoPage, 
+    homePage
     
 }) => {
     await caseListPage.goToCreateCase();
     await createCasePage.createNewCase('TestCase','TestURN');
-    await expect (caseDetailsPage.caseNameHeading).toBeVisible();
-    await memoPage.addUpdateRemoveMemo();
-    await expect (memoPage.memoHeading).toContainText('Memoranda');
+    await expect (caseDetailsPage.caseNameHeading).toBeVisible();   
+    await homePage.caseNavigation.navigateTo('Memos')
+    await expect (memoPage.memoHeading).toContainText('Add a Memorandum');
+    await memoPage.addMemo();
+    await expect (memoPage.memoText).toContainText('Add memo test');
+    await memoPage.changeMemo();
+    await expect (memoPage.memoText).toContainText('Change memo test');
+    await memoPage.removeMemo();
+    await expect (memoPage.memoTextBox).toBeVisible();
+
     });
 });

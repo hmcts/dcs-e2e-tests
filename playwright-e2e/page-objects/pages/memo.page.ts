@@ -3,22 +3,24 @@ import { Base } from "../base";
 
 class MemoPage extends Base {
   memoLink: Locator;
-  memoText: Locator;
-  addMemo: Locator;
-  changeMemo: Locator;
-  removeMemo: Locator;
+  memoTextBox: Locator;
+  addMemoButton: Locator;
+  changeMemoButton: Locator;
+  removeMemoButton: Locator;
   saveChangeMemo: Locator;
   memoHeading: Locator;
+  memoText: Locator;
 
 constructor(page) {
     super(page);
     this.memoLink = page.locator('a[title="View the memoranda for your role."]')
-    this.memoText = page.locator('#Text')
-    this.addMemo = page.locator('input[value="Add Memorandum"]')
-    this.changeMemo = page.locator('a[title="Change this memorandum."]')
-    this.removeMemo = page.locator('a[title="Remove this memorandum from the list."]')
+    this.memoTextBox = page.locator('#Text')
+    this.addMemoButton = page.locator('input[value="Add Memorandum"]')
+    this.changeMemoButton = page.locator('a[title="Change this memorandum."]')
+    this.removeMemoButton = page.locator('a[title="Remove this memorandum from the list."]')
     this.saveChangeMemo = page.locator('input[value="Save"]')
     this.memoHeading = page.locator('div[id="content"] h3')
+    this.memoText = page.locator("xpath=(//td[@class='tableText'])[1]")
 }
 
 async acceptDialog(){
@@ -26,17 +28,20 @@ async acceptDialog(){
     await dialog.accept(); 
 })};
 
-async addUpdateRemoveMemo(){
-    await this.memoLink.click();
-    await this.memoText.fill('Test add memo')
-    await this.addMemo.click();
-    await this.changeMemo.click();
-    await this.memoText.fill('Test change & remove memo')
+async addMemo(){
+    await this.memoTextBox.fill('Add memo test')
+    await this.addMemoButton.click();
+
+}
+async changeMemo(){
+    await this.changeMemoButton.click();
+    await this.memoTextBox.fill('Change memo test')
     await this.saveChangeMemo.click()
+}
+
+async removeMemo(){
     await this.acceptDialog();
     // Now, perform the action that opens the dialog
-    await this.removeMemo.click()
-    await this.memoText.fill('Tested Memo functionality')
-    await this.addMemo.click();
+    await this.removeMemoButton.click()
 }}
 export default MemoPage;
