@@ -19,6 +19,6 @@ test("Add, Change and Remove Memos", async ({
     await createCasePage.createNewCase('TestCase','TestURN');
     await expect (caseDetailsPage.caseNameHeading).toBeVisible();
     await memoPage.addUpdateRemoveMemo();
-    await expect(memoPage.memoHeading).toContainText('Memoranda');
+    await expect (memoPage.memoHeading).toContainText('Memoranda');
     });
 });
