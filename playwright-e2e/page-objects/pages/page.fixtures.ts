@@ -1,5 +1,5 @@
 import HomePage from "./home.page";
-import CaseListPage from "./caseList.page";
+import CaseSearchPage from "./caseSearch.page";
 import CaseDetailsPage from "./caseDetails.page";
 import LoginPage from "./login.page";
 import ReviewEvidencePage from "./reviewEvidence.page";
@@ -10,7 +10,7 @@ import ChangeCaseDetailsPage from "./changeCaseDetails.page"
 
 export interface PageFixtures {
   homePage: HomePage;
-  caseListPage: CaseListPage;
+  caseSearchPage: CaseSearchPage;
   caseDetailsPage: CaseDetailsPage;
   loginPage: LoginPage;
   reviewEvidencePage: ReviewEvidencePage;
@@ -25,8 +25,8 @@ export const pageFixtures = {
     await use(new HomePage(page));
   },
 
-  caseListPage: async ({ page }, use) => {
-    await use(new CaseListPage(page));
+  caseSearchPage: async ({ page }, use) => {
+    await use(new CaseSearchPage(page));
   },
 
   caseDetailsPage: async ({ page }, use) => {
