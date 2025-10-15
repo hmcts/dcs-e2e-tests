@@ -2,7 +2,7 @@ import { test, expect } from "../fixtures";
 
 test.describe.serial("Memo Functionality", () => {
 
-test.beforeEach(async ({ homePage, loginPage }) => {
+test.beforeEach(async ({ homePage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");
 });
