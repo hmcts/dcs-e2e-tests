@@ -6,7 +6,7 @@ import ReviewEvidencePage from "./reviewEvidence.page";
 import UpdateFrontPage from "./updateFront.page";
 import CreateCasePage from "./createCase.page";
 import AddDefendantPage from "./addDefendant.page";
-import ChangeCaseDetailsPage from "./changeCaseDetails.page"
+import ChangeCaseDetailsPage from "./changeCaseDetails.page";
 import SectionsPage from "./sections.page";
 import SectionDocumentsPage from "./sectionDocuments.page";
 import ViewDocumentPage from "./viewDocument.page";
@@ -60,7 +60,7 @@ export const pageFixtures = {
   },
 
   changeCaseDetailsPage: async ({ page }, use) => {
-  await use(new ChangeCaseDetailsPage(page));
+    await use(new ChangeCaseDetailsPage(page));
   },
   sectionsPage: async ({ page }, use) => {
     await use(new SectionsPage(page));
