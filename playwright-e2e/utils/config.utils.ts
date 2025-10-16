@@ -92,17 +92,20 @@ export const config: Config = {
     // },
     // defenceAdvocateA: {
     //   group: "DefenceAdvocateA",
+    //   group: "DefenceAdvocateA",
     //   username: "trainer21",
     //   password: process.env.DEFENCE_ADVOCATE_A_PASSWORD as string,
     //   sessionFile: sessionPath("trainer21"),
     // },
     // defenceAdvocateB: {
     //   group: "DefenceAdvocateB",
+    //   group: "DefenceAdvocateB",
     //   username: "trainer22",
     //   password: process.env.DEFENCE_ADVOCATE_B_PASSWORD as string,
     //   sessionFile: sessionPath("trainer22"),
     // },
     // defenceAdvocateC: {
+    //   group: "DefenceAdvocateC",
     //   group: "DefenceAdvocateC",
     //   username: "trainer23",
     //   password: process.env.DEFENCE_ADVOCATE_C_PASSWORD as string,
@@ -121,13 +124,13 @@ export const config: Config = {
     //   sessionFile: sessionPath("trainer39"),
     // },
     // outsideProsecutingAdvocate: {
-    //   group: "Outside Prosecuting Advocate",
+    //   group: "OutsideProsecutingAdvocate",
     //   username: "trainer41",
     //   password: getEnvVar("OUTSIDE_PROSECUTING_ADVOCATE_PASSWORD"),
     //   sessionFile: sessionPath("trainer41"),
     // },
     // feePaidJudge: {
-    //   group: "Fee Paid Judge",
+    //   group: "FeePaidJudge",
     //   username: "trainer47",
     //   password: getEnvVar("FEE_PAID_JUDGE_PASSWORD"),
     //   sessionFile: sessionPath("trainer47"),
