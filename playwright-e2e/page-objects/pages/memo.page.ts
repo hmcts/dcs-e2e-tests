@@ -2,25 +2,23 @@ import { Locator } from "@playwright/test";
 import { Base } from "../base";
 
 class MemoPage extends Base {
-  memoLink: Locator;
   memoTextBox: Locator;
   addMemoButton: Locator;
   changeMemoButton: Locator;
   removeMemoButton: Locator;
   saveChangeMemo: Locator;
   memoHeading: Locator;
-  memoText: Locator;
+  memoTextRow1: Locator;
 
 constructor(page) {
     super(page);
-    this.memoLink = page.locator('a[title="View the memoranda for your role."]')
     this.memoTextBox = page.locator('#Text')
     this.addMemoButton = page.locator('input[value="Add Memorandum"]')
     this.changeMemoButton = page.locator('a[title="Change this memorandum."]')
     this.removeMemoButton = page.locator('a[title="Remove this memorandum from the list."]')
     this.saveChangeMemo = page.locator('input[value="Save"]')
     this.memoHeading = page.locator('div[id="content"] h3')
-    this.memoText = page.locator("xpath=(//td[@class='tableText'])[1]")
+    this.memoTextRow1 = page.locator("xpath= //table[@class='formTable-zebra']/tbody[1]/tr[2]/td[2]")
 }
 
 async acceptDialog(){
@@ -29,10 +27,17 @@ async acceptDialog(){
 })};
 
 async addMemo(){
-    await this.memoTextBox.fill('Add memo test')
+if (await this.memoTextBox.isVisible()){
+    await this.memoTextBox.fill('Add memo test 1')
     await this.addMemoButton.click();
-
 }
+else{
+    await this.addMemoButton.click()
+    await this.memoTextBox.fill('Add memo test 2')
+    await this.addMemoButton.click()
+}
+}
+
 async changeMemo(){
     await this.changeMemoButton.click();
     await this.memoTextBox.fill('Change memo test')
@@ -40,8 +45,7 @@ async changeMemo(){
 }
 
 async removeMemo(){
-    await this.acceptDialog();
-    // Now, perform the action that opens the dialog
     await this.removeMemoButton.click()
+    await this.acceptDialog();
 }}
 export default MemoPage;
