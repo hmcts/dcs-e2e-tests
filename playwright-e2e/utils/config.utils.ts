@@ -28,7 +28,7 @@ export interface Config {
   env: "preprod" | "uat";
   users: {
     hmctsAdmin: UserCredentials;
-    cpsAdmin: UserCredentials;
+    // cpsAdmin: UserCredentials;
     // cpsProsecutor: UserCredentials;
     // defenceAdvocateA: UserCredentials;
     // defenceAdvocateB: UserCredentials;
@@ -78,12 +78,12 @@ export const config: Config = {
       sessionFile: sessionPath("trainer02"),
       cookieName: ".ASPXAUTH",
     },
-    cpsAdmin: {
-      group: "CPSAdmin",
-      username: "trainer12",
-      password: process.env.CPS_ADMIN_PASSWORD as string,
-      sessionFile: sessionPath("trainer12"),
-    },
+    // cpsAdmin: {
+    //   group: "CPSAdmin",
+    //   username: "trainer12",
+    //   password: process.env.CPS_ADMIN_PASSWORD as string,
+    //   sessionFile: sessionPath("trainer12"),
+    // },
     // cpsProsecutor: {
     //   group: "CPSProsecutor",
     //   username: "trainer17",
@@ -92,20 +92,17 @@ export const config: Config = {
     // },
     // defenceAdvocateA: {
     //   group: "DefenceAdvocateA",
-    //   group: "DefenceAdvocateA",
     //   username: "trainer21",
     //   password: process.env.DEFENCE_ADVOCATE_A_PASSWORD as string,
     //   sessionFile: sessionPath("trainer21"),
     // },
     // defenceAdvocateB: {
     //   group: "DefenceAdvocateB",
-    //   group: "DefenceAdvocateB",
     //   username: "trainer22",
     //   password: process.env.DEFENCE_ADVOCATE_B_PASSWORD as string,
     //   sessionFile: sessionPath("trainer22"),
     // },
     // defenceAdvocateC: {
-    //   group: "DefenceAdvocateC",
     //   group: "DefenceAdvocateC",
     //   username: "trainer23",
     //   password: process.env.DEFENCE_ADVOCATE_C_PASSWORD as string,
@@ -136,7 +133,7 @@ export const config: Config = {
     //   sessionFile: sessionPath("trainer47"),
     // },
     // associateProsecutor: {
-    //   group: "Associate Prosecutor",
+    //   group: "AssociateProsecutor",
     //   username: "trainer19",
     //   password: getEnvVar("ASSOCIATE_PROSECUTOR_PASSWORD"),
     //   sessionFile: sessionPath("trainer19"),
