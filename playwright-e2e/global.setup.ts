@@ -1,6 +1,8 @@
 import { test as setup } from "./fixtures";
 import fs from "fs";
 import { Cookie } from "@playwright/test";
+import { CookieUtils } from "./utils/cookie.utils";
+const cookieUtils = new CookieUtils();
 
 function isSessionValid(sessionFile: string, cookieName: string): boolean {
   // In the case the file doesn't exist, it should attempt to login
@@ -34,5 +36,6 @@ setup.describe("Set up user session", () => {
     await homePage.navigation.navigateTo("LogOn");
     await loginPage.login(user);
     await loginPage.page.context().storageState({ path: user.sessionFile });
+    await cookieUtils.addUserAnalyticsCookie(user.sessionFile!);
   });
 });
