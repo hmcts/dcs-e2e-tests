@@ -8,6 +8,9 @@ import path from "path";
 export default defineConfig({
   testDir: "./playwright-e2e",
   snapshotDir: "./playwright-e2e/snapshots",
+  snapshotPathTemplate:
+    "{testDir}/{testFilePath}-snapshots/{arg}-{projectName}{ext}",
+
   ...CommonConfig.recommended,
 
   globalTeardown: path.resolve("./playwright-e2e/global.teardown.ts"),
