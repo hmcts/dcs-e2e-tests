@@ -121,19 +121,19 @@ export const config: Config = {
     //   sessionFile: sessionPath("trainer39"),
     // },
     // outsideProsecutingAdvocate: {
-    //   group: "Outside Prosecuting Advocate",
+    //   group: "OutsideProsecutingAdvocate",
     //   username: "trainer41",
     //   password: getEnvVar("OUTSIDE_PROSECUTING_ADVOCATE_PASSWORD"),
     //   sessionFile: sessionPath("trainer41"),
     // },
     // feePaidJudge: {
-    //   group: "Fee Paid Judge",
+    //   group: "FeePaidJudge",
     //   username: "trainer47",
     //   password: getEnvVar("FEE_PAID_JUDGE_PASSWORD"),
     //   sessionFile: sessionPath("trainer47"),
     // },
     // associateProsecutor: {
-    //   group: "Associate Prosecutor",
+    //   group: "AssociateProsecutor",
     //   username: "trainer19",
     //   password: getEnvVar("ASSOCIATE_PROSECUTOR_PASSWORD"),
     //   sessionFile: sessionPath("trainer19"),

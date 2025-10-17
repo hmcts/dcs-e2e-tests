@@ -6,7 +6,10 @@ import ReviewEvidencePage from "./reviewEvidence.page";
 import UpdateFrontPage from "./updateFront.page";
 import CreateCasePage from "./createCase.page";
 import AddDefendantPage from "./addDefendant.page";
-import ChangeCaseDetailsPage from "./changeCaseDetails.page"
+import ChangeCaseDetailsPage from "./changeCaseDetails.page";
+import SectionsPage from "./sections.page";
+import SectionDocumentsPage from "./sectionDocuments.page";
+import ViewDocumentPage from "./viewDocument.page";
 
 export interface PageFixtures {
   homePage: HomePage;
@@ -18,6 +21,9 @@ export interface PageFixtures {
   createCasePage: CreateCasePage;
   addDefendantPage: AddDefendantPage;
   changeCaseDetailsPage: ChangeCaseDetailsPage;
+  sectionsPage: SectionsPage;
+  viewDocumentPage: ViewDocumentPage;
+  sectionDocumentsPage: SectionDocumentsPage;
 }
 
 export const pageFixtures = {
@@ -54,6 +60,15 @@ export const pageFixtures = {
   },
 
   changeCaseDetailsPage: async ({ page }, use) => {
-  await use(new ChangeCaseDetailsPage(page));
+    await use(new ChangeCaseDetailsPage(page));
+  },
+  sectionsPage: async ({ page }, use) => {
+    await use(new SectionsPage(page));
+  },
+  viewDocumentPage: async ({ page }, use) => {
+    await use(new ViewDocumentPage(page));
+  },
+  sectionDocumentsPage: async ({ page }, use) => {
+    await use(new SectionDocumentsPage(page));
   },
 };
