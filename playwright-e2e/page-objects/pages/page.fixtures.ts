@@ -7,6 +7,8 @@ import UpdateFrontPage from "./updateFront.page";
 import CreateCasePage from "./createCase.page";
 import AddDefendantPage from "./addDefendant.page";
 import ChangeCaseDetailsPage from "./changeCaseDetails.page"
+import MemoPage from "./memo.page";
+
 
 export interface PageFixtures {
   homePage: HomePage;
@@ -18,6 +20,7 @@ export interface PageFixtures {
   createCasePage: CreateCasePage;
   addDefendantPage: AddDefendantPage;
   changeCaseDetailsPage: ChangeCaseDetailsPage;
+  memoPage: MemoPage;
 }
 
 export const pageFixtures = {
@@ -48,7 +51,7 @@ export const pageFixtures = {
   createCasePage: async ({ page }, use) => {
     await use(new CreateCasePage(page));
   },
-
+  
   addDefendantPage: async ({ page }, use) => {
     await use(new AddDefendantPage(page));
   },
@@ -56,4 +59,9 @@ export const pageFixtures = {
   changeCaseDetailsPage: async ({ page }, use) => {
   await use(new ChangeCaseDetailsPage(page));
   },
+  
+  memoPage: async ({ page }, use) => {
+    await use(new MemoPage(page));
+  },
+
 };
