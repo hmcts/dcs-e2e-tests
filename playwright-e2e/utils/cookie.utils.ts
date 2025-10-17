@@ -20,7 +20,6 @@ export class CookieUtils {
       state.cookies = state.cookies.filter(
         (cookie: Cookie) => cookie.name !== "cb-enabled"
       );
-      console.log(state.cookies);
       state.cookies.push({
         name: "cb-enabled",
         value: "accepted",
