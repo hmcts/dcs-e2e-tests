@@ -8,11 +8,11 @@ import { UserCredentials, config } from "../utils";
 
 // As a user
 // I want to be able to access the Sections Page
-// And I should be able to see a list of the correct available Sections 
+// And I should be able to see a list of the correct available Sections
 
 // As a user
 // I want to be able to navigate to View Documents for each individual Section
-// And I should be able to see a list of the correct available Documents in each Section 
+// And I should be able to see a list of the correct available Documents in each Section
 
 // As a user
 // If I navigate to View each Document within a Section
@@ -37,12 +37,13 @@ test.describe("Sections Page", () => {
       caseSearchPage,
       caseDetailsPage,
       sectionsPage,
+      homePage,
     }) => {
       test.setTimeout(360_000);
       const currentUserIssues: string[] = [];
       try {
         await loginPage.login(user);
-        await loginPage.navigation.navigateTo("ViewCaseListLink");
+        await homePage.navigation.navigateTo("ViewCaseListLink");
         await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
         await caseSearchPage.goToUpdateCase();
         await caseDetailsPage.caseNavigation.navigateTo("Sections");

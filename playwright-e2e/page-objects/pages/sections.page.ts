@@ -7,14 +7,12 @@ import { DocumentModel, documents } from "../../data/documentModel";
 class SectionsPage extends Base {
   readonly page: Page;
   readonly sectionDocumentsPage: SectionDocumentsPage;
-  sectionsLink: Locator;
   viewDocumentsLink: Locator;
 
   constructor(page) {
     super(page);
     this.page = page;
     this.sectionDocumentsPage = new SectionDocumentsPage(page);
-    this.sectionsLink = page.getByRole("link", { name: "Sections" });
     this.viewDocumentsLink = page.getByRole("link", { name: "View Documents" });
   }
 
