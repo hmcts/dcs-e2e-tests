@@ -28,7 +28,7 @@ export interface Config {
   env: "preprod" | "uat";
   users: {
     hmctsAdmin: UserCredentials;
-    cpsAdmin: UserCredentials;
+    // cpsAdmin: UserCredentials;
     // cpsProsecutor: UserCredentials;
     // defenceAdvocateA: UserCredentials;
     // defenceAdvocateB: UserCredentials;
@@ -78,12 +78,12 @@ export const config: Config = {
       sessionFile: sessionPath("trainer02"),
       cookieName: ".ASPXAUTH",
     },
-    cpsAdmin: {
-      group: "CPSAdmin",
-      username: "trainer12",
-      password: process.env.CPS_ADMIN_PASSWORD as string,
-      sessionFile: sessionPath("trainer12"),
-    },
+    // cpsAdmin: {
+    //   group: "CPSAdmin",
+    //   username: "trainer12",
+    //   password: process.env.CPS_ADMIN_PASSWORD as string,
+    //   sessionFile: sessionPath("trainer12"),
+    // },
     // cpsProsecutor: {
     //   group: "CPSProsecutor",
     //   username: "trainer17",
