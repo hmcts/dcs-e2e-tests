@@ -26,11 +26,6 @@ constructor(page) {
     this.memoTableRow2 = page.locator("xpath= //table[@class='formTable-zebra']/tbody[1]/tr[3]/td[2]")
 }
 
-async acceptDialog(){
-    this.page.on('dialog', async dialog => {
-    await dialog.accept(); 
-})};
-
 async addMemo(){
 if (await this.memoTextBox.isVisible()){
     await this.memoTextBox.fill('Add memo test textbox directly available')
@@ -48,7 +43,11 @@ async changeMemo(){
 }
 
 async removeMemo(){
+    const [dialog] = await Promise.all([
+    this.page.waitForEvent('dialog'),
     await this.removeMemoButton.click()
-    await this.acceptDialog();
+]);
+    await dialog.accept();
 }}
+
 export default MemoPage;
