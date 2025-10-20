@@ -10,10 +10,8 @@ export class CookieUtils {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
-      const domain = (config.urls.base as string).replace(
-        "https://",
-        ""
-      );
+      const rawBase = config.urls.base as string;
+      const domain = rawBase.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
 
       const state = fs.existsSync(sessionPath)
         ? JSON.parse(fs.readFileSync(sessionPath, "utf-8"))
@@ -22,11 +20,10 @@ export class CookieUtils {
       state.cookies = state.cookies.filter(
         (cookie: Cookie) => cookie.name !== "cb-enabled"
       );
-      console.log(state.cookies);
       state.cookies.push({
         name: "cb-enabled",
         value: "accepted",
-        domain: `${domain}`,
+        domain,
         path: "/",
         expires: -1,
         httpOnly: false,
