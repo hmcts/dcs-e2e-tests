@@ -21,11 +21,13 @@ test("Add, Change and Remove Memos", async ({
     await caseDetailsPage.caseNavigation.navigateTo('Memos')
     await expect (memoPage.memoHeading).toContainText('Add a Memorandum');
     await memoPage.addMemo();
-    await expect (memoPage.memoTextRow1).toBeVisible();
+    await expect (memoPage.memoTableRow1).toHaveText("Add memo test textbox directly available")
+    await memoPage.addMemo();
+    await expect (memoPage.memoTableRow2).toHaveText("Add memo test via Add A Memorandum button")
     await memoPage.changeMemo();
-    await expect (memoPage.memoTextRow1).toContainText('Change memo test');
+    await expect (memoPage.memoTableRow1).toContainText('Change memo test');
     await memoPage.removeMemo();
-    await expect (memoPage.memoTextBox).toBeVisible();
+    await expect (memoPage.memoTableRow1).toHaveText("Add memo test via Add A Memorandum button")
 
     });
 });
