@@ -17,8 +17,6 @@
       "groupSlug": "All-minor-patch",
       "addLabels": [
         "Renovate All-minor-patch"
-      ],
-      "automerge": false
       ]
     },
     {
