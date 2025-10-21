@@ -2,44 +2,52 @@ import { Locator } from "@playwright/test";
 import { Base } from "../base";
 
 class MemoPage extends Base {
-  memoLink: Locator;
-  updateMemo: Locator;
-  memoText: Locator;
-  addMemo: Locator;
-  changeMemo: Locator;
-  removeMemo: Locator;
+  memoTextBox: Locator;
+  addMemoButton: Locator;
+  addMemoLink: Locator;
+  changeMemoButton: Locator;
+  removeMemoButton: Locator;
   saveChangeMemo: Locator;
   memoHeading: Locator;
+  memoTableRow1: Locator;
+  memoTableRow2: Locator;
+
 
 constructor(page) {
     super(page);
-    this.memoLink = page.locator('a[title="View the memoranda for your role."]')
-    this.updateMemo = page.getByRole('link', { name: 'Update Memoranda' })
-    this.memoText = page.locator('#Text')
-    this.addMemo = page.locator('input[value="Add Memorandum"]')
-    this.changeMemo = page.locator('a[title="Change this memorandum."]')
-    this.removeMemo = page.locator('a[title="Remove this memorandum from the list."]')
-    this.saveChangeMemo = page.locator('input[value="Save"]')
+    this.memoTextBox = page.locator('#Text')
+    this.addMemoButton = page.getByRole('button', { name: 'Add Memorandum' })
+    this.addMemoLink = page.getByRole('link', { name: 'Add a Memorandum' }) 
+    this.changeMemoButton = page.getByRole('link', { name: 'Change' }).first()
+    this.removeMemoButton = page.getByRole('link', { name: 'Remove' }).first()
+    this.saveChangeMemo = page.getByRole('button', { name: 'Save' })
     this.memoHeading = page.locator('div[id="content"] h3')
+    this.memoTableRow1 = page.locator("xpath= //table[@class='formTable-zebra']/tbody[1]/tr[2]/td[2]")
+    this.memoTableRow2 = page.locator("xpath= //table[@class='formTable-zebra']/tbody[1]/tr[3]/td[2]")
 }
 
-async acceptDialog(){
-    this.page.on('dialog', async dialog => {
-    await dialog.accept(); // Confirms the action
-})};
-
-async addAndUpdateMemo(){
-    await this.memoLink.click();
-    await this.memoText.fill('Test add memo')
-    await this.addMemo.click();
-    await this.changeMemo.click();
-    await this.memoText.fill('Test change & remove memo')
-    await this.saveChangeMemo.click()
-    await this.acceptDialog();
-    // Now, perform the action that opens the dialog
-    await this.removeMemo.click()
-    await this.memoText.fill('Tested Memo functionality')
-    await this.addMemo.click();
-
+async addMemo(){
+if (await this.memoTextBox.isVisible()){
+    await this.memoTextBox.fill('Add memo test textbox directly available')
+    await this.addMemoButton.click();
+} else {
+    await this.addMemoLink.click();
+    await this.memoTextBox.fill('Add memo test via Add A Memorandum button')
+    await this.addMemoButton.click();
 }}
+
+async changeMemo(){
+    await this.changeMemoButton.click();
+    await this.memoTextBox.fill('Change memo test')
+    await this.saveChangeMemo.click()
+}
+
+async removeMemo(){
+    const [dialog] = await Promise.all([
+    this.page.waitForEvent('dialog'),
+    await this.removeMemoButton.click()
+]);
+    await dialog.accept();
+}}
+
 export default MemoPage;

@@ -1,24 +1,33 @@
 import { test, expect } from "../fixtures";
 
-test.describe.serial("Memo Functionality", () => {
+test.describe("Memo Functionality", () => {
 
-test.beforeEach(async ({ homePage, loginPage }) => {
+test.beforeEach(async ({ homePage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");
-    await loginPage.acceptCookies();
-    });
+});
 
 
-test("Add, Change and remove Memos", async ({
+test("Add, Change and Remove Memos", async ({
     createCasePage,
     caseDetailsPage,
-    memoPage
+    caseSearchPage,
+    memoPage, 
     
 }) => {
-    await createCasePage.createCaseLink.click();
-    const caseUrn = await createCasePage.createNewCase('TestCase','TestURN');
-    await expect (caseDetailsPage.caseNameHeading).toBeVisible();
-    await memoPage.addAndUpdateMemo();
-    await expect(memoPage.memoHeading).toContainText('Memoranda');
+    await caseSearchPage.goToCreateCase();
+    await createCasePage.createNewCase('TestCase','TestURN');
+    await expect (caseDetailsPage.caseNameHeading).toBeVisible();   
+    await caseDetailsPage.caseNavigation.navigateTo('Memos')
+    await expect (memoPage.memoHeading).toContainText('Add a Memorandum');
+    await memoPage.addMemo();
+    await expect (memoPage.memoTableRow1).toHaveText("Add memo test textbox directly available")
+    await memoPage.addMemo();
+    await expect (memoPage.memoTableRow2).toHaveText("Add memo test via Add A Memorandum button")
+    await memoPage.changeMemo();
+    await expect (memoPage.memoTableRow1).toContainText('Change memo test');
+    await memoPage.removeMemo();
+    await expect (memoPage.memoTableRow1).toHaveText("Add memo test via Add A Memorandum button")
+
     });
 });

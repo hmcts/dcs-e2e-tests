@@ -8,6 +8,7 @@ class HomePage extends Base {
   constructor(page) {
     super(page);
     this.accountMessage =page.locator('#content')
+
   }
 
   async open() {
