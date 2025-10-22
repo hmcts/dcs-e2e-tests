@@ -1,17 +1,25 @@
 import { test, expect } from "../fixtures";
-import CaseListPage from "../page-objects/pages/caseList.page";
+
+// ============================================================
+// Test : New User Registration
+// ============================================================
+
+// As a user
+// I want to be able to create a new Crown Court DCS Account
+// And I should be able to get verified and approved by Access Coordinator.
 
 test.describe("Register New user in CCDCS", () => {
 
 test.beforeEach(async ({ homePage }) => {
     await homePage.open();
+    await homePage.navigation.navigateTo("LogOff")
   });
 
 test("Approve/Reject New user registration", async ({
     registerUserPage,
     homePage,
     loginPage,
-    caseListPage,
+    caseSearchPage,
     userSettingsPage,
     approvalRequestsPage,
     approveAccessRequestPage,
@@ -56,7 +64,7 @@ test("Approve/Reject New user registration", async ({
       await homePage.navigation.navigateTo("LogOn");
       await loginPage.loginAsNewUserRegistered(userName);
       await homePage.navigation.navigateTo("ViewCaseListLink");
-      await expect (caseListPage.caseSearchHeading).toHaveText('Case List')
+      await expect (caseSearchPage.caseSearchHeading).toHaveText('Case List')
     }
     else 
     {
@@ -73,7 +81,7 @@ test("Approve/Reject New user registration", async ({
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await expect (homePage.accountMessage).toContainText('Your account registration has been rejected. If you require access to DCS, you must re-register. If you believe your account has been incorrectly rejected then please contact CITS:')
     }
-  
+
   });
 });
 
