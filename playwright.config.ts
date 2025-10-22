@@ -28,14 +28,14 @@ export default defineConfig({
       },
       dependencies: ["setup"],
     },
-    // {
-    //   name: "chromium",
-    //   use: {
-    //     ...ProjectsConfig.chromium.use,
-    //     storageState: "./playwright-e2e/.sessions/trainer02.json",
-    //   },
-    //   dependencies: ["setup"],
-    // },
+    {
+      name: "chromium",
+      use: {
+        ...ProjectsConfig.chromium.use,
+        storageState: "./playwright-e2e/.sessions/trainer02.json",
+      },
+      dependencies: ["setup"],
+    },
     // {
     //   name: "edge",
     //   use: {
