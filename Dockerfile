@@ -1,12 +1,15 @@
 FROM mcr.microsoft.com/playwright:v1.56.1-noble
 
+# Set working directory
 WORKDIR /playwright/
 
-COPY package.json ./
+# Copy only package files and install dependencies
+COPY package.json yarn.lock ./
+RUN corepack enable && yarn install --immutable
 
-RUN corepack enable
-RUN yarn install
-
+# Copy the rest of the project
 COPY . .
 
-ENTRYPOINT [ "/bin/bash", "-l", "-c" ]
+# Install all Playwright-supported browsers + dependencies
+RUN npx playwright install --with-deps
+
