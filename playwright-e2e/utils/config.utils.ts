@@ -83,7 +83,7 @@ export const config: Config = {
     accessCoordinator: {
       group: "Access coordinator",
       username: "SJagadeesan",
-      password: getEnvVar("AC_PASSWORD"),
+      password: process.env.AC_ADMIN_PASSWORD as string,
       sessionFile: sessionPath("suganDCSTen10"),
       cookieName: ".ASPXAUTH",
     },

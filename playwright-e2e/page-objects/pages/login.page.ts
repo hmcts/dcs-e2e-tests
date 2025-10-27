@@ -42,18 +42,20 @@ class LoginPage extends Base {
     await this.loginButton.click();
   }
 
-  async loginAsAccessCoordinator() {
-    const user = config.users.accessCoordinator;
-    await this.login(user);
-    await this.page.context().storageState({ path: user.sessionFile });
+  async loginAsAccessCoordinator() {    
+    await this.username.fill('TestACHMCTS');
+    await this.password.fill('TestACHMCTS');
+    await this.loginButton.click();
+    await this.acceptCookies();
+
   }
 
-  async loginAsNewUserRegistered(username: string) {    // move to config
+  async loginAsNewUserRegistered(username: string) {    
     await this.username.fill(username);
     await this.password.fill('UserReg2025');
     await this.loginButton.click();
   }
-  
+
   async loginValidation(user: UserCredentials) {
     const hasUserNameError = await this.usernameErrorMessage
       .isVisible()

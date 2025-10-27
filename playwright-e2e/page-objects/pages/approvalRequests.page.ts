@@ -27,10 +27,9 @@ constructor(page) {
 
 }
 
-async newApprovalRequests(userName: string){
-   await expect(this.userEmail).toContainText(new RegExp(userName + "@cps.gov.uk", "i"));
-   await expect(this.userLocation).toHaveText("Southwark");
-   await expect(this.userRole).toHaveText("CPS Administrator");
-}
-}
+async newApprovalRequests(userRole: string, userEmail: string, userLocation: string){
+   await expect(this.userEmail).toContainText(new RegExp(userEmail, "i"));
+   await expect(this.userLocation).toHaveText(userLocation);
+   await expect(this.userRole).toHaveText(userRole);
+}}
 export default AprrovalRequestsPage;
