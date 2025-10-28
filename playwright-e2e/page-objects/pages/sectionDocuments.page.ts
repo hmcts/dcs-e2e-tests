@@ -2,6 +2,11 @@ import { Base } from "../base";
 import { DocumentModel } from "../../data/documentModel";
 import ViewDocumentPage from "./viewDocument.page";
 
+interface DocumentCheck {
+  name: string;
+  shouldBeVisible: boolean;
+}
+
 class SectionDocumentsPage extends Base {
   readonly viewDocumentPage: ViewDocumentPage;
 
@@ -83,5 +88,45 @@ class SectionDocumentsPage extends Base {
       await viewDocumentPage.close();
     }
   }
+
+  async validateRestrictedSectionDocumentUpload(
+    section: string,
+    user: string,
+    documents: DocumentCheck[]
+  ) {
+    const issues: string[] = [];
+
+    await this.page
+      .locator("td.documentInContentsIndex span")
+      .first()
+      .waitFor({
+        state: "visible",
+        timeout: 10000,
+      })
+      .catch(() => {});
+
+    for (const doc of documents) {
+      const locator = this.page.locator("td.documentInContentsIndex span", {
+        hasText: `${doc.name}`,
+      });
+
+      const count = await locator.count();
+      const isVisible = count > 0;
+
+      if (doc.shouldBeVisible && !isVisible) {
+        issues.push(`Expected ${doc.name} to be visible but it wasn't.`);
+      }
+      if (!doc.shouldBeVisible && isVisible) {
+        issues.push(`Expected ${doc.name} to NOT be visible but it was.`);
+      }
+    }
+
+    if (issues.length > 0) {
+      return `Validation failed for ${user} in Section ${section}:\n - ${issues.join(
+        "\n - "
+      )}`;
+    }
+  }
 }
+
 export default SectionDocumentsPage;
