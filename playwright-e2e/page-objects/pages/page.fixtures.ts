@@ -12,6 +12,8 @@ import SectionDocumentsPage from "./sectionDocuments.page";
 import ViewDocumentPage from "./viewDocument.page";
 import UploadDocumentPage from "./uploadDocument.page";
 import PeoplePage from "./people.page";
+import MemoPage from "./memo.page";
+
 
 export interface PageFixtures {
   homePage: HomePage;
@@ -23,6 +25,7 @@ export interface PageFixtures {
   createCasePage: CreateCasePage;
   addDefendantPage: AddDefendantPage;
   changeCaseDetailsPage: ChangeCaseDetailsPage;
+  memoPage: MemoPage;
   sectionsPage: SectionsPage;
   viewDocumentPage: ViewDocumentPage;
   sectionDocumentsPage: SectionDocumentsPage;
@@ -58,7 +61,7 @@ export const pageFixtures = {
   createCasePage: async ({ page }, use) => {
     await use(new CreateCasePage(page));
   },
-
+  
   addDefendantPage: async ({ page }, use) => {
     await use(new AddDefendantPage(page));
   },
@@ -66,6 +69,11 @@ export const pageFixtures = {
   changeCaseDetailsPage: async ({ page }, use) => {
     await use(new ChangeCaseDetailsPage(page));
   },
+  
+  memoPage: async ({ page }, use) => {
+    await use(new MemoPage(page));
+  },
+
   sectionsPage: async ({ page }, use) => {
     await use(new SectionsPage(page));
   },
