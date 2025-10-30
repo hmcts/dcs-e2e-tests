@@ -43,16 +43,14 @@ class LoginPage extends Base {
   }
 
   async loginAsAccessCoordinator() {    
-    await this.username.fill('TestACHMCTS');
-    await this.password.fill('TestACHMCTS');
-    await this.loginButton.click();
-    await this.acceptCookies();
-
+    const user = config.users.accessCoordinator;
+    await this.login(user);
   }
 
   async loginAsNewUserRegistered(username: string) {    
     await this.username.fill(username);
-    await this.password.fill('UserReg2025');
+    const password: string = process.env.USER_REG_PASSWORD!;
+    await this.password.fill(password);
     await this.loginButton.click();
   }
 

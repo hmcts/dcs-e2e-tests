@@ -29,7 +29,6 @@ export interface Config {
   users: {
     hmctsAdmin: UserCredentials;
     accessCoordinator: UserCredentials;
-    // newUserRegistered: UserCredentials;
     // cpsAdmin: UserCredentials;
     // cpsProsecutor: UserCredentials;
     // defenceAdvocateA: UserCredentials;
@@ -82,9 +81,9 @@ export const config: Config = {
     },
     accessCoordinator: {
       group: "Access coordinator",
-      username: "SJagadeesan",
-      password: process.env.AC_ADMIN_PASSWORD as string,
-      sessionFile: sessionPath("suganDCSTen10"),
+      username: "TestACHMCTS",
+      password: process.env.TESTAC_PASSWORD as string,
+      sessionFile: sessionPath("TestACHMCTS"),
       cookieName: ".ASPXAUTH",
     },
     // cpsAdmin: {
