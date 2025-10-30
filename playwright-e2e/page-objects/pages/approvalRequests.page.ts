@@ -1,4 +1,4 @@
-import { expect, Locator } from "@playwright/test";
+import { Locator } from "@playwright/test";
 import { Base } from "../base";
 
 class AprrovalRequestsPage extends Base {
@@ -25,11 +25,5 @@ constructor(page) {
     this.approvalRequestsHeading = page.locator('div#content h2')
     this.returnMessage = page.locator('.ReturnMessage')
 
-}
-
-async newApprovalRequests(userRole: string, userEmail: string, userLocation: string){
-   await expect(this.userEmail).toContainText(new RegExp(userEmail, "i"));
-   await expect(this.userLocation).toHaveText(userLocation);
-   await expect(this.userRole).toHaveText(userRole);
 }}
 export default AprrovalRequestsPage;

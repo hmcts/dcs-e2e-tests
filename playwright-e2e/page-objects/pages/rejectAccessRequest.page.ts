@@ -1,4 +1,4 @@
-import { expect, Locator } from "@playwright/test";
+import { Locator } from "@playwright/test";
 import { Base } from "../base";
 
 class RejectAccessRequestPage extends Base {

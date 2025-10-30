@@ -55,7 +55,7 @@ test("Approve/Reject New user registration", async ({
     await loginPage.loginAsAccessCoordinator();
     await homePage.navigation.navigateTo("Admin");
     await userSettingsPage.searchUser(userName);
-    await userSettingsPage.updateVerifyUserFlag();  // Verify Email format to AC for approval to be added - Request for New User Approval
+    await userSettingsPage.updateVerifyUserFlag();  
     await expect(userSettingsPage.verifiedUserFlag).toHaveText('Y');
     await homePage.navigation.navigateTo("LogOff");
     await homePage.navigation.navigateTo("LogOn");
@@ -73,7 +73,9 @@ test("Approve/Reject New user registration", async ({
     await expect (approvalRequestsPage.approvalRequestsHeading).toHaveText('Approval Requests')
     await expect (approvalRequestsPage.acRole).toContainText(userRole);
     await expect (approvalRequestsPage.acLocation).toContainText(userLocation);
-    await approvalRequestsPage.newApprovalRequests(userRole, userEmail, userLocation);
+    await expect(approvalRequestsPage.userEmail).toContainText(new RegExp(userEmail, "i"));
+    await expect(approvalRequestsPage.userLocation).toHaveText(userLocation);
+    await expect(approvalRequestsPage.userRole).toHaveText(userRole);
     const isApproved = Math.random() < 0.5;
     console.log('User approved:',isApproved);
     if (isApproved)
