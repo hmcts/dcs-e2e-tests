@@ -61,9 +61,11 @@ class LoginPage extends Base {
       await this.password.fill(user.password);
       await this.loginButton.click();
     } else if (hasLoginError) {
-      throw new Error(`❌ Login for ${user} has unexpectedly failed`);
+      throw new Error(`❌ Login for ${user.group} has unexpectedly failed`);
     } else {
-      console.log("✅ User details registered successfully, continuing...");
+      console.log(
+        `✅ User: ${user.group} details registered successfully, continuing...`
+      );
     }
   }
 }

@@ -3,16 +3,21 @@ import { Page } from "@playwright/test";
 import { Base } from "../base";
 import { Locator } from "@playwright/test";
 import { DocumentModel, documents } from "../../data/documentModel";
+import UploadDocumentPage from "./uploadDocument.page";
+import { expect } from "@playwright/test";
 
 class SectionsPage extends Base {
   readonly page: Page;
   readonly sectionDocumentsPage: SectionDocumentsPage;
+  uploadDocumentPage: UploadDocumentPage;
+
   viewDocumentsLink: Locator;
 
   constructor(page) {
     super(page);
     this.page = page;
     this.sectionDocumentsPage = new SectionDocumentsPage(page);
+    this.uploadDocumentPage = new UploadDocumentPage(page);
     this.viewDocumentsLink = page.getByRole("link", { name: "View Documents" });
   }
 
@@ -53,6 +58,20 @@ class SectionsPage extends Base {
       'a.button-level-two[title*="view the list of documents"]'
     );
     await viewDocsButton.click();
+  }
+
+  async goToViewDocumentsByKey(sectionKey: string) {
+    const row = this.page.locator(`tr:has(a[href*="${sectionKey}"])`);
+    const viewDocsButton = row.locator(
+      'a.button-level-two[title*="view the list of documents"]'
+    );
+    await viewDocsButton.click();
+  }
+
+  async goToUploadDocuments(sectionKey: string) {
+    const row = this.page.locator(`tr:has(a[href*="${sectionKey}"])`);
+    const uploadButton = row.getByRole("link", { name: "Upload Document(s)" });
+    await uploadButton.click();
   }
 
   async getSectionAndDocumentDetails(): Promise<DocumentModel[]> {
@@ -121,6 +140,61 @@ class SectionsPage extends Base {
       }
     }
     return { missingDocuments, unexpectedDocuments };
+  }
+
+  async getSectionKeys(sections: string[]) {
+    const sectionKeys: Record<string, string> = {};
+    for (const section of sections) {
+      const cell = this.page
+        .getByRole("cell", { name: `${section}`, exact: true })
+        .first();
+      const indexLink = cell.locator('a.fieldAuditTrail[href*="Index"]');
+      await expect(
+        indexLink,
+        `No href available for section: ${section}`
+      ).toHaveAttribute("href");
+      const href = (await indexLink.getAttribute("href"))!;
+
+      // extract the section key from the href
+      // href example: 'javascript:viewAuditTrail('Section', 'a8db8c2e...', 'bc1b906e...', 'Index')'
+      const parts = href.split("'");
+      const key = parts[5];
+      sectionKeys[section] = key;
+    }
+    return sectionKeys;
+  }
+
+  async uploadAndValidateUnrestrictedSectionDocument(
+    key: string,
+    filename: string,
+    section: string
+  ) {
+    await this.goToUploadDocuments(key);
+    await this.uploadDocumentPage.uploadUnrestrictedDocument(filename);
+
+    const unrestrictedDocument = this.sectionDocumentsPage.page.locator(
+      "td.documentInContentsIndex span",
+      {
+        hasText: `${filename}`,
+      }
+    );
+    try {
+      await unrestrictedDocument.waitFor({ state: "visible", timeout: 5000 });
+    } catch (error) {
+      return `Unrestricted document upload not found: ${filename} in Section: ${section}. Error: ${error}`;
+    }
+  }
+
+  async uploadRestrictedSectionDocument(
+    key: string,
+    filename: string,
+    defendant: string
+  ) {
+    await this.goToUploadDocuments(key);
+    await this.uploadDocumentPage.uploadRestrictedSectionDocument(
+      defendant,
+      filename
+    );
   }
 }
 

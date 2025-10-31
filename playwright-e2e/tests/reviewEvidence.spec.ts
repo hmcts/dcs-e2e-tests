@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { test, expect } from "../fixtures";
 import ReviewEvidencePage from "../page-objects/pages/reviewEvidence.page";
-import { UserCredentials, config } from "../utils";
+import { UserCredentials, config, assertNoIssues } from "../utils";
 
 // ============================================================
 // Test 1: Sections & Documents Availability
@@ -9,7 +9,7 @@ import { UserCredentials, config } from "../utils";
 
 // As a user
 // I want to be able to access the Review Evidence Page
-// And I should be able to see a list of the correct available Sections and Documents in the Index
+// And I should be able to see a list of the correct available Sections and Documents in the Index for an existing case
 
 test.describe("Sections and Documents availability", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
@@ -75,32 +75,18 @@ test.describe("Sections and Documents availability", () => {
   }
 
   test.afterAll(() => {
-    // Build a readable summary string
-    const summaryLines: string[] = [];
-    summaryLines.push("===== SECTION & DOCUMENT AVAILABILITY SUMMARY =====");
-
-    documentResults.forEach(({ user, issues }) => {
-      if (issues.length > 0) {
-        summaryLines.push(`❌ ${user}:`);
-        issues.forEach((i) => summaryLines.push(`   - ${i}`));
-      }
-    });
-
-    summaryLines.push("===================================================");
-
-    // Check if any user has issues
-    const anyIssues = documentResults.some(
-      (result) => result.issues.length > 0
+    const documentsCheck = documentResults.map((r) => ({
+      label: r.user,
+      issues: r.issues,
+    }));
+    const { summaryLines, anyIssues } = assertNoIssues(
+      documentsCheck,
+      "SECTION & DOCUMENT AVAILABILITY SUMMARY"
     );
-
-    // Include the summary in the expect failure message
-    const message = [
-      "User had missing or unexpected documents:",
-      "",
-      ...summaryLines,
-    ].join("\n");
-
-    expect(anyIssues, message).toBe(false);
+    if (anyIssues) {
+      const message = ["Issues detected:", "", ...summaryLines].join("\n");
+      expect(anyIssues, message).toBe(false);
+    }
   });
 });
 
@@ -109,7 +95,7 @@ test.describe("Sections and Documents availability", () => {
 // ============================================================
 
 // As a user
-// I want to be able to click onto an available document
+// I want to be able to click onto an available document in the Index
 // And this document should render correctly on the page
 
 test.describe("Document rendering / photosnaps", () => {
@@ -214,28 +200,21 @@ test.describe("Document rendering / photosnaps", () => {
   }
 
   test.afterAll(() => {
-    const summaryLines: string[] = [];
-    summaryLines.push("===== DOCUMENT RENDERING SUMMARY =====");
-
-    renderResults.forEach(({ user, issues }) => {
-      if (issues.length > 0) {
-        summaryLines.push(`❌ ${user}:`);
-        issues.forEach((i) => summaryLines.push(`   - ${i}`));
-      }
-    });
-
-    summaryLines.push("======================================");
-
-    // Check if any user has issues
-    const anyIssues = renderResults.some((result) => result.issues.length > 0);
-
-    // Include formatted summary in expect message
-    const message = [
-      "User had document rendering issues:",
-      "",
-      ...summaryLines,
-    ].join("\n");
-
-    expect(anyIssues, message).toBe(false);
+    const renderCheck = renderResults.map((r) => ({
+      label: r.user,
+      issues: r.issues,
+    }));
+    const { summaryLines, anyIssues } = assertNoIssues(
+      renderCheck,
+      "DOCUMENT RENDERING SUMMARY"
+    );
+    if (anyIssues) {
+      const message = [
+        "User had document rendering issues:",
+        "",
+        ...summaryLines,
+      ].join("\n");
+      expect(anyIssues, message).toBe(false);
+    }
   });
 });

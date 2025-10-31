@@ -30,9 +30,9 @@ export interface Config {
     hmctsAdmin: UserCredentials;
     // cpsAdmin: UserCredentials;
     // cpsProsecutor: UserCredentials;
-    // defenceAdvocateA: UserCredentials;
-    // defenceAdvocateB: UserCredentials;
-    // defenceAdvocateC: UserCredentials;
+    defenceAdvocateA: UserCredentials;
+    defenceAdvocateB: UserCredentials;
+    defenceAdvocateC: UserCredentials;
     // fullTimeJudge: UserCredentials;
     // probationStaff: UserCredentials;
     // outsideProsecutingAdvocate: UserCredentials;
@@ -90,24 +90,24 @@ export const config: Config = {
     //   password: process.env.CPS_PROSECUTOR_PASSWORD as string,
     //   sessionFile: sessionPath("trainer17"),
     // },
-    // defenceAdvocateA: {
-    //   group: "DefenceAdvocateA",
-    //   username: "trainer21",
-    //   password: process.env.DEFENCE_ADVOCATE_A_PASSWORD as string,
-    //   sessionFile: sessionPath("trainer21"),
-    // },
-    // defenceAdvocateB: {
-    //   group: "DefenceAdvocateB",
-    //   username: "trainer22",
-    //   password: process.env.DEFENCE_ADVOCATE_B_PASSWORD as string,
-    //   sessionFile: sessionPath("trainer22"),
-    // },
-    // defenceAdvocateC: {
-    //   group: "DefenceAdvocateC",
-    //   username: "trainer23",
-    //   password: process.env.DEFENCE_ADVOCATE_C_PASSWORD as string,
-    //   sessionFile: sessionPath("trainer23"),
-    // },
+    defenceAdvocateA: {
+      group: "DefenceAdvocateA",
+      username: "trainer21",
+      password: process.env.DEFENCE_ADVOCATE_A_PASSWORD as string,
+      sessionFile: sessionPath("trainer21"),
+    },
+    defenceAdvocateB: {
+      group: "DefenceAdvocateB",
+      username: "trainer22",
+      password: process.env.DEFENCE_ADVOCATE_B_PASSWORD as string,
+      sessionFile: sessionPath("trainer22"),
+    },
+    defenceAdvocateC: {
+      group: "DefenceAdvocateC",
+      username: "trainer23",
+      password: process.env.DEFENCE_ADVOCATE_C_PASSWORD as string,
+      sessionFile: sessionPath("trainer23"),
+    },
     // fullTimeJudge: {
     //   group: "FullTimeJudge",
     //   username: "trainer28",
@@ -162,3 +162,26 @@ export const invalidUsers: {
     password: "wrongPassword",
   },
 ];
+
+export const sections = {
+  unrestricted: [
+    "A",
+    "B",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "O",
+    "P",
+    "R",
+    "S",
+    "W",
+    "X",
+    "Y",
+  ],
+  restricted: ["C", "D", "M", "N", "Q", "T", "U", "V"],
+};
