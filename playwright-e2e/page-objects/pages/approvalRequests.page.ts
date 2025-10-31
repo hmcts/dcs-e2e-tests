@@ -1,9 +1,9 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../base";
 
-class AprrovalRequestsPage extends Base {
-  acRole: Locator;
-  acLocation: Locator;
+class ApprovalRequestsPage extends Base {
+  acRoles: Locator;
+  acLocations: Locator;
   userEmail: Locator;
   userLocation: Locator;
   userRole: Locator;
@@ -15,8 +15,8 @@ class AprrovalRequestsPage extends Base {
       
 constructor(page) {
     super(page);
-    this.acRole = page.locator("xpath=(//div[@class='InLineEditx'])[1]")
-    this.acLocation = page.locator("xpath=(//div[@class='InLineEditx'])[2]")
+    this.acRoles = page.locator("xpath=(//div[@class='InLineEditx'])[1]")
+    this.acLocations = page.locator("xpath=(//div[@class='InLineEditx'])[2]")
     this.userEmail = page.locator("xpath=(//*[@id=\"content\"]/table/tbody/tr[2]/td[2])").nth(0)
     this.userLocation = page.locator("xpath=(//*[@id=\"content\"]/table/tbody/tr[2]/td[3])").nth(0)
     this.userRole = page.locator("xpath=(//*[@id=\"content\"]/table/tbody/tr[2]/td[4])").nth(0)
@@ -26,4 +26,4 @@ constructor(page) {
     this.returnMessage = page.locator('.ReturnMessage')
 
 }}
-export default AprrovalRequestsPage;
+export default ApprovalRequestsPage;

@@ -12,9 +12,10 @@ import SectionDocumentsPage from "./sectionDocuments.page";
 import ViewDocumentPage from "./viewDocument.page";
 import MemoPage from "./memo.page";
 import RegisterUserPage from "./registerUser.page";
+import AdminPage from "./admin.page";
 import UserSettingsPage from "./userSettings.page";
-import AprrovalRequestsPage from "./approvalRequests.page";
-import AprroveAccessRequestPage from "./approveAccessRequest.page";
+import ApprovalRequestsPage from "./approvalRequests.page";
+import ApproveAccessRequestPage from "./approveAccessRequest.page";
 import RejectAccessRequestPage from "./rejectAccessRequest.page";
 
 
@@ -33,9 +34,10 @@ export interface PageFixtures {
   viewDocumentPage: ViewDocumentPage;
   sectionDocumentsPage: SectionDocumentsPage;
   registerUserPage: RegisterUserPage;
+  adminPage: AdminPage;
   userSettingsPage: UserSettingsPage;
-  approvalRequestsPage: AprrovalRequestsPage;
-  approveAccessRequestPage: AprroveAccessRequestPage;
+  approvalRequestsPage: ApprovalRequestsPage;
+  approveAccessRequestPage: ApproveAccessRequestPage;
   rejectAccessRequestPage: RejectAccessRequestPage;
 }
 
@@ -82,14 +84,17 @@ export const pageFixtures = {
   registerUserPage: async ({ page }, use) => {
     await use(new RegisterUserPage(page));
   },
+  adminPage: async ({ page }, use) => {
+    await use(new AdminPage(page));
+  },
   userSettingsPage: async ({ page }, use) => {
     await use(new UserSettingsPage(page));
   },
   approvalRequestsPage: async ({ page }, use) => {
-    await use(new AprrovalRequestsPage(page));
+    await use(new ApprovalRequestsPage(page));
   },
   approveAccessRequestPage: async ({ page }, use) => {
-    await use(new AprroveAccessRequestPage(page));
+    await use(new ApproveAccessRequestPage(page));
   },
   rejectAccessRequestPage: async ({ page }, use) => {
     await use(new RejectAccessRequestPage(page));

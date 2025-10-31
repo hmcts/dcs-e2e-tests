@@ -41,6 +41,7 @@ test("Approve/Reject New user registration", async ({
     homePage,
     loginPage,
     caseSearchPage,
+    adminPage,
     userSettingsPage,
     approvalRequestsPage,
     approveAccessRequestPage,
@@ -48,12 +49,15 @@ test("Approve/Reject New user registration", async ({
 
 }) => {
     await homePage.navigation.navigateTo("Register");
-    await expect(registerUserPage.registerTitle).toContainText('Register');   
-    const {userName, userEmail, userRole, userLocation, isSelfInviteRole} = await registerUserPage.enterUserRegDetails();
+    await expect(registerUserPage.registerHeading).toContainText('Register');   
+    const {userName, userEmail, userRole, userLocation, isSelfInviteRole} = await registerUserPage.submitUserRegDetails();
     await homePage.navigation.navigateTo("LogOff");
     await homePage.navigation.navigateTo("LogOn");
     await loginPage.loginAsAccessCoordinator();
     await homePage.navigation.navigateTo("Admin");
+    await expect(adminPage.adminHeading).toContainText('Administration Options');   
+    await adminPage.usersLink.click();
+    await expect(userSettingsPage.userSettingsHeading).toContainText('People List');   
     await userSettingsPage.searchUser(userName);
     await userSettingsPage.updateVerifyUserFlag();  
     await expect(userSettingsPage.verifiedUserFlag).toHaveText('Y');
@@ -71,8 +75,8 @@ test("Approve/Reject New user registration", async ({
     await loginPage.loginAsAccessCoordinator();
     await homePage.navigation.navigateTo("ApprovalRequests");
     await expect (approvalRequestsPage.approvalRequestsHeading).toHaveText('Approval Requests')
-    await expect (approvalRequestsPage.acRole).toContainText(userRole);
-    await expect (approvalRequestsPage.acLocation).toContainText(userLocation);
+    await expect (approvalRequestsPage.acRoles).toContainText(userRole);
+    await expect (approvalRequestsPage.acLocations).toContainText(userLocation);
     await expect(approvalRequestsPage.userEmail).toContainText(new RegExp(userEmail, "i"));
     await expect(approvalRequestsPage.userLocation).toHaveText(userLocation);
     await expect(approvalRequestsPage.userRole).toHaveText(userRole);
@@ -85,6 +89,9 @@ test("Approve/Reject New user registration", async ({
       await approveAccessRequestPage.confirmApproval();
       await expect (approvalRequestsPage.returnMessage).toContainText('successfully approved!')
       await homePage.navigation.navigateTo("Admin");
+      await expect(adminPage.adminHeading).toContainText('Administration Options');   
+      await adminPage.usersLink.click();
+      await expect(userSettingsPage.userSettingsHeading).toContainText('People List');   
       await userSettingsPage.searchUser(userName);
       await expect (userSettingsPage.approvedUserFlag).toContainText('Y')
       await homePage.navigation.navigateTo("LogOff");
@@ -100,6 +107,9 @@ test("Approve/Reject New user registration", async ({
       await rejectAccessRequestPage.confirmReject();
       await expect (approvalRequestsPage.returnMessage).toContainText('Rejection confirmed!')
       await homePage.navigation.navigateTo("Admin");
+      await expect(adminPage.adminHeading).toContainText('Administration Options');   
+      await adminPage.usersLink.click();
+      await expect(userSettingsPage.userSettingsHeading).toContainText('People List');   
       await userSettingsPage.searchUser(userName);
       await expect (userSettingsPage.deniedUserFlag).toContainText('Y')
       await homePage.navigation.navigateTo("LogOff");

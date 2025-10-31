@@ -3,7 +3,7 @@ import { Base } from "../base";
 
 class RegisterUserPage extends Base {
 
-  registerTitle: Locator;
+  registerHeading: Locator;
   title: Locator;
   firstName: Locator;
   lastName: Locator;
@@ -19,7 +19,7 @@ class RegisterUserPage extends Base {
     
 constructor(page) {
     super(page);
-    this.registerTitle = page.locator('.heading-medium')
+    this.registerHeading = page.locator('.heading-medium')
     this.title = page.locator('#Title')
     this.firstName = page.locator('#FirstName')
     this.lastName = page.locator('#LastName')
@@ -32,10 +32,9 @@ constructor(page) {
     this.confirmPassword = page.locator('#ConfirmPassword')
     this.agreeTermsCheckBox = page.locator('#agreeTermsCheckBox')
     this.saveRegisterForm = page.locator('#saveRegisterForm')
-
 }
 
-async enterUserRegDetails() {
+async submitUserRegDetails() {
     await this.title.fill("Mr");
     await this.firstName.fill("User");
     await this.lastName.fill("Reg");    
@@ -49,18 +48,21 @@ async enterUserRegDetails() {
     let userEmail : string,userRole : string;
     if (isSelfInviteRole)                                   
     {
-        userEmail = await this.fillSelfInviteEmail(this.email, userName);  
+        userEmail = await this.selectSelfInviteEmail(userName);  
+        await this.email.fill(userEmail)
         await this.role.waitFor({ state: "visible", timeout: 10000 });
         const labelsToExclude = ['Please select ...', 'Legal Aid Agency', 'Fee Paid Judge'];
-        userRole = await this.selectRandomRoleExcludingMultiple(this.role, labelsToExclude); // random role select option
+        userRole = await this.selectRandomRoleExcludingMultiple(this.role, labelsToExclude); 
     }
     else
     {
-        userEmail = await this.fillInviteOnlyEmail(this.email, userName);  
+        userEmail = await this.selectInviteOnlyEmail(userName);  
+        await this.email.fill(userEmail) 
         await this.role.waitFor({ state: "visible", timeout: 10000 });
         const labelsToExclude = ['Please select ...'];
-        userRole = await this.selectRandomRoleExcludingMultiple(this.role, labelsToExclude); // random role select option
+        userRole = await this.selectRandomRoleExcludingMultiple(this.role, labelsToExclude); 
     }
+    console.log(`Email: ${userEmail}`);
     const permittedLocations = ['Southwark','Nottingham','Cambridge','Oxford'];
     const userLocation = await this.selectRandomLocationFromSpecificList(this.location, permittedLocations);
     if(await this.otherEmail1.isVisible()){
@@ -81,7 +83,7 @@ async generateUserName (){
     return userName;
 }
 
-async fillSelfInviteEmail(email: Locator, userName : string): Promise<string> {
+async selectSelfInviteEmail(userName : string) {
     const domains = [
         '@justice.gov.uk',
         '@cps.gov.uk',
@@ -90,20 +92,16 @@ async fillSelfInviteEmail(email: Locator, userName : string): Promise<string> {
     const randomIndex = Math.floor(Math.random() * domains.length);
     const randomDomain = domains[randomIndex];
     const randomEmail = userName + randomDomain;
-    await email.fill(randomEmail); 
-    console.log(`Email: ${randomEmail}`);
     return randomEmail;
 }
 
-async fillInviteOnlyEmail(email: Locator, userName : string): Promise<string> {
+async selectInviteOnlyEmail(userName : string) {
     const domains = [
          '@pspb.cjsm.co.uk'
     ];
     const randomIndex = Math.floor(Math.random() * domains.length);
     const randomDomain = domains[randomIndex];
     const randomEmail = userName + randomDomain;
-    await email.fill(randomEmail); 
-    console.log(`Email: ${randomEmail}`);
     return randomEmail;
 }
 

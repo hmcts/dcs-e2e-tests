@@ -1,8 +1,8 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../base";
 
-class UserSettingsPage extends Base {
-  usersLink: Locator;
+class UserSettingsPage extends Base { 
+  userSettingsHeading : Locator;
   searchText: Locator;
   applyFilter: Locator;
   changeIsVerifiedUser: Locator;
@@ -12,7 +12,7 @@ class UserSettingsPage extends Base {
       
 constructor(page) {
     super(page);
-    this.usersLink = page.getByRole('link', { name: 'Users' })
+    this.userSettingsHeading = page.locator('div#content h2')
     this.searchText = page.locator('#searchText')
     this.applyFilter = page.getByRole('link', { name: 'Apply Filter' })
     this.changeIsVerifiedUser = page.locator("xpath=(//a[contains(text(),'Change')])[5]")
@@ -23,7 +23,6 @@ constructor(page) {
 }
 
 async searchUser(userName: string){
-    await this.usersLink.click();
     await this.searchText.clear();
     await this.searchText.fill(userName);
     await this.applyFilter.click();

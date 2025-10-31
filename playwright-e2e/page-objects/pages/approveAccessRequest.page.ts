@@ -1,7 +1,7 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../base";
 
-class AprroveAccessRequestPage extends Base {
+class ApproveAccessRequestPage extends Base {
   confirmButton: Locator;
   approveRequestHeading: Locator;
 
@@ -16,4 +16,4 @@ async confirmApproval() {
     await this.confirmButton.click();
 }
 }
-export default AprroveAccessRequestPage;
+export default ApproveAccessRequestPage;
