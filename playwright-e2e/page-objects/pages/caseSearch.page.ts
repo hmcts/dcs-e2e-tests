@@ -1,7 +1,9 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../base";
+import { expect } from "../../fixtures";
 
 class CaseSearchPage extends Base {
+  caseSearchHeading: Locator;
   createCaseButton: Locator;
   textField: Locator;
   viewCaseListLink: Locator;
@@ -14,9 +16,11 @@ class CaseSearchPage extends Base {
   updateCaseButton: Locator;
   reviewEvidenceButton: Locator;
   updateFrontPageButton: Locator;
+  noCasesText: Locator;
 
   constructor(page) {
     super(page);
+    this.caseSearchHeading = page.locator(".heading-medium");
     this.createCaseButton = page.getByRole("link", { name: "Create a Case" });
     this.textField = page.locator("#searchText");
     this.viewCaseListLink = page.getByRole("link", { name: "View Case List" });
@@ -33,6 +37,7 @@ class CaseSearchPage extends Base {
     });
     this.fromDateCheckbox = page.locator("#fromDateCheck");
     this.toDateCheckbox = page.locator("#toDateCheck");
+    this.noCasesText = page.locator("#caseListDiv > h4");
   }
 
   getCaseRowByTextInput(textFieldInput: string) {
@@ -71,7 +76,7 @@ class CaseSearchPage extends Base {
   async goToCreateCase() {
     await this.createCaseButton.click();
   }
-  
+
   async goToUpdateCase() {
     await this.updateCaseButton.click();
   }
@@ -82,6 +87,13 @@ class CaseSearchPage extends Base {
 
   async goToUpdateFrontPage() {
     await this.updateFrontPageButton.click();
+  }
+
+  async confirmCaseDeletion() {
+    await this.applyFilter.click();
+    await expect(this.noCasesText).toHaveText(
+      /There are no cases on the system that match the search criteria/
+    );
   }
 }
 
