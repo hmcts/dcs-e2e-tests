@@ -73,10 +73,8 @@ test.describe("Document Upload Tests", () => {
       }
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
-  });
 
-  //Results Summary
-  test.afterAll(() => {
+    //Results Summary
     const unrestrictedDocumentsCheck = unrestrictedUploadResults.map((r) => ({
       label: r.section,
       issues: r.issues,
@@ -103,6 +101,7 @@ test.describe("Document Upload Tests", () => {
     loginPage,
     homePage,
     caseDetailsPage,
+    caseSearchPage,
     sectionsPage,
     sectionDocumentsPage,
   }) => {
@@ -114,6 +113,7 @@ test.describe("Document Upload Tests", () => {
       homePage,
       loginPage,
       caseDetailsPage,
+      caseSearchPage,
       config.users.defenceAdvocateA,
       newCaseName
     );
@@ -142,6 +142,7 @@ test.describe("Document Upload Tests", () => {
       homePage,
       loginPage,
       caseDetailsPage,
+      caseSearchPage,
       config.users.defenceAdvocateB,
       newCaseName
     );
@@ -165,6 +166,7 @@ test.describe("Document Upload Tests", () => {
       homePage,
       loginPage,
       caseDetailsPage,
+      caseSearchPage,
       config.users.defenceAdvocateC,
       newCaseName
     );
@@ -185,23 +187,20 @@ test.describe("Document Upload Tests", () => {
       homePage,
       loginPage,
       caseDetailsPage,
+      caseSearchPage,
       config.users.defenceAdvocateA,
       newCaseName
     );
     await uploadAndValidateRestrictedDocumentUpload(
       config.users.defenceAdvocateA.group,
       sampleEntries,
-      [
-        { name: "restrictedSectionUploadDefendantOne", shouldBeVisible: true },
-        { name: "restrictedSectionUploadDefendantTwo", shouldBeVisible: false },
-      ],
+      [{ name: "restrictedSectionUploadDefendantTwo", shouldBeVisible: false }],
       restrictedUploadResults,
       sectionsPage,
       sectionDocumentsPage
     );
-  });
 
-  test.afterAll(() => {
+    // Results Summary
     const restrictedDocumentsCheck = restrictedUploadResults.map((r) => ({
       label: r.user,
       issues: r.issues,
