@@ -10,6 +10,8 @@ import ChangeCaseDetailsPage from "./changeCaseDetails.page";
 import SectionsPage from "./sections.page";
 import SectionDocumentsPage from "./sectionDocuments.page";
 import ViewDocumentPage from "./viewDocument.page";
+import UploadDocumentPage from "./uploadDocument.page";
+import PeoplePage from "./people.page";
 import MemoPage from "./memo.page";
 
 
@@ -27,6 +29,8 @@ export interface PageFixtures {
   sectionsPage: SectionsPage;
   viewDocumentPage: ViewDocumentPage;
   sectionDocumentsPage: SectionDocumentsPage;
+  uploadDocumentPage: UploadDocumentPage;
+  peoplePage: PeoplePage;
 }
 
 export const pageFixtures = {
@@ -78,5 +82,11 @@ export const pageFixtures = {
   },
   sectionDocumentsPage: async ({ page }, use) => {
     await use(new SectionDocumentsPage(page));
+  },
+  uploadDocumentPage: async ({ page }, use) => {
+    await use(new UploadDocumentPage(page));
+  },
+  peoplePage: async ({ page }, use) => {
+    await use(new PeoplePage(page));
   },
 };
