@@ -2,6 +2,7 @@ import { Locator } from "@playwright/test";
 import { Base } from "../base";
 
 class CaseSearchPage extends Base {
+  caseSearchHeading: Locator;
   createCaseButton: Locator;
   textField: Locator;
   viewCaseListLink: Locator;
@@ -17,6 +18,7 @@ class CaseSearchPage extends Base {
 
   constructor(page) {
     super(page);
+    this.caseSearchHeading = page.locator('.heading-medium')
     this.createCaseButton = page.getByRole("link", { name: "Create a Case" });
     this.textField = page.locator("#searchText");
     this.viewCaseListLink = page.getByRole("link", { name: "View Case List" });
