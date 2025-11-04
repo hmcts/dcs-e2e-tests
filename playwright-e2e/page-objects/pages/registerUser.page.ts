@@ -1,4 +1,4 @@
-import { Locator } from "@playwright/test";
+import { expect,Locator } from "@playwright/test";
 import { Base } from "../base";
 
 class RegisterUserPage extends Base {
@@ -45,26 +45,33 @@ async submitUserRegDetails() {
     // Random selection - Self Inviting or Invitation only user roles
     const isSelfInviteRole = Math.random() < 0.5;
     console.log('Self Invite user role:',isSelfInviteRole);
-    let userEmail : string,userRole : string;
+    let userEmail : string, userRole : string, labelsToExclude : string[], domains : string[];
     if (isSelfInviteRole)                                   
     {
-        userEmail = await this.selectSelfInviteEmail(userName);  
-        await this.email.fill(userEmail)
-        await this.role.waitFor({ state: "visible", timeout: 10000 });
-        const labelsToExclude = ['Please select ...', 'Legal Aid Agency', 'Fee Paid Judge'];
-        userRole = await this.selectRandomRoleExcludingMultiple(this.role, labelsToExclude); 
+        domains = [
+        '@justice.gov.uk',
+        '@cps.gov.uk',
+        '@judiciary.gsi.gov.uk',
+        ];
+        labelsToExclude = ['Please select ...', 'Legal Aid Agency', 'Fee Paid Judge'];
     }
     else
     {
-        userEmail = await this.selectInviteOnlyEmail(userName);  
-        await this.email.fill(userEmail) 
-        await this.role.waitFor({ state: "visible", timeout: 10000 });
-        const labelsToExclude = ['Please select ...'];
-        userRole = await this.selectRandomRoleExcludingMultiple(this.role, labelsToExclude); 
+        domains = [
+         '@pspb.cjsm.co.uk'
+        ];
+        labelsToExclude = ['Please select ...'];
     }
+    userEmail = await this.selectEmail(userName, domains);  
+    await this.email.fill(userEmail) 
+    await expect(this.role).toBeVisible();
+    userRole = await this.selectRandomRoleExcludingMultiple(labelsToExclude); 
+    await this.role.selectOption(userRole)
+    console.log(`Selected Role: ${userRole} (Excluded ${labelsToExclude.length} labels)`);
     console.log(`Email: ${userEmail}`);
     const permittedLocations = ['Southwark','Nottingham','Cambridge','Oxford'];
-    const userLocation = await this.selectRandomLocationFromSpecificList(this.location, permittedLocations);
+    const userLocation = await this.selectRandomLocationFromSpecificList(permittedLocations);
+    await this.location.selectOption(userLocation)
     if(await this.otherEmail1.isVisible()){
         await this.otherEmail1.fill('inviteonly@cjsm.com')
     }
@@ -83,22 +90,7 @@ async generateUserName (){
     return userName;
 }
 
-async selectSelfInviteEmail(userName : string) {
-    const domains = [
-        '@justice.gov.uk',
-        '@cps.gov.uk',
-        '@judiciary.gsi.gov.uk',
-    ];
-    const randomIndex = Math.floor(Math.random() * domains.length);
-    const randomDomain = domains[randomIndex];
-    const randomEmail = userName + randomDomain;
-    return randomEmail;
-}
-
-async selectInviteOnlyEmail(userName : string) {
-    const domains = [
-         '@pspb.cjsm.co.uk'
-    ];
+async selectEmail(userName : string, domains : string[]) {   
     const randomIndex = Math.floor(Math.random() * domains.length);
     const randomDomain = domains[randomIndex];
     const randomEmail = userName + randomDomain;
@@ -106,8 +98,8 @@ async selectInviteOnlyEmail(userName : string) {
 }
 
 async selectRandomRoleExcludingMultiple(
-    dropdownLocator: Locator, labelsToExclude: string[]): Promise<string> {
-    const roles = await dropdownLocator.locator('option').allTextContents();
+    labelsToExclude: string[]): Promise<string> {
+    const roles = await this.role.locator('option').allTextContents();
     const validRoles = roles.filter(label => {
         const trimmedLabel = label.trim();
         return trimmedLabel !== '' && !labelsToExclude.includes(trimmedLabel);
@@ -117,14 +109,12 @@ async selectRandomRoleExcludingMultiple(
     }
     const randomIndex = Math.floor(Math.random() * validRoles.length);
     const randomRole = validRoles[randomIndex];
-    await dropdownLocator.selectOption({ label: randomRole });
-    console.log(`Selected Role: ${randomRole} (Excluded ${labelsToExclude.length} labels)`);
     return randomRole;
 }
 
 async selectRandomLocationFromSpecificList(
-    dropdownLocator: Locator, allowedLabels: string[]): Promise<string> {
-    const locations = await dropdownLocator.locator('option').allTextContents();
+    allowedLabels: string[]): Promise<string> { 
+    const locations = await this.location.locator('option').allTextContents();
     const selectableOptions = locations.filter(label => {
         const trimmedLabel = label.trim();
         return trimmedLabel !== '' && allowedLabels.includes(trimmedLabel);
@@ -134,8 +124,6 @@ async selectRandomLocationFromSpecificList(
     }
     const randomIndex = Math.floor(Math.random() * selectableOptions.length);
     const randomLocation = selectableOptions[randomIndex];
-    await dropdownLocator.selectOption({ label: randomLocation });
-    console.log(`Selected Location: ${randomLocation} from allowed list.`);
     return randomLocation;
 }}
 
