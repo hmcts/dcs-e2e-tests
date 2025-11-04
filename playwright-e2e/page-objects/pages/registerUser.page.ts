@@ -45,27 +45,24 @@ async submitUserRegDetails() {
     // Random selection - Self Inviting or Invitation only user roles
     const isSelfInviteRole = Math.random() < 0.5;
     console.log('Self Invite user role:',isSelfInviteRole);
-    let userEmail : string, userRole : string, labelsToExclude : string[], domains : string[];
-    if (isSelfInviteRole)                                   
-    {
-        domains = [
+    const domains: string[] = isSelfInviteRole
+    ? [
         '@justice.gov.uk',
         '@cps.gov.uk',
         '@judiciary.gsi.gov.uk',
-        ];
-        labelsToExclude = ['Please select ...', 'Legal Aid Agency', 'Fee Paid Judge'];
-    }
-    else
-    {
-        domains = [
-         '@pspb.cjsm.co.uk'
-        ];
-        labelsToExclude = ['Please select ...'];
-    }
-    userEmail = await this.selectEmail(userName, domains);  
+      ]
+    : [
+        '@pspb.cjsm.co.uk'
+      ];
+
+    const labelsToExclude: string[] = isSelfInviteRole
+    ? ['Please select ...', 'Legal Aid Agency', 'Fee Paid Judge']
+    : ['Please select ...'];
+
+    const userEmail: string = await this.selectEmail(userName, domains); 
     await this.email.fill(userEmail) 
     await expect(this.role).toBeVisible();
-    userRole = await this.selectRandomRoleExcludingMultiple(labelsToExclude); 
+    const userRole = await this.selectRandomRoleExcludingMultiple(labelsToExclude); 
     await this.role.selectOption(userRole)
     console.log(`Selected Role: ${userRole} (Excluded ${labelsToExclude.length} labels)`);
     console.log(`Email: ${userEmail}`);
