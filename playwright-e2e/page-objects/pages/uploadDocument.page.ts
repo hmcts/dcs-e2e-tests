@@ -16,7 +16,6 @@ class UploadDocumentPage extends Base {
   }
 
   async uploadUnrestrictedDocument(filename: string) {
-    await this.fileInput.waitFor();
     await this.fileInput.setInputFiles(`playwright-e2e/data/${filename}.pdf`);
     await this.startUploadBtn.click();
     await this.viewSectionDocsBtn.click();
@@ -29,7 +28,6 @@ class UploadDocumentPage extends Base {
     if (!(await defendantCheckbox.isChecked())) {
       await defendantCheckbox.check();
     }
-    await this.fileInput.waitFor();
     await this.fileInput.setInputFiles(`playwright-e2e/data/${filename}.pdf`);
     await this.startUploadBtn.click();
     await this.viewSectionDocsBtn.click();
