@@ -4,26 +4,33 @@ import { Base } from "../base";
 class ApprovalRequestsPage extends Base {
   acRoles: Locator;
   acLocations: Locator;
-  userEmail: Locator;
-  userLocation: Locator;
-  userRole: Locator;
-  approveButton: Locator;
-  rejectButton: Locator;
+  approvalRequestsTable: Locator;
   approvalRequestsHeading: Locator;
   returnMessage: Locator;
-
       
 constructor(page) {
-    super(page);
-    this.acRoles = page.locator("xpath=(//div[@class='InLineEditx'])[1]")
-    this.acLocations = page.locator("xpath=(//div[@class='InLineEditx'])[2]")
-    this.userEmail = page.locator("xpath=(//*[@id=\"content\"]/table/tbody/tr[2]/td[2])").nth(0)
-    this.userLocation = page.locator("xpath=(//*[@id=\"content\"]/table/tbody/tr[2]/td[3])").nth(0)
-    this.userRole = page.locator("xpath=(//*[@id=\"content\"]/table/tbody/tr[2]/td[4])").nth(0)
-    this.approveButton = page.getByRole('link', { name: 'Approve' }).nth(0)
-    this.rejectButton = page.getByRole('link', { name: 'Reject' }).nth(0)
-    this.approvalRequestsHeading = page.locator('div#content h2')
-    this.returnMessage = page.locator('.ReturnMessage')
+  super(page);
+  this.acRoles = page.locator("xpath=(//div[@class='InLineEditx'])[1]")
+  this.acLocations = page.locator("xpath=(//div[@class='InLineEditx'])[2]")
+  this.approvalRequestsTable = page.locator('table', { hasText: 'Name Email Primary Location' });
+  this.approvalRequestsHeading = page.locator('div#content h2')
+  this.returnMessage = page.locator('.ReturnMessage')
 
-}}
-export default ApprovalRequestsPage;
+}
+async clickApprove(userEmail: string){
+    const approveEmail = userEmail;
+    console.log('Approve Email: ', approveEmail)
+    const targetRowLocator = this.page.locator(`tr:has-text("${approveEmail}")`);
+    const approveLink = targetRowLocator.getByRole('link', { name: 'Approve', exact: true });
+    await approveLink.click();
+}
+
+async clickReject(userEmail: string){
+    const rejectEmail = userEmail;
+    console.log('Reject Email: ', rejectEmail)
+    const targetRowLocator = this.page.locator(`tr:has-text("${rejectEmail}")`);
+    const rejectLink = targetRowLocator.getByRole('link', { name: 'Reject', exact: true });
+    await rejectLink.click();
+}
+}
+export default ApprovalRequestsPage;  

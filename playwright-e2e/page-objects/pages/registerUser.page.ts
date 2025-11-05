@@ -44,7 +44,6 @@ async submitUserRegDetails() {
 
     // Random selection - Self Inviting or Invitation only user roles
     const isSelfInviteRole = Math.random() < 0.5;
-    console.log('Self Invite user role:',isSelfInviteRole);
     const domains: string[] = isSelfInviteRole
     ? [
         '@justice.gov.uk',
@@ -64,8 +63,7 @@ async submitUserRegDetails() {
     await expect(this.role).toBeVisible();
     const userRole = await this.selectRandomRoleExcludingMultiple(labelsToExclude); 
     await this.role.selectOption(userRole)
-    console.log(`Selected Role: ${userRole} (Excluded ${labelsToExclude.length} labels)`);
-    console.log(`Email: ${userEmail}`);
+    console.log(`Selected Role: ${userRole}, Self Invite user role: ${isSelfInviteRole}, Email: ${userEmail}`);
     const permittedLocations = ['Southwark','Nottingham','Cambridge','Oxford'];
     const userLocation = await this.selectRandomLocationFromSpecificList(permittedLocations);
     await this.location.selectOption(userLocation)
@@ -75,6 +73,7 @@ async submitUserRegDetails() {
     await this.password.fill(process.env.USER_REG_PASSWORD!)
     await this.confirmPassword.fill(process.env.USER_REG_PASSWORD!)
     await this.agreeTermsCheckBox.check();
+    await expect(this.saveRegisterForm).toBeEnabled({timeout: 10000 });
     await this.saveRegisterForm.click();
     return {userName, userEmail, userRole, userLocation, isSelfInviteRole};
 }
@@ -83,7 +82,6 @@ async generateUserName (){
     // Generate a random username part (e.g., 'user1000' to 'user9999')
     const randomNumber = Math.floor(Math.random() * 9000) + 1000;
     const userName = `user${randomNumber}`;
-    console.log(userName);
     return userName;
 }
 

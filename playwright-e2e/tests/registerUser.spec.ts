@@ -65,8 +65,7 @@ test("Approve/Reject New user registration", async ({
     await homePage.navigation.navigateTo("LogOn");
     await loginPage.loginAsNewUserRegistered(userName)
     await homePage.navigation.navigateTo("ViewCaseListLink");
-
-    // Random selection - Self Inviting or Invitation only user roles
+  // Random selection - Self Inviting or Invitation only user roles
     if (isSelfInviteRole)          
     {
     await expect (homePage.accountMessage).toContainText('Your account has been successfully verified and is now waiting for Approval from an Access Coordinator applicable to the Location and Role you have registered for.');
@@ -77,14 +76,13 @@ test("Approve/Reject New user registration", async ({
     await expect (approvalRequestsPage.approvalRequestsHeading).toHaveText('Approval Requests')
     await expect (approvalRequestsPage.acRoles).toContainText(userRole);
     await expect (approvalRequestsPage.acLocations).toContainText(userLocation);
-    await expect(approvalRequestsPage.userEmail).toContainText(new RegExp(userEmail, "i"));
-    await expect(approvalRequestsPage.userLocation).toHaveText(userLocation);
-    await expect(approvalRequestsPage.userRole).toHaveText(userRole);
+    await expect(approvalRequestsPage.approvalRequestsTable).toContainText(new RegExp(userEmail, "i"));
+    await expect(approvalRequestsPage.approvalRequestsTable).toContainText(userLocation);
+    await expect(approvalRequestsPage.approvalRequestsTable).toContainText(userRole);
     const isApproved = Math.random() < 0.5;
-    console.log('User approved:',isApproved);
     if (isApproved)
     {
-      await approvalRequestsPage.approveButton.click();
+      await approvalRequestsPage.clickApprove(userEmail);
       await expect (approveAccessRequestPage.approveRequestHeading).toHaveText('Approve Access Request')
       await approveAccessRequestPage.confirmApproval();
       await expect (approvalRequestsPage.returnMessage).toContainText('successfully approved!')
@@ -102,7 +100,7 @@ test("Approve/Reject New user registration", async ({
     }
     else 
     {
-      await approvalRequestsPage.rejectButton.click();
+      await approvalRequestsPage.clickReject(userEmail);
       await expect (rejectAccessRequestPage.rejectRequestHeading).toHaveText('Reject Access Request')
       await rejectAccessRequestPage.confirmReject();
       await expect (approvalRequestsPage.returnMessage).toContainText('Rejection confirmed!')
