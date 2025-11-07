@@ -90,6 +90,7 @@ export const pageFixtures = {
   },
   peoplePage: async ({ page }, use) => {
     await use(new PeoplePage(page));
+  },
   registerUserPage: async ({ page }, use) => {
     await use(new RegisterUserPage(page));
   },
