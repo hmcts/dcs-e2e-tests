@@ -1,4 +1,4 @@
-import { Locator } from "@playwright/test";
+import { Locator, expect } from "@playwright/test";
 import { Base } from "../base";
 
 class ApprovalRequestsPage extends Base {
@@ -17,18 +17,22 @@ constructor(page) {
   this.returnMessage = page.locator('.ReturnMessage')
 
 }
-async clickApprove(userEmail: string){
+async clickApprove(userEmail: string, userRole: string, userLocation: string){
     const approveEmail = userEmail;
     console.log('Approve Email: ', approveEmail)
     const targetRowLocator = this.page.locator(`tr:has-text("${approveEmail}")`);
+    await expect(targetRowLocator.getByText(userRole)).toBeVisible();
+    await expect(targetRowLocator.getByText(userLocation)).toBeVisible();
     const approveLink = targetRowLocator.getByRole('link', { name: 'Approve', exact: true });
     await approveLink.click();
 }
 
-async clickReject(userEmail: string){
+async clickReject(userEmail: string, userRole: string, userLocation: string){
     const rejectEmail = userEmail;
     console.log('Reject Email: ', rejectEmail)
     const targetRowLocator = this.page.locator(`tr:has-text("${rejectEmail}")`);
+    await expect(targetRowLocator.getByText(userRole)).toBeVisible();
+    await expect(targetRowLocator.getByText(userLocation)).toBeVisible();
     const rejectLink = targetRowLocator.getByRole('link', { name: 'Reject', exact: true });
     await rejectLink.click();
 }

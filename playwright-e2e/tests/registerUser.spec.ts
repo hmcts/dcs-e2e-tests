@@ -77,12 +77,10 @@ test("Approve/Reject New user registration", async ({
     await expect (approvalRequestsPage.acRoles).toContainText(userRole);
     await expect (approvalRequestsPage.acLocations).toContainText(userLocation);
     await expect(approvalRequestsPage.approvalRequestsTable).toContainText(new RegExp(userEmail, "i"));
-    await expect(approvalRequestsPage.approvalRequestsTable).toContainText(userLocation);
-    await expect(approvalRequestsPage.approvalRequestsTable).toContainText(userRole);
     const isApproved = Math.random() < 0.5;
     if (isApproved)
     {
-      await approvalRequestsPage.clickApprove(userEmail);
+      await approvalRequestsPage.clickApprove(userEmail, userRole, userLocation);
       await expect (approveAccessRequestPage.approveRequestHeading).toHaveText('Approve Access Request')
       await approveAccessRequestPage.confirmApproval();
       await expect (approvalRequestsPage.returnMessage).toContainText('successfully approved!')
@@ -100,7 +98,7 @@ test("Approve/Reject New user registration", async ({
     }
     else 
     {
-      await approvalRequestsPage.clickReject(userEmail);
+      await approvalRequestsPage.clickReject(userEmail, userRole, userLocation);
       await expect (rejectAccessRequestPage.rejectRequestHeading).toHaveText('Reject Access Request')
       await rejectAccessRequestPage.confirmReject();
       await expect (approvalRequestsPage.returnMessage).toContainText('Rejection confirmed!')
