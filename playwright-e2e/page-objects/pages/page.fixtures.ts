@@ -13,7 +13,8 @@ import ViewDocumentPage from "./viewDocument.page";
 import UploadDocumentPage from "./uploadDocument.page";
 import PeoplePage from "./people.page";
 import MemoPage from "./memo.page";
-
+import IngestPage from "./ingest.page";
+import ROCAPage from "./ROCA.page";
 
 export interface PageFixtures {
   homePage: HomePage;
@@ -31,6 +32,8 @@ export interface PageFixtures {
   sectionDocumentsPage: SectionDocumentsPage;
   uploadDocumentPage: UploadDocumentPage;
   peoplePage: PeoplePage;
+  ingestPage: IngestPage;
+  rocaPage: ROCAPage;
 }
 
 export const pageFixtures = {
@@ -61,7 +64,7 @@ export const pageFixtures = {
   createCasePage: async ({ page }, use) => {
     await use(new CreateCasePage(page));
   },
-  
+
   addDefendantPage: async ({ page }, use) => {
     await use(new AddDefendantPage(page));
   },
@@ -69,7 +72,7 @@ export const pageFixtures = {
   changeCaseDetailsPage: async ({ page }, use) => {
     await use(new ChangeCaseDetailsPage(page));
   },
-  
+
   memoPage: async ({ page }, use) => {
     await use(new MemoPage(page));
   },
@@ -88,5 +91,11 @@ export const pageFixtures = {
   },
   peoplePage: async ({ page }, use) => {
     await use(new PeoplePage(page));
+  },
+  ingestPage: async ({ page }, use) => {
+    await use(new IngestPage(page));
+  },
+  rocaPage: async ({ page }, use) => {
+    await use(new ROCAPage(page));
   },
 };

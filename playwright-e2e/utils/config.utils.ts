@@ -73,7 +73,7 @@ export const config: Config = {
   users: {
     hmctsAdmin: {
       group: "HMCTSAdmin",
-      username: "trainer02",
+      username: "Trainer02",
       password: process.env.HMCTS_ADMIN_PASSWORD as string,
       sessionFile: sessionPath("trainer02"),
       cookieName: ".ASPXAUTH",
@@ -92,19 +92,19 @@ export const config: Config = {
     // },
     defenceAdvocateA: {
       group: "DefenceAdvocateA",
-      username: "trainer21",
+      username: "Trainer21",
       password: process.env.DEFENCE_ADVOCATE_A_PASSWORD as string,
       sessionFile: sessionPath("trainer21"),
     },
     defenceAdvocateB: {
       group: "DefenceAdvocateB",
-      username: "trainer22",
+      username: "Trainer22",
       password: process.env.DEFENCE_ADVOCATE_B_PASSWORD as string,
       sessionFile: sessionPath("trainer22"),
     },
     defenceAdvocateC: {
       group: "DefenceAdvocateC",
-      username: "trainer23",
+      username: "Trainer23",
       password: process.env.DEFENCE_ADVOCATE_C_PASSWORD as string,
       sessionFile: sessionPath("trainer23"),
     },
