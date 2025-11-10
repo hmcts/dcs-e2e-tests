@@ -54,7 +54,7 @@ test.describe("Sections and Documents availability", () => {
 
         // Compare expected vs available sections and documents for User
         const { missingDocuments, unexpectedDocuments } =
-          await reviewEvidencePage.compareExpectedVsAvailableDocuments(
+          await reviewEvidencePage.compareExpectedVsAvailableSectionsAndDocuments(
             expectedDocuments,
             availableDocuments
           );
