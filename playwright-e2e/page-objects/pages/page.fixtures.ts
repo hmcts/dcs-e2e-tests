@@ -102,6 +102,7 @@ export const pageFixtures = {
   },
   rocaPage: async ({ page }, use) => {
     await use(new ROCAPage(page));
+  },
   registerUserPage: async ({ page }, use) => {
     await use(new RegisterUserPage(page));
   },
