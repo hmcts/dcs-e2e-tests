@@ -15,6 +15,13 @@ import PeoplePage from "./people.page";
 import MemoPage from "./memo.page";
 import IngestPage from "./ingest.page";
 import ROCAPage from "./ROCA.page";
+import RegisterUserPage from "./registerUser.page";
+import AdminPage from "./admin.page";
+import UserSettingsPage from "./userSettings.page";
+import ApprovalRequestsPage from "./approvalRequests.page";
+import ApproveAccessRequestPage from "./approveAccessRequest.page";
+import RejectAccessRequestPage from "./rejectAccessRequest.page";
+
 
 export interface PageFixtures {
   homePage: HomePage;
@@ -34,33 +41,33 @@ export interface PageFixtures {
   peoplePage: PeoplePage;
   ingestPage: IngestPage;
   rocaPage: ROCAPage;
+  registerUserPage: RegisterUserPage;
+  adminPage: AdminPage;
+  userSettingsPage: UserSettingsPage;
+  approvalRequestsPage: ApprovalRequestsPage;
+  approveAccessRequestPage: ApproveAccessRequestPage;
+  rejectAccessRequestPage: RejectAccessRequestPage;
 }
 
 export const pageFixtures = {
   homePage: async ({ page }, use) => {
     await use(new HomePage(page));
   },
-
   caseSearchPage: async ({ page }, use) => {
     await use(new CaseSearchPage(page));
   },
-
   caseDetailsPage: async ({ page }, use) => {
     await use(new CaseDetailsPage(page));
   },
-
   loginPage: async ({ page }, use) => {
     await use(new LoginPage(page));
   },
-
   reviewEvidencePage: async ({ page }, use) => {
     await use(new ReviewEvidencePage(page));
   },
-
   updateFrontPage: async ({ page }, use) => {
     await use(new UpdateFrontPage(page));
   },
-
   createCasePage: async ({ page }, use) => {
     await use(new CreateCasePage(page));
   },
@@ -68,7 +75,6 @@ export const pageFixtures = {
   addDefendantPage: async ({ page }, use) => {
     await use(new AddDefendantPage(page));
   },
-
   changeCaseDetailsPage: async ({ page }, use) => {
     await use(new ChangeCaseDetailsPage(page));
   },
@@ -76,7 +82,6 @@ export const pageFixtures = {
   memoPage: async ({ page }, use) => {
     await use(new MemoPage(page));
   },
-
   sectionsPage: async ({ page }, use) => {
     await use(new SectionsPage(page));
   },
@@ -97,5 +102,22 @@ export const pageFixtures = {
   },
   rocaPage: async ({ page }, use) => {
     await use(new ROCAPage(page));
+  registerUserPage: async ({ page }, use) => {
+    await use(new RegisterUserPage(page));
+  },
+  adminPage: async ({ page }, use) => {
+    await use(new AdminPage(page));
+  },
+  userSettingsPage: async ({ page }, use) => {
+    await use(new UserSettingsPage(page));
+  },
+  approvalRequestsPage: async ({ page }, use) => {
+    await use(new ApprovalRequestsPage(page));
+  },
+  approveAccessRequestPage: async ({ page }, use) => {
+    await use(new ApproveAccessRequestPage(page));
+  },
+  rejectAccessRequestPage: async ({ page }, use) => {
+    await use(new RejectAccessRequestPage(page));
   },
 };

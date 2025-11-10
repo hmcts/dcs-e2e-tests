@@ -1,6 +1,6 @@
-import { Locator } from "@playwright/test";
+import { Locator, expect } from "@playwright/test";
 import { Base } from "../base";
-import { UserCredentials } from "../../utils";
+import { UserCredentials, config } from "../../utils";
 
 class LoginPage extends Base {
   username: Locator;
@@ -42,6 +42,20 @@ class LoginPage extends Base {
     await this.loginButton.click();
   }
 
+  async loginAsAccessCoordinator() {    
+    const user = config.users.accessCoordinator;
+    await this.login(user);
+  }
+
+  async loginAsNewUserRegistered(username: string) {    
+    await this.username.fill(username);
+    const password: string = process.env.USER_REG_PASSWORD!;
+    await this.password.fill(password);
+    await this.loginButton.click();
+    await this.loginValidationUserReg(username, password);
+    await this.acceptCookies();
+  }
+
   async loginValidation(user: UserCredentials) {
     const hasUserNameError = await this.usernameErrorMessage
       .isVisible()
@@ -64,8 +78,34 @@ class LoginPage extends Base {
       throw new Error(`❌ Login for ${user.group} has unexpectedly failed`);
     } else {
       console.log(
-        `✅ User: ${user.group} details registered successfully, continuing...`
+        `✅ User: ${user.group} logged in successfully, continuing...`
       );
+    }
+  }
+
+  async loginValidationUserReg(username : string, password : string) {
+    const hasUserNameError = await this.usernameErrorMessage
+      .isVisible()
+      .catch(() => false);
+    const hasPasswordError = await this.passwordErrorMessage
+      .isVisible()
+      .catch(() => false);
+    const hasLoginError = await this.loginErrorMessage
+      .isVisible()
+      .catch(() => false);
+
+    if (hasUserNameError || hasPasswordError) {
+      console.log(
+        "⚠️ Login new user or password field not detected — retrying login..."
+      );
+      await expect(this.username).toBeEditable();
+      await this.username.fill(username);
+      await this.password.fill(password);
+      await this.loginButton.click();
+    } else if (hasLoginError) {
+      throw new Error(`❌ Login for ${username} has unexpectedly failed`);
+    } else {
+      console.log("✅ User details registered successfully, continuing...");
     }
   }
 }
