@@ -76,7 +76,7 @@ class LoginPage extends Base {
       throw new Error(`❌ Login for ${user.group} has unexpectedly failed`);
     } else {
       console.log(
-        `✅ User: ${user.group} details registered successfully, continuing...`
+        `✅ User: ${user.group} logged in successfully, continuing...`
       );
     }
   }
