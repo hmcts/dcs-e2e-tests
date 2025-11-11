@@ -23,7 +23,7 @@ export async function deleteCaseByName(
       homePage,
       loginPage,
       caseSearchPage,
-      config.users.accessCoordinator,
+      config.users.deleteAdmin,
       caseName
     );
     await caseDetailsPage.removeCase();

@@ -43,14 +43,14 @@ class CaseDetailsPage extends Base {
 
   async removeCase() {
     // First dialog
-    const [firstDialog] = await Promise.all([
-      this.page.waitForEvent("dialog"),
-      await this.removeCaseBtn.click(),
-    ]);
+    const firstDialogPromise = this.page.waitForEvent("dialog");
+    await this.removeCaseBtn.click();
+    const firstDialog = await firstDialogPromise;
     await firstDialog.accept();
 
-    // Second dialog (re-confirm)
-    const secondDialog = await this.page.waitForEvent("dialog");
+    // Second dialog
+    const secondDialogPromise = this.page.waitForEvent("dialog");
+    const secondDialog = await secondDialogPromise;
     await secondDialog.accept();
   }
 }

@@ -65,9 +65,8 @@ class CaseSearchPage extends Base {
         return; // success
       } catch {
         if (i === 1)
-          throw new Error(
-            `Case "${textFieldInput}" not found after retrying filter`
-          );
+          // Final attempt, throw test failure if case not found
+          await expect(caseRow).toBeVisible({ timeout: 20000 });
         // otherwise retry loop
       }
     }
