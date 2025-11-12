@@ -22,26 +22,26 @@ class UploadDocumentPage extends Base {
   }
 
   async uploadRestrictedSectionDocument(
-    defendant: string,
+    primaryDefendant: string,
     filename: string,
-    defendantTwo?: string
+    additionalDefendant?: string
   ) {
     const defendantCheckbox = this.page.getByRole("checkbox", {
-      name: `${defendant}`,
+      name: `${primaryDefendant}`,
     });
     if (!(await defendantCheckbox.isChecked())) {
       await defendantCheckbox.check();
     }
 
-    if (defendantTwo) {
+    if (additionalDefendant) {
       const defendantTwoCheckbox = this.page.getByRole("checkbox", {
-        name: defendantTwo,
+        name: additionalDefendant,
       });
       if (!(await defendantTwoCheckbox.isChecked())) {
         await defendantTwoCheckbox.check();
       }
     }
-      
+
     await this.fileInput.waitFor();
     await this.fileInput.setInputFiles(`playwright-e2e/data/${filename}.pdf`);
     await this.startUploadBtn.click();
