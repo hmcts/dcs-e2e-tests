@@ -122,7 +122,6 @@ test.describe("ROCA Page", () => {
     await loginAndOpenCase(
       homePage,
       loginPage,
-      caseDetailsPage,
       caseSearchPage,
       config.users.defenceAdvocateA,
       newCaseName
