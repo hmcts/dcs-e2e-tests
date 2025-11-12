@@ -21,13 +21,28 @@ class UploadDocumentPage extends Base {
     await this.viewSectionDocsBtn.click();
   }
 
-  async uploadRestrictedSectionDocument(defendant: string, filename: string) {
-    const defendantCheckbox = this.page.getByRole("checkbox", {
-      name: `${defendant}`,
+  async uploadRestrictedSectionDocument(
+    primaryDefendant: string,
+    filename: string,
+    additionalDefendant?: string
+  ) {
+    const primaryDefendantCheckbox = this.page.getByRole("checkbox", {
+      name: `${primaryDefendant}`,
     });
-    if (!(await defendantCheckbox.isChecked())) {
-      await defendantCheckbox.check();
+    if (!(await primaryDefendantCheckbox.isChecked())) {
+      await primaryDefendantCheckbox.check();
     }
+
+    if (additionalDefendant) {
+      const additionalDefendantCheckbox = this.page.getByRole("checkbox", {
+        name: additionalDefendant,
+      });
+      if (!(await additionalDefendantCheckbox.isChecked())) {
+        await additionalDefendantCheckbox.check();
+      }
+    }
+
+    await this.fileInput.waitFor();
     await this.fileInput.setInputFiles(`playwright-e2e/data/${filename}.pdf`);
     await this.startUploadBtn.click();
     await this.viewSectionDocsBtn.click();
