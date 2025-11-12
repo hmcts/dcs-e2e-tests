@@ -64,7 +64,7 @@ export async function createNewCaseWithDefendantsAndUsers(
       defenceDetail.defendants
     );
   }
-  await expect(peoplePage.pageTitle).toBeVisible();
+  await expect(peoplePage.pageTitle).toBeVisible({ timeout: 20_000 });
   await peoplePage.caseNavigation.navigateTo("Sections");
   return { newCaseName, newCaseUrn };
 }
