@@ -29,13 +29,17 @@ class PeoplePage extends Base {
     });
   }
 
-  async addDefenceUser(username: string, defendants: string[]) {
+  async addUser(username: string, defendants?: string[]) {
     await this.inviteNewParticipantBtn.click();
     await this.addEmailAddress.fill(`${username}`);
     await this.selectBtn.click();
     await this.roleSelector.first().click();
-    for (const defendant of defendants) {
-      await this.page.getByRole("checkbox", { name: `${defendant} -` }).check();
+    if (defendants) {
+      for (const defendant of defendants) {
+        await this.page
+          .getByRole("checkbox", { name: `${defendant} -` })
+          .check();
+      }
     }
     await this.inviteBtn.click();
   }

@@ -57,11 +57,12 @@ test.describe("Create & Update New Case in CCDCS", () => {
         username: config.users.defenceAdvocateC.username,
         defendants: ["Defendant One", "Defendant Two"],
       },
+      { username: config.users.admin.username },
     ];
     for (const defenceDetail of defenceUserDetails) {
-      await peoplePage.addDefenceUser(
+      await peoplePage.addUser(
         defenceDetail.username,
-        defenceDetail.defendants
+        defenceDetail?.defendants
       );
     }
     await peoplePage.confirmUserAccess(
