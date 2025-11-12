@@ -18,7 +18,6 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
       addDefendantPage,
       peoplePage,
     }) => {
-      test.setTimeout(460_000);
       await homePage.open();
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
@@ -41,7 +40,6 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
     uploadDocumentPage,
     rocaPage,
   }) => {
-    test.setTimeout(460_000);
     const unrestrictedSectionKeys = await sectionsPage.getSectionKeys(
       sections.unrestricted
     );
@@ -72,11 +70,9 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
 
     // Compare expected vs actual ROCA
     const expectedROCA = uploadedDocuments;
-    console.log("UPLOADED", uploadedDocuments);
     const availableROCA = await rocaPage.getDocumentsFromROCATable(
       rocaPage.unrestrictedTable
     );
-    console.log("AVAILABLE", availableROCA);
 
     const { missingDocuments, unexpectedDocuments } =
       await rocaPage.compareExpectedVsAvailableROCA(
@@ -110,7 +106,6 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
     uploadDocumentPage,
     rocaPage,
   }) => {
-    test.setTimeout(460_000);
     const restrictedSectionKeys = await sectionsPage.getSectionKeys(
       sections.restricted
     );
@@ -181,7 +176,6 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
     const expectedROCADefenceB = uploadedDocuments.filter((document) =>
       document.defendants!.includes("Two Defendant")
     );
-    console.log("expected", expectedROCADefenceB);
 
     const issuesB = await rocaPage.validateROCAForUser(
       expectedROCADefenceB,
@@ -204,7 +198,6 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
     const expectedROCADefenceA = uploadedDocuments.filter((document) =>
       document.defendants!.includes("One Defendant")
     );
-    console.log("expected", expectedROCADefenceA);
     const issuesA = await rocaPage.validateROCAForUser(
       expectedROCADefenceA,
       rocaPage.restrictedTable
@@ -247,7 +240,6 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
         document.defendants!.includes("Two Defendant") ||
         document.defendants!.includes("One Defendant, Two Defendant")
     );
-    console.log("expected", expectedROCADefenceC);
     const issuesC = await rocaPage.validateROCAForUser(
       expectedROCADefenceC,
       rocaPage.restrictedTable
