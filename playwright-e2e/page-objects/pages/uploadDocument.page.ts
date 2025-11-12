@@ -26,19 +26,19 @@ class UploadDocumentPage extends Base {
     filename: string,
     additionalDefendant?: string
   ) {
-    const defendantCheckbox = this.page.getByRole("checkbox", {
+    const primaryDefendantCheckbox = this.page.getByRole("checkbox", {
       name: `${primaryDefendant}`,
     });
-    if (!(await defendantCheckbox.isChecked())) {
-      await defendantCheckbox.check();
+    if (!(await primaryDefendantCheckbox.isChecked())) {
+      await primaryDefendantCheckbox.check();
     }
 
     if (additionalDefendant) {
-      const defendantTwoCheckbox = this.page.getByRole("checkbox", {
+      const additionalDefendantCheckbox = this.page.getByRole("checkbox", {
         name: additionalDefendant,
       });
-      if (!(await defendantTwoCheckbox.isChecked())) {
-        await defendantTwoCheckbox.check();
+      if (!(await additionalDefendantCheckbox.isChecked())) {
+        await additionalDefendantCheckbox.check();
       }
     }
 
