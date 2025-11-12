@@ -3,6 +3,7 @@ import { sections, config, assertNoIssues } from "../utils";
 import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
 import { loginAndOpenCase } from "../helpers/login.helper";
 import { uploadAndValidateRestrictedDocumentUpload } from "../helpers/sectionDocuments.helper";
+import { deleteCaseByName } from "../helpers/deleteCase.helper";
 
 // ============================================================
 // Test 1: Upload Unrestricted Section Documents
@@ -212,4 +213,19 @@ test.describe("Document Upload Tests", () => {
       expect(anyIssues, message).toBe(false);
     }
   });
+
+  test.afterEach(
+    async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
+      if (newCaseName) {
+        await deleteCaseByName(
+          newCaseName,
+          caseSearchPage,
+          caseDetailsPage,
+          homePage,
+          loginPage,
+          page
+        );
+      }
+    }
+  );
 });

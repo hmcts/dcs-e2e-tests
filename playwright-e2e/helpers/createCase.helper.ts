@@ -57,12 +57,10 @@ export async function createNewCaseWithDefendantsAndUsers(
       username: config.users.defenceAdvocateC.username,
       defendants: ["Defendant One", "Defendant Two"],
     },
+    { username: config.users.admin.username },
   ];
   for (const defenceDetail of defenceUserDetails) {
-    await peoplePage.addDefenceUser(
-      defenceDetail.username,
-      defenceDetail.defendants
-    );
+    await peoplePage.addUser(defenceDetail.username, defenceDetail?.defendants);
   }
   await expect(peoplePage.pageTitle).toBeVisible({ timeout: 20_000 });
   await peoplePage.caseNavigation.navigateTo("Sections");
