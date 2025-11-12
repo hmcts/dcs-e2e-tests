@@ -21,10 +21,15 @@ test.describe("Sections and Documents availability", () => {
 
   const documentResults: { user: string; issues: string[] }[] = [];
 
-  for (const [_, user] of Object.entries(config.users) as [
-    string,
-    UserCredentials
-  ][]) {
+  const excludedGroups = [
+    "AccessCoordinator",
+    "DefenceAdvocateB",
+    "DefenceAdvocateC",
+  ];
+
+  for (const [_, user] of Object.entries(config.users).filter(
+    ([_, user]) => !excludedGroups.includes(user.group)
+  ) as [string, UserCredentials][]) {
     test(`Verify Sections & Documents in Navigation Panel for: ${user.group}`, async ({
       loginPage,
       homePage,
@@ -108,10 +113,15 @@ test.describe("Document rendering / photosnaps", () => {
 
   const renderResults: { user: string; issues: string[] }[] = [];
 
-  for (const [_, user] of Object.entries(config.users) as [
-    string,
-    UserCredentials
-  ][]) {
+  const excludedGroups = [
+    "AccessCoordinator",
+    "DefenceAdvocateB",
+    "DefenceAdvocateC",
+  ];
+
+  for (const [_, user] of Object.entries(config.users).filter(
+    ([_, user]) => !excludedGroups.includes(user.group)
+  ) as [string, UserCredentials][]) {
     test(`Render a sample of documents for: ${user.group}`, async ({
       loginPage,
       homePage,

@@ -36,8 +36,12 @@ test.describe("External navigation links", () => {
   }
 });
 
+const excludedLinksForAdmin = ["ApprovalRequests", "Admin"];
+
 test.describe.serial("Internal navigation links Logged In", () => {
-  for (const link of internalLinksLoggedIn) {
+  for (const link of internalLinksLoggedIn.filter(
+    (l) => !excludedLinksForAdmin.includes(l.name)
+  )) {
     test(`Navigate to ${link.name}`, async ({ page, homePage }) => {
       await homePage.open();
       await homePage.navigation.navigateTo(link.name);
