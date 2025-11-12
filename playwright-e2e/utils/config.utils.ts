@@ -29,7 +29,7 @@ export interface Config {
   users: {
     hmctsAdmin: UserCredentials;
     accessCoordinator: UserCredentials;
-    deleteAdmin: UserCredentials;
+    admin: UserCredentials;
     // cpsAdmin: UserCredentials;
     // cpsProsecutor: UserCredentials;
     defenceAdvocateA: UserCredentials;
@@ -87,11 +87,11 @@ export const config: Config = {
       sessionFile: sessionPath("TestACHMCTS"),
       cookieName: ".ASPXAUTH",
     },
-    deleteAdmin: {
-      group: "DeleteAdmin",
+    admin: {
+      group: "Admin",
       username: "TestAdmin",
-      password: process.env.DELETE_ADMIN_PASSWORD as string,
-      sessionFile: sessionPath("TestAdmin"),
+      password: process.env.ADMIN_PASSWORD as string,
+      sessionFile: sessionPath("Admin"),
       cookieName: ".ASPXAUTH",
     },
     // cpsAdmin: {
