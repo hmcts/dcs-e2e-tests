@@ -76,7 +76,12 @@ class ROCAPage extends Base {
         .replace("Name:", "")
         .trim();
 
-      const defendants = await row.locator("td:nth-child(5)").innerText();
+      let defendants: string | undefined;
+      if (tableLocator === this.restrictedTable) {
+        defendants = await row.locator("td:nth-child(5)").innerText();
+      } else {
+        defendants = undefined;
+      }
 
       if (/^\d+$/.test(documentNumber)) {
         documentNumber = String(parseInt(documentNumber, 10)); // "001" → "1"

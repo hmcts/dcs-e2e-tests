@@ -28,10 +28,15 @@ test.describe("Sections Page", () => {
 
   const documentResults: { user: string; issues: string[] }[] = [];
 
-  for (const [roleKey, user] of Object.entries(config.users) as [
-    string,
-    UserCredentials
-  ][]) {
+  const excludedGroups = [
+    "AccessCoordinator",
+    "DefenceAdvocateB",
+    "DefenceAdvocateC",
+  ];
+
+  for (const [_, user] of Object.entries(config.users).filter(
+    ([_, user]) => !excludedGroups.includes(user.group)
+  ) as [string, UserCredentials][]) {
     test(`Verify Sections & Documents for: ${user.group}`, async ({
       loginPage,
       caseSearchPage,

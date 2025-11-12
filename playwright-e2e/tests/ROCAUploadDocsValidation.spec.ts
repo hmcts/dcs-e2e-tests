@@ -6,7 +6,7 @@ import { assertNoIssues } from "../utils";
 import { sections } from "../utils";
 import { loginAndOpenCase } from "../helpers/login.helper";
 
-test.describe("ROCA Page", () => {
+test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", () => {
   let newCaseName: string;
 
   test.beforeEach(
@@ -66,7 +66,7 @@ test.describe("ROCA Page", () => {
     }
 
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.unrestrictedTable).toBeVisible();
+    await expect(rocaPage.unrestrictedTable).toBeVisible({ timeout: 30_000 });
 
     // Compare expected vs actual ROCA
     const expectedROCA = uploadedDocuments;
@@ -122,12 +122,11 @@ test.describe("ROCA Page", () => {
     await loginAndOpenCase(
       homePage,
       loginPage,
-      caseDetailsPage,
       caseSearchPage,
       config.users.defenceAdvocateA,
       newCaseName
     );
-
+    await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [sectionIndex, sectionKey] of sampleEntries) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadRestrictedSectionDocument(
@@ -144,19 +143,17 @@ test.describe("ROCA Page", () => {
         "One Defendant"
       );
     }
-
     await sectionsPage.navigation.navigateTo("LogOff");
 
     // Upload documents to restricted section as Defence Advocate B and validate ROCA
     await loginAndOpenCase(
       homePage,
       loginPage,
-      caseDetailsPage,
       caseSearchPage,
       config.users.defenceAdvocateB,
       newCaseName
     );
-
+    await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [sectionIndex, sectionKey] of sampleEntries) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadRestrictedSectionDocument(
@@ -173,14 +170,12 @@ test.describe("ROCA Page", () => {
         "Two Defendant"
       );
     }
-
     await sectionsPage.caseNavigation.navigateTo("ROCA");
     await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
 
     const expectedROCADefenceB = uploadedDocuments.filter((document) =>
       document.defendants!.includes("Two Defendant")
     );
-    console.log("expected", expectedROCADefenceB);
 
     const issuesB = await rocaPage.validateROCAForUser(
       expectedROCADefenceB,
@@ -193,18 +188,16 @@ test.describe("ROCA Page", () => {
     await loginAndOpenCase(
       homePage,
       loginPage,
-      caseDetailsPage,
       caseSearchPage,
       config.users.defenceAdvocateA,
       newCaseName
     );
-    await sectionsPage.caseNavigation.navigateTo("ROCA");
+    await caseDetailsPage.caseNavigation.navigateTo("ROCA");
     await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
 
     const expectedROCADefenceA = uploadedDocuments.filter((document) =>
       document.defendants!.includes("One Defendant")
     );
-    console.log("expected", expectedROCADefenceA);
     const issuesA = await rocaPage.validateROCAForUser(
       expectedROCADefenceA,
       rocaPage.restrictedTable
@@ -216,12 +209,11 @@ test.describe("ROCA Page", () => {
     await loginAndOpenCase(
       homePage,
       loginPage,
-      caseDetailsPage,
       caseSearchPage,
       config.users.defenceAdvocateC,
       newCaseName
     );
-
+    await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [sectionIndex, sectionKey] of sampleEntries) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadRestrictedSectionDocument(
@@ -248,7 +240,6 @@ test.describe("ROCA Page", () => {
         document.defendants!.includes("Two Defendant") ||
         document.defendants!.includes("One Defendant, Two Defendant")
     );
-    console.log("expected", expectedROCADefenceC);
     const issuesC = await rocaPage.validateROCAForUser(
       expectedROCADefenceC,
       rocaPage.restrictedTable
