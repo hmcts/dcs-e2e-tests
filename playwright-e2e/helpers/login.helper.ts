@@ -1,6 +1,7 @@
 export async function loginAndOpenCase(
   homePage,
   loginPage,
+  caseDetailsPage,
   caseSearchPage,
   user,
   caseName
@@ -10,4 +11,5 @@ export async function loginAndOpenCase(
   await homePage.navigation.navigateTo("ViewCaseListLink");
   await caseSearchPage.searchCaseFile(caseName, "Southwark");
   await caseSearchPage.goToUpdateCase();
+  await caseDetailsPage.caseNavigation.navigateTo("Sections");
 }
