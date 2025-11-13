@@ -1,11 +1,16 @@
 import { test, expect } from "../fixtures";
 import { caseLinks } from "../data/navLinks";
+import { todaysDate } from "../utils";
 
 test.describe.serial("Case navigation links", () => {
   test.beforeEach(async ({ homePage, caseSearchPage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");
-    await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
+    await caseSearchPage.searchCaseFile(
+      "01AD111111",
+      "Southwark",
+      todaysDate()
+    );
     await caseSearchPage.goToUpdateCase();
   });
 

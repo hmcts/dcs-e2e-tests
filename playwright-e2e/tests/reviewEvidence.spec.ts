@@ -2,6 +2,7 @@
 import { test, expect } from "../fixtures";
 import ReviewEvidencePage from "../page-objects/pages/reviewEvidence.page";
 import { UserCredentials, config, assertNoIssues } from "../utils";
+import { todaysDate } from "../utils";
 
 // ============================================================
 // Test 1: Sections & Documents Availability
@@ -40,7 +41,7 @@ test.describe("Sections and Documents availability", () => {
       try {
         await loginPage.login(user);
         await homePage.navigation.navigateTo("ViewCaseListLink");
-        await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
+        await caseSearchPage.searchCaseFile("01AD111111", "Southwark", todaysDate());
         const [popup] = await Promise.all([
           caseSearchPage.page.waitForEvent("popup"),
           caseSearchPage.goToReviewEvidence(),
@@ -132,7 +133,7 @@ test.describe("Document rendering / photosnaps", () => {
       try {
         await loginPage.login(user);
         await homePage.navigation.navigateTo("ViewCaseListLink");
-        await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
+        await caseSearchPage.searchCaseFile("01AD111111", "Southwark", todaysDate());
         const [popup] = await Promise.all([
           caseSearchPage.page.waitForEvent("popup"),
           caseSearchPage.goToReviewEvidence(),

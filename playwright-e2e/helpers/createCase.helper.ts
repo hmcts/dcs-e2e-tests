@@ -1,5 +1,6 @@
 import { config } from "../utils";
 import { expect } from "../fixtures";
+import { sections } from "../utils";
 
 export async function createNewCaseWithDefendantsAndUsers(
   createCasePage,
@@ -65,4 +66,81 @@ export async function createNewCaseWithDefendantsAndUsers(
   await expect(peoplePage.pageTitle).toBeVisible({ timeout: 20_000 });
   await peoplePage.caseNavigation.navigateTo("Sections");
   return { newCaseName, newCaseUrn };
+}
+
+export async function createNewCaseWithUnrestrictedDocuments(
+  createCasePage,
+  caseDetailsPage,
+  addDefendantPage,
+  peoplePage,
+  sectionsPage,
+  sectionDocumentsPage,
+  caseName: string,
+  caseUrn: string
+) {
+  const { newCaseName, newCaseUrn } = await createNewCaseWithDefendantsAndUsers(
+    createCasePage,
+    caseDetailsPage,
+    addDefendantPage,
+    peoplePage,
+    caseName,
+    caseUrn
+  );
+  const unrestrictedSections = sections.unrestricted;
+  const unrestrictedSectionKeys = await sectionsPage.getSectionKeys(
+    unrestrictedSections
+  );
+  const sampleKeys = Object.entries(unrestrictedSectionKeys)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3);
+
+  for (const [section, key] of sampleKeys) {
+    await sectionsPage.uploadAndValidateUnrestrictedSectionDocument(
+      key,
+      "unrestrictedSectionUpload",
+      section
+    );
+    await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
+  }
+
+  return { newCaseName, newCaseUrn, sampleKeys };
+}
+
+export async function createNewCaseWithRestrictedDocuments(
+  createCasePage,
+  caseDetailsPage,
+  addDefendantPage,
+  peoplePage,
+  sectionsPage,
+  sectionDocumentsPage,
+  caseName: string,
+  caseUrn: string
+) {
+  const { newCaseName, newCaseUrn } = await createNewCaseWithDefendantsAndUsers(
+    createCasePage,
+    caseDetailsPage,
+    addDefendantPage,
+    peoplePage,
+    caseName,
+    caseUrn
+  );
+  const restrictedSections = sections.restricted;
+  const restrictedSectionKeys = await sectionsPage.getSectionKeys(
+    restrictedSections
+  );
+  const sampleKeys = Object.entries(restrictedSectionKeys)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  for (const [section, key] of sampleKeys) {
+    await sectionsPage.uploadRestrictedSectionDocument(
+      key,
+      "restrictedSectionUploadDefendantOne",
+      "One, Defendant"
+    );
+    await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
+  }
+
+  return { newCaseName, newCaseUrn, sampleKeys };
 }

@@ -40,13 +40,17 @@ class CaseSearchPage extends Base {
     this.noCasesText = page.locator("#caseListDiv > h4");
   }
 
-  getCaseRowByTextInput(textFieldInput: string) {
+  getCaseRowByTextInput(textFieldInput: string, hearingDate) {
     return this.page.locator(
-      `tr:has(td.tableText:has-text("${textFieldInput}"))`
+      `tr:has(td.tableText:has-text("${textFieldInput}")):has(td.tableText:has-text("${hearingDate}"))`
     );
   }
 
-  async searchCaseFile(textFieldInput: string, location: string) {
+  async searchCaseFile(
+    textFieldInput: string,
+    location: string,
+    hearingDate: string
+  ) {
     await this.locationField.selectOption(location);
     await this.textField.clear();
     await this.textField.fill(textFieldInput);
@@ -59,7 +63,7 @@ class CaseSearchPage extends Base {
     for (let i = 0; i < 2; i++) {
       // TEMP FIX: try up to 2 times (need to address with Dev team: glitch often occurs where Apply Filter needs to be clicked twice before the right case will show)
       await this.applyFilter.click();
-      const caseRow = this.getCaseRowByTextInput(textFieldInput);
+      const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
       try {
         await caseRow.waitFor({ state: "visible", timeout: 5000 });
         return; // success

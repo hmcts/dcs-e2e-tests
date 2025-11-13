@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { test, expect } from "../fixtures";
 import { UserCredentials, config } from "../utils";
+import { todaysDate } from "../utils";
 
 // ============================================================
 // Test 1: Sections & Documents Availability
@@ -49,7 +50,11 @@ test.describe("Sections Page", () => {
       try {
         await loginPage.login(user);
         await homePage.navigation.navigateTo("ViewCaseListLink");
-        await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
+        await caseSearchPage.searchCaseFile(
+          "01AD111111",
+          "Southwark",
+          todaysDate()
+        );
         await caseSearchPage.goToUpdateCase();
         await caseDetailsPage.caseNavigation.navigateTo("Sections");
         const availableDocuments =

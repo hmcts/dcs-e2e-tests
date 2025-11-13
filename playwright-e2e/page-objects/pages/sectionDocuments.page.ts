@@ -15,6 +15,20 @@ class SectionDocumentsPage extends Base {
     this.viewDocumentPage = new ViewDocumentPage(page);
   }
 
+  async verifyDocumentRemoval(user, section) {
+    await this.page
+      .locator("table.formTable-zebra tbody tr:nth-child(n+2)")
+      .first()
+      .waitFor({ state: "visible", timeout: 20000 });
+    const rows = this.page.locator(
+      "table.formTable-zebra tbody tr:nth-child(n+3)"
+    );
+    const count = await rows.count();
+    if (count > 0) {
+      return `Document removal failed for ${user} in Section ${section}`;
+    }
+  }
+
   async getSectionDocuments(
     sectionId: string,
     sectionName: string
@@ -125,6 +139,50 @@ class SectionDocumentsPage extends Base {
       return `Validation failed for ${user} in Section ${section}:\n - ${issues.join(
         "\n - "
       )}`;
+    }
+  }
+
+  async validateUnrestrictedSectionDocument(filename, section) {
+    await this.page
+      .locator("td.documentInContentsIndex span")
+      .first()
+      .waitFor({
+        state: "visible",
+        timeout: 10000,
+      })
+      .catch(() => {});
+
+    const locator = this.page.locator("td.documentInContentsIndex span", {
+      hasText: `${filename}`,
+    });
+
+    const count = await locator.count();
+    const isVisible = count > 0;
+
+    if (!isVisible) {
+      return `Edit: Unable to locate edited filename for unrestricted document in Section ${section}`;
+    }
+  }
+
+  async validateSingleRestrictedSectionDocument(filename, section) {
+    await this.page
+      .locator("td.documentInContentsIndex span")
+      .first()
+      .waitFor({
+        state: "visible",
+        timeout: 10000,
+      })
+      .catch(() => {});
+
+    const locator = this.page.locator("td.documentInContentsIndex span", {
+      hasText: `${filename}`,
+    });
+
+    const count = await locator.count();
+    const isVisible = count > 0;
+
+    if (!isVisible) {
+      return `Edit: Unable to locate edited filename for restricted document in Section ${section}`;
     }
   }
 }
