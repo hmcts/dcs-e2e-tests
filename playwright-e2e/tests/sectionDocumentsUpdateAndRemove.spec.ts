@@ -315,7 +315,7 @@ test.describe("Restricted Document Update and Removal Tests", () => {
       await updateDocumentsPage.sectionDocumentsBtn.click();
 
       const moveIssues = await verifyDocumentMove(
-        "Defence Advocate B",
+        "Defence Advocate A",
         section,
         randomSection,
         "restrictedSectionUploadDefendantOne",
