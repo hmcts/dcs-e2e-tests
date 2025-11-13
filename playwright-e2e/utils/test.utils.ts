@@ -18,3 +18,11 @@ export function assertNoIssues(
 
   return { summaryLines, anyIssues };
 }
+
+export function todaysDate() {
+  const today = new Date();
+  const day = today.getDate();
+  const month = today.toLocaleString("default", { month: "long" });
+  const year = today.getFullYear();
+  return `${day} ${month} ${year}`;
+}

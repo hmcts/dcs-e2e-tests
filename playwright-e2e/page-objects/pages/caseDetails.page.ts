@@ -46,10 +46,10 @@ class CaseDetailsPage extends Base {
     const firstDialogPromise = this.page.waitForEvent("dialog");
     await this.removeCaseBtn.click();
     const firstDialog = await firstDialogPromise;
+    const secondDialogPromise = this.page.waitForEvent("dialog");
     await firstDialog.accept();
 
     // Second dialog
-    const secondDialogPromise = this.page.waitForEvent("dialog");
     const secondDialog = await secondDialogPromise;
     await secondDialog.accept();
   }

@@ -3,12 +3,17 @@ import { test, expect } from "../fixtures";
 import fs from "fs";
 import { config } from "../utils";
 import ReviewEvidencePage from "../page-objects/pages/reviewEvidence.page";
+import { todaysDate } from "../utils";
 
 test.describe("Search Auto Case 1 (Documents Testing) and navigate into case", () => {
   test.beforeEach(async ({ homePage, caseSearchPage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");
-    await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
+    await caseSearchPage.searchCaseFile(
+      "01AD111111",
+      "Southwark",
+      todaysDate()
+    );
   });
 
   test("Update Case - Auto Case1", async ({
@@ -55,7 +60,7 @@ test.describe("Search Comment Case (Notes Testing) and navigate into case", () =
   test.beforeEach(async ({ homePage, caseSearchPage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");
-    await caseSearchPage.searchCaseFile("01SJ1111", "Southwark");
+    await caseSearchPage.searchCaseFile("01SJ1111", "Southwark", todaysDate());
   });
 
   test("Update Case - Comment Case", async ({

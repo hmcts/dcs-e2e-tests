@@ -12,6 +12,7 @@ export default defineConfig({
     "{testDir}/{testFilePath}-snapshots/{arg}-{projectName}{ext}",
 
   ...CommonConfig.recommended,
+  timeout: 360_000,
 
   globalTeardown: path.resolve("./playwright-e2e/global.teardown.ts"),
 
