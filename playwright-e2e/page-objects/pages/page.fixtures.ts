@@ -21,7 +21,9 @@ import UserSettingsPage from "./userSettings.page";
 import ApprovalRequestsPage from "./approvalRequests.page";
 import ApproveAccessRequestPage from "./approveAccessRequest.page";
 import RejectAccessRequestPage from "./rejectAccessRequest.page";
-
+import CreateNewSectionPage from "./createNewSection.page"
+import SplitCasePage from "./splitCase.page";
+import ReviewNotePage from "./reviewNote.page";
 
 export interface PageFixtures {
   homePage: HomePage;
@@ -47,6 +49,9 @@ export interface PageFixtures {
   approvalRequestsPage: ApprovalRequestsPage;
   approveAccessRequestPage: ApproveAccessRequestPage;
   rejectAccessRequestPage: RejectAccessRequestPage;
+  createNewSectionPage: CreateNewSectionPage;
+  splitCasePage: SplitCasePage;
+  reviewNotePage : ReviewNotePage;
 }
 
 export const pageFixtures = {
@@ -71,19 +76,20 @@ export const pageFixtures = {
   createCasePage: async ({ page }, use) => {
     await use(new CreateCasePage(page));
   },
-
   addDefendantPage: async ({ page }, use) => {
     await use(new AddDefendantPage(page));
   },
   changeCaseDetailsPage: async ({ page }, use) => {
     await use(new ChangeCaseDetailsPage(page));
   },
-
   memoPage: async ({ page }, use) => {
     await use(new MemoPage(page));
   },
   sectionsPage: async ({ page }, use) => {
     await use(new SectionsPage(page));
+  },
+  createNewSectionPage: async ({ page }, use) => {
+    await use(new CreateNewSectionPage(page));
   },
   viewDocumentPage: async ({ page }, use) => {
     await use(new ViewDocumentPage(page));
@@ -120,5 +126,11 @@ export const pageFixtures = {
   },
   rejectAccessRequestPage: async ({ page }, use) => {
     await use(new RejectAccessRequestPage(page));
+  },
+  splitCasePage: async ({ page }, use) => {
+    await use(new SplitCasePage(page));
+  },
+  reviewNotePage: async ({ page }, use) => {
+    await use(new ReviewNotePage(page));
   },
 };
