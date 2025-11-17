@@ -47,11 +47,19 @@ class CaseDetailsPage extends Base {
     await this.removeCaseBtn.click();
     const firstDialog = await firstDialogPromise;
     const secondDialogPromise = this.page.waitForEvent("dialog");
-    await firstDialog.accept();
+    try {
+      await firstDialog.accept();
+    } catch (err) {
+      console.warn("⚠️ Failed to accept first dialog:", err);
+    }
 
     // Second dialog
     const secondDialog = await secondDialogPromise;
-    await secondDialog.accept();
+    try {
+      await secondDialog.accept();
+    } catch (err) {
+      console.warn("⚠️ Failed to accept second dialog:", err);
+    }
   }
 }
 

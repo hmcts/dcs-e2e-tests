@@ -26,3 +26,13 @@ export function todaysDate() {
   const year = today.getFullYear();
   return `${day} ${month} ${year}`;
 }
+
+export async function getRandomSectionKeys(
+  sectionsPage,
+  sectionList: string[]
+) {
+  const keys = await sectionsPage.getSectionKeys(sectionList);
+  return Object.entries(keys)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3); // returns [ [section, key], ... ]
+}

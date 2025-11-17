@@ -32,10 +32,11 @@ class UpdateDocumentsPage extends Base {
   }
 
   async removeDocument() {
-    const dialogPromise = this.page.waitForEvent("dialog");
+    this.page.once("dialog", async (dialog) => {
+      await dialog.accept();
+    });
+
     await this.removeBtn.click();
-    const dialog = await dialogPromise;
-    await dialog.accept();
   }
 
   async moveDocument(sectionKeys: [string, string][], newSections: string[]) {

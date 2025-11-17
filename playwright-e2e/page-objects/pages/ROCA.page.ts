@@ -2,6 +2,7 @@ import { Base } from "../base";
 import { Locator } from "playwright-core";
 import { ROCAModel } from "../../data/ROCAModel";
 import { expect } from "../../fixtures";
+import { sections } from "../../utils";
 
 class ROCAPage extends Base {
   unrestrictedTable: Locator;
@@ -40,6 +41,115 @@ class ROCAPage extends Base {
     uploadedDocuments.push(newDocument);
 
     return uploadedDocuments;
+  }
+
+  async updateROCAModel(
+    uploadedDocuments: ROCAModel[],
+    sectionIndex: string,
+    documentName: string,
+    action: string,
+    username: string,
+    defendants?: string
+  ): Promise<ROCAModel[]> {
+    // Find existing record
+    const existingDoc = uploadedDocuments.find(
+      (d) => d.sectionIndex === sectionIndex && d.documentName === documentName
+    );
+    if (!existingDoc) {
+      throw new Error(
+        `ROCA Model: Could not find existing record for Section: ${sectionIndex}/ Document: ${documentName}`
+      );
+    }
+
+    // Build new document record for document update
+    if (action === "Delete") {
+      const newDocument: ROCAModel = {
+        sectionIndex,
+        documentNumber: existingDoc?.documentNumber,
+        documentName,
+        action,
+        username,
+        defendants,
+      };
+      uploadedDocuments.push(newDocument);
+    } else {
+      const newDocument: ROCAModel = {
+        sectionIndex,
+        documentNumber: existingDoc?.documentNumber,
+        documentName: "TestEdit",
+        action,
+        username,
+        defendants,
+      };
+      uploadedDocuments.push(newDocument);
+    }
+
+    return uploadedDocuments;
+  }
+
+  async updateROCAModelMove(
+    uploadedDocuments: ROCAModel[],
+    sectionIndex: string,
+    newSectionIndex: string,
+    documentName: string,
+    username: string,
+    rocaModel: ROCAModel[],
+    isRestrictedContext: boolean,
+    defendants?: string
+  ) {
+    // Find existing record
+    const existingDoc = uploadedDocuments.find(
+      (d) => d.sectionIndex === sectionIndex && d.documentName === documentName
+    );
+    if (!existingDoc) {
+      throw new Error(
+        `ROCA Model: Could not find existing record for Section: ${sectionIndex}/ Document: ${documentName}`
+      );
+    }
+    // Build new document record for document deletion
+    const deletionRecord: ROCAModel = {
+      sectionIndex,
+      documentNumber: existingDoc?.documentNumber,
+      documentName,
+      action: "Delete",
+      username,
+      defendants,
+    };
+    uploadedDocuments.push(deletionRecord);
+
+    // Build new document record for the document in its new section
+    const newRecord: ROCAModel = {
+      sectionIndex: newSectionIndex,
+      documentNumber: existingDoc?.documentNumber,
+      documentName,
+      action: "Create",
+      username,
+      defendants,
+    };
+
+    const targetIsRestricted = sections.restricted.includes(newSectionIndex);
+
+    if (isRestrictedContext) {
+      // 🔹 Restricted → Restricted
+      if (targetIsRestricted) {
+        uploadedDocuments.push(newRecord);
+      }
+      // 🔹 Restricted → Unrestricted
+      else {
+        newRecord.defendants = undefined;
+        rocaModel.push(newRecord);
+      }
+    } else {
+      // 🔹 Unrestricted → Restricted
+      if (targetIsRestricted) {
+        newRecord.defendants = "";
+        rocaModel.push(newRecord);
+      }
+      // 🔹 Unrestricted → Unrestricted
+      else {
+        uploadedDocuments.push(newRecord);
+      }
+    }
   }
 
   async getDocumentsFromROCATable(tableLocator: Locator): Promise<ROCAModel[]> {
@@ -121,7 +231,7 @@ class ROCAPage extends Base {
       );
       if (!found) {
         missingDocuments.push(
-          `Missing: ${expected.sectionIndex} / ${expected.documentName} (${expected.documentNumber})`
+          `Missing Record - Section: ${expected.sectionIndex} / Document: ${expected.documentName}(${expected.documentNumber})`
         );
       }
     }
@@ -140,7 +250,7 @@ class ROCAPage extends Base {
       );
       if (!found) {
         unexpectedDocuments.push(
-          `Unexpected: ${actual.sectionIndex} / ${actual.documentName} (${actual.documentNumber})`
+          `Unexpected Record - Section: ${actual.sectionIndex} / Document: ${actual.documentName}(${actual.documentNumber})`
         );
       }
     }
