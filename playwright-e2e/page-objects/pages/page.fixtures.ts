@@ -23,7 +23,6 @@ import ApproveAccessRequestPage from "./approveAccessRequest.page";
 import RejectAccessRequestPage from "./rejectAccessRequest.page";
 import CreateNewSectionPage from "./createNewSection.page"
 import SplitCasePage from "./splitCase.page";
-import ReviewNotePage from "./reviewNote.page";
 
 export interface PageFixtures {
   homePage: HomePage;
@@ -51,7 +50,6 @@ export interface PageFixtures {
   rejectAccessRequestPage: RejectAccessRequestPage;
   createNewSectionPage: CreateNewSectionPage;
   splitCasePage: SplitCasePage;
-  reviewNotePage : ReviewNotePage;
 }
 
 export const pageFixtures = {
@@ -129,8 +127,5 @@ export const pageFixtures = {
   },
   splitCasePage: async ({ page }, use) => {
     await use(new SplitCasePage(page));
-  },
-  reviewNotePage: async ({ page }, use) => {
-    await use(new ReviewNotePage(page));
   },
 };
