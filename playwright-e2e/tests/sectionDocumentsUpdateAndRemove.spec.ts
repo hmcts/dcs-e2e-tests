@@ -1,8 +1,8 @@
 import { test, expect } from "../fixtures";
-import { config, assertNoIssues } from "../utils";
+import { config, pushTestResult } from "../utils";
 import {
-  createNewCaseWithUnrestrictedDocuments,
-  createNewCaseWithRestrictedDocuments,
+  createNewCaseWithUnrestrictedDocument,
+  createNewCaseWithRestrictedDocument,
 } from "../helpers/createCase.helper";
 import { loginAndOpenCase } from "../helpers/login.helper";
 import { deleteCaseByName } from "../helpers/deleteCase.helper";
@@ -17,11 +17,11 @@ import { verifyDocumentMove } from "../helpers/sectionDocuments.helper";
 // So that only relevant documents are available in the correct sections for further review for relevant parties
 
 test.describe("Unrestricted Document Update and Removal Tests", () => {
-  let sampleKeys: [string, string][];
+  let sampleKey: [string, string][];
   let newCaseName: string;
-  const unrestrictedRemoveResults: { section: string; issues: string[] }[] = [];
-  const unrestrictedMoveResults: { section: string; issues: string[] }[] = [];
-  const unrestrictedEditResults: { section: string; issues: string[] }[] = [];
+  const unrestrictedRemoveResults: string[] = [];
+  const unrestrictedMoveResults: string[] = [];
+  const unrestrictedEditResults: string[] = [];
 
   test.beforeEach(
     async ({
@@ -33,22 +33,24 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
       peoplePage,
       sectionsPage,
       sectionDocumentsPage,
+      rocaPage,
     }) => {
       await homePage.open();
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
 
-      const newCase = await createNewCaseWithUnrestrictedDocuments(
+      const newCase = await createNewCaseWithUnrestrictedDocument(
         createCasePage,
         caseDetailsPage,
         addDefendantPage,
         peoplePage,
         sectionsPage,
         sectionDocumentsPage,
+        rocaPage,
         "TestCase",
         "TestURN"
       );
-      sampleKeys = newCase.sampleKeys as [string, string][];
+      sampleKey = newCase.sampleKey as [string, string][];
       newCaseName = newCase.newCaseName;
     }
   );
@@ -58,7 +60,7 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
     sectionDocumentsPage,
     updateDocumentsPage,
   }) => {
-    for (const [section, key] of sampleKeys) {
+    for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
       await updateDocumentsPage.removeDocument();
       await updateDocumentsPage.sectionDocumentsBtn.click();
@@ -67,26 +69,26 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
         section
       );
       if (removeIssues) {
-        unrestrictedRemoveResults.push({
-          section: section,
-          issues: [removeIssues],
-        });
+        unrestrictedRemoveResults.push(removeIssues);
       }
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
-    // Results Summary
-    const unrestrictedRemoveCheck = unrestrictedRemoveResults.map((r) => ({
-      label: r.section,
-      issues: r.issues,
-    }));
-    const { summaryLines, anyIssues } = assertNoIssues(
-      unrestrictedRemoveCheck,
-      "UNRESTRICTED SECTION DOCUMENT REMOVAL SUMMARY"
-    );
-    if (anyIssues) {
-      const message = ["Issues detected:", "", ...summaryLines].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
+    // Aggragate Results
+    pushTestResult({
+      user: config.users.hmctsAdmin.group,
+      heading: `Section Validation: Delete Unrestricted Document`,
+      category: "Sections",
+      issues: unrestrictedRemoveResults,
+    });
+    // Fail the test if any issues were found
+    expect(
+      unrestrictedRemoveResults.length,
+      `User ${
+        config.users.hmctsAdmin.group
+      } experienced issues deleting an unrestricted document:\n${unrestrictedRemoveResults.join(
+        "\n"
+      )}`
+    ).toBe(0);
   });
 
   test(`Validate document move in unrestricted sections for user: HMCTS Admin`, async ({
@@ -96,10 +98,10 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
   }) => {
     const newSections: string[] = [];
 
-    for (const [section, key] of sampleKeys) {
+    for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
       const newSection = await updateDocumentsPage.moveDocument(
-        sampleKeys,
+        sampleKey,
         newSections
       );
       await updateDocumentsPage.sectionDocumentsBtn.click();
@@ -113,26 +115,26 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
         sectionsPage
       );
       if (moveIssues) {
-        unrestrictedMoveResults.push({
-          section: section,
-          issues: [moveIssues],
-        });
+        unrestrictedMoveResults.push(moveIssues);
       }
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
-    // Results Summary
-    const unrestrictedMoveCheck = unrestrictedMoveResults.map((r) => ({
-      label: r.section,
-      issues: r.issues,
-    }));
-    const { summaryLines, anyIssues } = assertNoIssues(
-      unrestrictedMoveCheck,
-      "UNRESTRICTED SECTION DOCUMENT MOVE SUMMARY"
-    );
-    if (anyIssues) {
-      const message = ["Issues detected:", "", ...summaryLines].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
+    // Aggragate Results
+    pushTestResult({
+      user: config.users.hmctsAdmin.group,
+      heading: `Section Validation: Move Unrestricted Document`,
+      category: "Sections",
+      issues: unrestrictedMoveResults,
+    });
+    // Fail the test if any issues were found
+    expect(
+      unrestrictedMoveResults.length,
+      `User ${
+        config.users.hmctsAdmin.group
+      } experiened issues moving an unrestricted document:\n${unrestrictedMoveResults.join(
+        "\n"
+      )}`
+    ).toBe(0);
   });
 
   test(`Validate document edit in unrestricted sections for user: HMCTS Admin`, async ({
@@ -140,7 +142,7 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
     sectionDocumentsPage,
     updateDocumentsPage,
   }) => {
-    for (const [section, key] of sampleKeys) {
+    for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
       await updateDocumentsPage.editDocumentName();
       await updateDocumentsPage.sectionDocumentsBtn.click();
@@ -150,26 +152,26 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
           section
         );
       if (editIssues) {
-        unrestrictedEditResults.push({
-          section: section,
-          issues: [editIssues],
-        });
+        unrestrictedEditResults.push(editIssues);
       }
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
-    // Results Summary
-    const unrestrictedEditCheck = unrestrictedEditResults.map((r) => ({
-      label: r.section,
-      issues: r.issues,
-    }));
-    const { summaryLines, anyIssues } = assertNoIssues(
-      unrestrictedEditCheck,
-      "UNRESTRICTED SECTION DOCUMENT EDIT SUMMARY"
-    );
-    if (anyIssues) {
-      const message = ["Issues detected:", "", ...summaryLines].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
+    // Aggragate Results
+    pushTestResult({
+      user: config.users.hmctsAdmin.group,
+      heading: `Section Validation: Edit Unrestricted Document`,
+      category: "Sections",
+      issues: unrestrictedRemoveResults,
+    });
+    // Fail the test if any issues were found
+    expect(
+      unrestrictedRemoveResults.length,
+      `User ${
+        config.users.hmctsAdmin.group
+      } experienced issues editing an unrestricted document:\n${unrestrictedRemoveResults.join(
+        "\n"
+      )}`
+    ).toBe(0);
   });
 
   test.afterEach(
@@ -197,11 +199,11 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
 // So that only relevant documents are available in the correct sections for further review for relevant parties
 
 test.describe("Restricted Document Update and Removal Tests", () => {
-  let sampleKeys: [string, string][];
+  let sampleKey: [string, string][];
   let newCaseName: string;
-  const restrictedRemoveResults: { section: string; issues: string[] }[] = [];
-  const restrictedMoveResults: { section: string; issues: string[] }[] = [];
-  const restrictedEditResults: { section: string; issues: string[] }[] = [];
+  const restrictedRemoveResults: string[] = [];
+  const restrictedMoveResults: string[] = [];
+  const restrictedEditResults: string[] = [];
 
   test.beforeEach(
     async ({
@@ -213,22 +215,24 @@ test.describe("Restricted Document Update and Removal Tests", () => {
       peoplePage,
       sectionsPage,
       sectionDocumentsPage,
+      rocaPage,
     }) => {
       await homePage.open();
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
 
-      const newCase = await createNewCaseWithRestrictedDocuments(
+      const newCase = await createNewCaseWithRestrictedDocument(
         createCasePage,
         caseDetailsPage,
         addDefendantPage,
         peoplePage,
         sectionsPage,
         sectionDocumentsPage,
+        rocaPage,
         "TestCase",
         "TestURN"
       );
-      sampleKeys = newCase.sampleKeys as [string, string][];
+      sampleKey = newCase.sampleKey as [string, string][];
       newCaseName = newCase.newCaseName;
     }
   );
@@ -253,7 +257,7 @@ test.describe("Restricted Document Update and Removal Tests", () => {
       newCaseName
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
-    for (const [section, key] of sampleKeys) {
+    for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
       await updateDocumentsPage.removeDocument();
       await updateDocumentsPage.sectionDocumentsBtn.click();
@@ -262,26 +266,26 @@ test.describe("Restricted Document Update and Removal Tests", () => {
         section
       );
       if (removeIssues) {
-        restrictedRemoveResults.push({
-          section: section,
-          issues: [removeIssues],
-        });
+        restrictedRemoveResults.push(removeIssues);
       }
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
-    // Results Summary
-    const restrictedRemoveCheck = restrictedRemoveResults.map((r) => ({
-      label: r.section,
-      issues: r.issues,
-    }));
-    const { summaryLines, anyIssues } = assertNoIssues(
-      restrictedRemoveCheck,
-      "RESTRICTED SECTION DOCUMENT REMOVAL SUMMARY"
-    );
-    if (anyIssues) {
-      const message = ["Issues detected:", "", ...summaryLines].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
+    // Aggragate Results
+    pushTestResult({
+      user: config.users.defenceAdvocateA.group,
+      heading: `Section Validation: Delete Restricted Document`,
+      category: "Sections",
+      issues: restrictedRemoveResults,
+    });
+    // Fail the test if any issues were found
+    expect(
+      restrictedRemoveResults.length,
+      `User ${
+        config.users.defenceAdvocateA.group
+      } experienced issues deleting a restricted document:\n${restrictedRemoveResults.join(
+        "\n"
+      )}`
+    ).toBe(0);
   });
 
   test(`Validate document move from restricted sections`, async ({
@@ -306,10 +310,10 @@ test.describe("Restricted Document Update and Removal Tests", () => {
       newCaseName
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
-    for (const [section, key] of sampleKeys) {
+    for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
       const randomSection = await updateDocumentsPage.moveDocument(
-        sampleKeys,
+        sampleKey,
         newSections
       );
       await updateDocumentsPage.sectionDocumentsBtn.click();
@@ -323,26 +327,26 @@ test.describe("Restricted Document Update and Removal Tests", () => {
         sectionsPage
       );
       if (moveIssues) {
-        restrictedMoveResults.push({
-          section: section,
-          issues: [moveIssues],
-        });
+        restrictedMoveResults.push(moveIssues);
       }
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
-    // Results Summary
-    const restrictedMoveCheck = restrictedMoveResults.map((r) => ({
-      label: r.section,
-      issues: r.issues,
-    }));
-    const { summaryLines, anyIssues } = assertNoIssues(
-      restrictedMoveCheck,
-      "RESTRICTED SECTION DOCUMENT MOVE SUMMARY"
-    );
-    if (anyIssues) {
-      const message = ["Issues detected:", "", ...summaryLines].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
+    // Aggragate Results
+    pushTestResult({
+      user: config.users.defenceAdvocateA.group,
+      heading: `Section Validation: Move Restricted Document`,
+      category: "Sections",
+      issues: restrictedMoveResults,
+    });
+    // Fail the test if any issues were found
+    expect(
+      restrictedMoveResults.length,
+      `User ${
+        config.users.defenceAdvocateA.group
+      } experienced issues moving a restricted document:\n${restrictedMoveResults.join(
+        "\n"
+      )}`
+    ).toBe(0);
   });
 
   test(`Validate document edit in restricted sections`, async ({
@@ -365,7 +369,7 @@ test.describe("Restricted Document Update and Removal Tests", () => {
       newCaseName
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
-    for (const [section, key] of sampleKeys) {
+    for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
       await updateDocumentsPage.editDocumentName();
       await updateDocumentsPage.sectionDocumentsBtn.click();
@@ -375,26 +379,26 @@ test.describe("Restricted Document Update and Removal Tests", () => {
           section
         );
       if (editIssues) {
-        restrictedEditResults.push({
-          section: section,
-          issues: [editIssues],
-        });
+        restrictedEditResults.push(editIssues);
       }
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
-    // Results Summary
-    const restrictedEditCheck = restrictedEditResults.map((r) => ({
-      label: r.section,
-      issues: r.issues,
-    }));
-    const { summaryLines, anyIssues } = assertNoIssues(
-      restrictedEditCheck,
-      "RESTRICTED SECTION DOCUMENT EDIT SUMMARY"
-    );
-    if (anyIssues) {
-      const message = ["Issues detected:", "", ...summaryLines].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
+    // Aggragate Results
+    pushTestResult({
+      user: config.users.defenceAdvocateC.group,
+      heading: `Section Validation: Edit Restricted Document`,
+      category: "Sections",
+      issues: restrictedEditResults,
+    });
+    // Fail the test if any issues were found
+    expect(
+      restrictedEditResults.length,
+      `User ${
+        config.users.defenceAdvocateC.group
+      } experienced issues editing a restricted document:\n${restrictedEditResults.join(
+        "\n"
+      )}`
+    ).toBe(0);
   });
 
   test.afterEach(

@@ -1,5 +1,5 @@
 import { test, expect } from "../fixtures";
-import { sections, config, assertNoIssues } from "../utils";
+import { sections, config, pushTestResult } from "../utils";
 import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
 import { loginAndOpenCase } from "../helpers/login.helper";
 import { uploadAndValidateRestrictedDocumentUpload } from "../helpers/sectionDocuments.helper";
@@ -15,11 +15,8 @@ import { deleteCaseByName } from "../helpers/deleteCase.helper";
 
 test.describe("Document Upload Tests", () => {
   let newCaseName: string;
-  const unrestrictedUploadResults: { section: string; issues: string[] }[] = [];
-  const restrictedUploadResults: {
-    user: string;
-    issues: string[];
-  }[] = [];
+  const unrestrictedUploadResults: string[] = [];
+  const restrictedUploadResults: string[] = [];
 
   test.beforeEach(
     async ({
@@ -50,7 +47,9 @@ test.describe("Document Upload Tests", () => {
   test(`Validate document upload to unrestricted sections for user: HMCTS Admin`, async ({
     sectionsPage,
     sectionDocumentsPage,
+    peoplePage,
   }) => {
+    await peoplePage.caseNavigation.navigateTo("Sections");
     const unrestrictedSections = sections.unrestricted;
     const unrestrictedSectionKeys = await sectionsPage.getSectionKeys(
       unrestrictedSections
@@ -58,7 +57,6 @@ test.describe("Document Upload Tests", () => {
     const sampleEntries = Object.entries(unrestrictedSectionKeys)
       .sort(() => Math.random() - 0.5)
       .slice(0, 3);
-
     for (const [section, key] of sampleEntries) {
       const uploadIssues =
         await sectionsPage.uploadAndValidateUnrestrictedSectionDocument(
@@ -67,27 +65,26 @@ test.describe("Document Upload Tests", () => {
           section
         );
       if (uploadIssues) {
-        unrestrictedUploadResults.push({
-          section: section,
-          issues: [uploadIssues],
-        });
+        unrestrictedUploadResults.push(uploadIssues);
       }
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
-
-    //Results Summary
-    const unrestrictedDocumentsCheck = unrestrictedUploadResults.map((r) => ({
-      label: r.section,
-      issues: r.issues,
-    }));
-    const { summaryLines, anyIssues } = assertNoIssues(
-      unrestrictedDocumentsCheck,
-      "UNRESTRICTED SECTION DOCUMENT VALIDATION SUMMARY"
-    );
-    if (anyIssues) {
-      const message = ["Issues detected:", "", ...summaryLines].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
+    // Aggragate Results
+    pushTestResult({
+      user: config.users.hmctsAdmin.group,
+      heading: `Section Validation: Upload Unrestricted Document`,
+      category: "Sections",
+      issues: unrestrictedUploadResults,
+    });
+    // Fail the test if any issues were found
+    expect(
+      unrestrictedUploadResults.length,
+      `User ${
+        config.users.hmctsAdmin.group
+      } experienced issues uploading an unrestricted document:\n${unrestrictedUploadResults.join(
+        "\n"
+      )}`
+    ).toBe(0);
   });
 
   // ============================================================
@@ -105,9 +102,10 @@ test.describe("Document Upload Tests", () => {
     caseSearchPage,
     sectionsPage,
     sectionDocumentsPage,
+    peoplePage,
   }) => {
     const restrictedSections = sections.restricted;
-    await sectionsPage.navigation.navigateTo("LogOff");
+    await peoplePage.navigation.navigateTo("LogOff");
 
     // Upload documents to restricted section as Defence Advocate A
     await loginAndOpenCase(
@@ -198,20 +196,20 @@ test.describe("Document Upload Tests", () => {
       sectionsPage,
       sectionDocumentsPage
     );
-
-    // Results Summary
-    const restrictedDocumentsCheck = restrictedUploadResults.map((r) => ({
-      label: r.user,
-      issues: r.issues,
-    }));
-    const { summaryLines, anyIssues } = assertNoIssues(
-      restrictedDocumentsCheck,
-      "RESTRICTED SECTION DOCUMENT VALIDATION SUMMARY"
-    );
-    if (anyIssues) {
-      const message = ["Issues detected:", "", ...summaryLines].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
+    // Aggragate Results
+    pushTestResult({
+      user: "Defence Users",
+      heading: `Section Validation: Upload and Access Restricted Document`,
+      category: "Sections",
+      issues: restrictedUploadResults,
+    });
+    // Fail the test if any issues were found
+    expect(
+      restrictedUploadResults.length,
+      `Defence Users experienced issues uploading and accessing restricted documents:\n${unrestrictedUploadResults.join(
+        "\n"
+      )}`
+    ).toBe(0);
   });
 
   test.afterEach(

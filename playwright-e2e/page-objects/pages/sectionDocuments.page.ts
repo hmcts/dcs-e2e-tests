@@ -1,6 +1,7 @@
 import { Base } from "../base";
 import { DocumentModel } from "../../data/documentModel";
 import ViewDocumentPage from "./viewDocument.page";
+import { expect } from "../../fixtures";
 
 interface DocumentCheck {
   name: string;
@@ -110,14 +111,12 @@ class SectionDocumentsPage extends Base {
   ) {
     const issues: string[] = [];
 
-    await this.page
-      .locator("td.documentInContentsIndex span")
-      .first()
-      .waitFor({
-        state: "visible",
-        timeout: 10000,
-      })
-      .catch(() => {});
+    await this.page;
+
+    await expect(
+      this.page.locator("td.documentInContentsIndex span").first(),
+      `Documents table did not load for User: ${user}, Section: ${section}`
+    ).toBeVisible();
 
     for (const doc of documents) {
       const locator = this.page.locator("td.documentInContentsIndex span", {
@@ -143,14 +142,10 @@ class SectionDocumentsPage extends Base {
   }
 
   async validateUnrestrictedSectionDocument(filename, section) {
-    await this.page
-      .locator("td.documentInContentsIndex span")
-      .first()
-      .waitFor({
-        state: "visible",
-        timeout: 10000,
-      })
-      .catch(() => {});
+    await expect(
+      this.page.locator("td.documentInContentsIndex span").first(),
+      `Documents table did not load for Section: ${section}, filename: ${filename}`
+    ).toBeVisible();
 
     const locator = this.page.locator("td.documentInContentsIndex span", {
       hasText: `${filename}`,
@@ -165,14 +160,10 @@ class SectionDocumentsPage extends Base {
   }
 
   async validateSingleRestrictedSectionDocument(filename, section) {
-    await this.page
-      .locator("td.documentInContentsIndex span")
-      .first()
-      .waitFor({
-        state: "visible",
-        timeout: 10000,
-      })
-      .catch(() => {});
+    await expect(
+      this.page.locator("td.documentInContentsIndex span").first(),
+      `Documents table did not load for Section: ${section}, Filename: ${filename}`
+    ).toBeVisible();
 
     const locator = this.page.locator("td.documentInContentsIndex span", {
       hasText: `${filename}`,

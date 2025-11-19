@@ -2,7 +2,7 @@ import { config } from "../utils";
 import { expect } from "../fixtures";
 import { sections } from "../utils";
 import { ROCAModel } from "../data/ROCAModel";
-import { getRandomSectionKeys } from "../utils";
+import { getRandomSectionKey } from "../utils";
 
 export async function createNewCaseWithDefendantsAndUsers(
   createCasePage,
@@ -19,9 +19,7 @@ export async function createNewCaseWithDefendantsAndUsers(
   const prosecutorLabel = await createCasePage.selectRandomOptionFromDropdown(
     createCasePage.dropdownCaseProsecutedBy
   );
-  await createCasePage.dropdownCaseProsecutedBy.selectOption({
-    prosecutorLabel,
-  });
+  await createCasePage.dropdownCaseProsecutedBy.selectOption(prosecutorLabel);
   await createCasePage.dropdownCourtHouse.selectOption({ label: "Southwark" });
   const today = new Date();
   const date = today.getDate();
@@ -68,82 +66,10 @@ export async function createNewCaseWithDefendantsAndUsers(
     await peoplePage.addUser(defenceDetail.username, defenceDetail?.defendants);
   }
   await expect(peoplePage.pageTitle).toBeVisible({ timeout: 20_000 });
-  await peoplePage.caseNavigation.navigateTo("Sections");
   return { newCaseName, newCaseUrn };
 }
 
-export async function createNewCaseWithUnrestrictedDocuments(
-  createCasePage,
-  caseDetailsPage,
-  addDefendantPage,
-  peoplePage,
-  sectionsPage,
-  sectionDocumentsPage,
-  caseName: string,
-  caseUrn: string
-) {
-  const { newCaseName, newCaseUrn } = await createNewCaseWithDefendantsAndUsers(
-    createCasePage,
-    caseDetailsPage,
-    addDefendantPage,
-    peoplePage,
-    caseName,
-    caseUrn
-  );
-  const sampleKeys = await getRandomSectionKeys(
-    sectionsPage,
-    sections.unrestricted
-  );
-
-  for (const [section, key] of sampleKeys) {
-    await sectionsPage.uploadAndValidateUnrestrictedSectionDocument(
-      key,
-      "unrestrictedSectionUpload",
-      section
-    );
-    await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
-  }
-
-  return { newCaseName, newCaseUrn, sampleKeys };
-}
-
-export async function createNewCaseWithRestrictedDocuments(
-  createCasePage,
-  caseDetailsPage,
-  addDefendantPage,
-  peoplePage,
-  sectionsPage,
-  sectionDocumentsPage,
-  caseName: string,
-  caseUrn: string
-) {
-  const { newCaseName, newCaseUrn } = await createNewCaseWithDefendantsAndUsers(
-    createCasePage,
-    caseDetailsPage,
-    addDefendantPage,
-    peoplePage,
-    caseName,
-    caseUrn
-  );
-  const sampleKeys = await getRandomSectionKeys(
-    sectionsPage,
-    sections.restricted
-  );
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  for (const [section, key] of sampleKeys) {
-    await sectionsPage.uploadRestrictedSectionDocument(
-      key,
-      "restrictedSectionUploadDefendantOne",
-      "One, Defendant"
-    );
-    await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
-  }
-
-  return { newCaseName, newCaseUrn, sampleKeys };
-}
-
-export async function createNewCaseWithUnrestrictedDocumentsROCA(
+export async function createNewCaseWithUnrestrictedDocument(
   createCasePage,
   caseDetailsPage,
   addDefendantPage,
@@ -163,12 +89,12 @@ export async function createNewCaseWithUnrestrictedDocumentsROCA(
     caseUrn
   );
   const uploadedDocuments: ROCAModel[] = [];
-  const sampleKeys = await getRandomSectionKeys(
+  await peoplePage.caseNavigation.navigateTo("Sections");
+  const sampleKey = await getRandomSectionKey(
     sectionsPage,
     sections.unrestricted
   );
-
-  for (const [sectionIndex, sectionKey] of sampleKeys) {
+  for (const [sectionIndex, sectionKey] of sampleKey) {
     await sectionsPage.uploadAndValidateUnrestrictedSectionDocument(
       sectionKey,
       "unrestrictedSectionUpload",
@@ -184,10 +110,10 @@ export async function createNewCaseWithUnrestrictedDocumentsROCA(
     );
   }
 
-  return { newCaseName, newCaseUrn, sampleKeys, uploadedDocuments };
+  return { newCaseName, newCaseUrn, sampleKey, uploadedDocuments };
 }
 
-export async function createNewCaseWithRestrictedDocumentsROCA(
+export async function createNewCaseWithRestrictedDocument(
   createCasePage,
   caseDetailsPage,
   addDefendantPage,
@@ -207,12 +133,12 @@ export async function createNewCaseWithRestrictedDocumentsROCA(
     caseUrn
   );
   const uploadedDocuments: ROCAModel[] = [];
-  const sampleKeys = await getRandomSectionKeys(
+  await peoplePage.caseNavigation.navigateTo("Sections");
+  const sampleKey = await getRandomSectionKey(
     sectionsPage,
     sections.restricted
   );
-
-  for (const [sectionIndex, key] of sampleKeys) {
+  for (const [sectionIndex, key] of sampleKey) {
     await sectionsPage.uploadRestrictedSectionDocument(
       key,
       "restrictedSectionUploadDefendantOne",
@@ -229,5 +155,5 @@ export async function createNewCaseWithRestrictedDocumentsROCA(
     await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
   }
 
-  return { newCaseName, newCaseUrn, sampleKeys, uploadedDocuments };
+  return { newCaseName, newCaseUrn, sampleKey, uploadedDocuments };
 }

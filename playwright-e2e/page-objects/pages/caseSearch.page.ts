@@ -40,16 +40,20 @@ class CaseSearchPage extends Base {
     this.noCasesText = page.locator("#caseListDiv > h4");
   }
 
-  getCaseRowByTextInput(textFieldInput: string, hearingDate) {
-    return this.page.locator(
-      `tr:has(td.tableText:has-text("${textFieldInput}")):has(td.tableText:has-text("${hearingDate}"))`
-    );
+  getCaseRowByTextInput(textFieldInput: string, hearingDate?: string) {
+    let selector = `tr:has(td.tableText:has-text("${textFieldInput}"))`;
+
+    if (hearingDate) {
+      selector += `:has(td.tableText:has-text("${hearingDate}"))`;
+    }
+
+    return this.page.locator(selector);
   }
 
   async searchCaseFile(
     textFieldInput: string,
     location: string,
-    hearingDate: string
+    hearingDate?: string
   ) {
     await this.locationField.selectOption(location);
     await this.textField.clear();
@@ -80,16 +84,29 @@ class CaseSearchPage extends Base {
     await this.createCaseButton.click();
   }
 
-  async goToUpdateCase() {
-    await this.updateCaseButton.click();
+  async goToUpdateCase(textFieldInput, hearingDate?) {
+    const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
+    const updateBtn = caseRow.getByRole("link", { name: "Update Case" });
+    await expect(updateBtn).toBeVisible({ timeout: 5000 });
+    await updateBtn.click();
   }
 
-  async goToReviewEvidence() {
-    await this.reviewEvidenceButton.click();
+  async goToReviewEvidence(textFieldInput, hearingDate?) {
+    const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
+    const reviewEvidenceBtn = caseRow.getByRole("link", {
+      name: "Review Evidence",
+    });
+    await expect(reviewEvidenceBtn).toBeVisible({ timeout: 5000 });
+    return reviewEvidenceBtn.click();
   }
 
-  async goToUpdateFrontPage() {
-    await this.updateFrontPageButton.click();
+  async goToUpdateFrontPage(textFieldInput, hearingDate?) {
+    const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
+    const updateFrntPageBtn = caseRow.getByRole("link", {
+      name: "Update Front Page",
+    });
+    await expect(updateFrntPageBtn).toBeVisible({ timeout: 5000 });
+    await updateFrntPageBtn.click();
   }
 
   async confirmCaseDeletion() {

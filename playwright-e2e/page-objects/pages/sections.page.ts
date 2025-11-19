@@ -197,7 +197,7 @@ class SectionsPage extends Base {
       }
     );
     try {
-      await unrestrictedDocument.waitFor({ state: "visible", timeout: 5000 });
+      await unrestrictedDocument.waitFor({ state: "visible", timeout: 10000 });
     } catch (error) {
       return `Unrestricted document upload not found: ${filename} in Section: ${section}. Error: ${error}`;
     }

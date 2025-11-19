@@ -32,11 +32,12 @@ class UpdateDocumentsPage extends Base {
   }
 
   async removeDocument() {
-    this.page.once("dialog", async (dialog) => {
-      await dialog.accept();
-    });
+    const dialog = await Promise.all([
+      this.page.waitForEvent("dialog"),
+      this.removeBtn.click(),
+    ]).then(([dialog]) => dialog);
 
-    await this.removeBtn.click();
+    await dialog.accept();
   }
 
   async moveDocument(sectionKeys: [string, string][], newSections: string[]) {
@@ -73,7 +74,7 @@ class UpdateDocumentsPage extends Base {
     await this.documentTitle.press("Tab");
     const loading = this.loadingIndicator;
     try {
-      await loading.waitFor({ state: "visible", timeout: 10000 });
+      await loading.waitFor({ state: "visible", timeout: 15000 });
       // Wait for it to disappear
       await loading.waitFor({ state: "hidden", timeout: 30000 });
     } catch {

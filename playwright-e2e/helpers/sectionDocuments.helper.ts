@@ -2,7 +2,7 @@ export async function uploadAndValidateRestrictedDocumentUpload(
   user: string,
   entries: [string, string][],
   expectedDocs: { name: string; shouldBeVisible: boolean }[],
-  resultsArray: { user: string; issues: string[] }[],
+  resultsArray: string[],
   sectionsPage,
   sectionDocumentsPage,
   filename?: string,
@@ -24,11 +24,7 @@ export async function uploadAndValidateRestrictedDocumentUpload(
         user,
         expectedDocs
       );
-    if (validationIssues)
-      resultsArray.push({
-        user: user,
-        issues: [validationIssues],
-      });
+    if (validationIssues) resultsArray.push(validationIssues);
     await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
   }
   await sectionsPage.navigation.navigateTo("LogOff");

@@ -11,5 +11,5 @@ export async function loginAndOpenCase(
   await loginPage.login(user);
   await homePage.navigation.navigateTo("ViewCaseListLink");
   await caseSearchPage.searchCaseFile(caseName, "Southwark", todaysDate());
-  await caseSearchPage.goToUpdateCase();
+  await caseSearchPage.goToUpdateCase(caseName, todaysDate());
 }
