@@ -1,8 +1,8 @@
 import { test, expect } from "../fixtures";
-import { config, assertNoIssues } from "../utils";
+import { config, pushTestResult } from "../utils";
 import {
-  createNewCaseWithUnrestrictedDocumentsROCA,
-  createNewCaseWithRestrictedDocumentsROCA,
+  createNewCaseWithUnrestrictedDocument,
+  createNewCaseWithRestrictedDocument,
 } from "../helpers/createCase.helper";
 import { loginAndOpenCase } from "../helpers/login.helper";
 import { deleteCaseByName } from "../helpers/deleteCase.helper";
@@ -17,7 +17,7 @@ import { ROCAModel } from "../data/ROCAModel";
 // So that I can accurately track document activity
 
 test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
-  let sampleKeys: [string, string][];
+  let sampleKey: [string, string][];
   let newCaseName: string;
   let rocaExpected: ROCAModel[] = [];
 
@@ -37,7 +37,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
 
-      const newCase = await createNewCaseWithUnrestrictedDocumentsROCA(
+      const newCase = await createNewCaseWithUnrestrictedDocument(
         createCasePage,
         caseDetailsPage,
         addDefendantPage,
@@ -48,7 +48,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
         "TestCase",
         "TestURN"
       );
-      sampleKeys = newCase.sampleKeys as [string, string][];
+      sampleKey = newCase.sampleKey as [string, string][];
       newCaseName = newCase.newCaseName;
       rocaExpected = newCase.uploadedDocuments;
     }
@@ -59,7 +59,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
     sectionsPage,
     updateDocumentsPage,
   }) => {
-    for (const [section, key] of sampleKeys) {
+    for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
       await rocaPage.updateROCAModel(
         rocaExpected,
@@ -79,21 +79,22 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
       rocaExpected,
       rocaPage.unrestrictedTable
     );
-
-    //Results summary
-    const { summaryLines, anyIssues } = assertNoIssues(
-      [
-        {
-          label: "Unrestricted ROCA",
-          issues: deletionIssues,
-        },
-      ],
-      "ROCA Validation: Delete Unrestricted Document"
-    );
-    if (anyIssues) {
-      const message = ["ROCA issues detected:", "", ...summaryLines].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
+    // Aggragate Results
+    pushTestResult({
+      user: config.users.hmctsAdmin.group,
+      heading: `ROCA Validation: Delete Unrestricted Document`,
+      category: "ROCA",
+      issues: deletionIssues,
+    });
+    // Fail the test if any issues were found
+    expect(
+      deletionIssues.length,
+      `User ${
+        config.users.hmctsAdmin.group
+      } was unable to delete unrestricted document:\n${deletionIssues.join(
+        "\n"
+      )}`
+    ).toBe(0);
   });
 
   test(`Validate ROCA: Moving a document from an unrestricted section`, async ({
@@ -104,10 +105,10 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
     const newSections: string[] = [];
     const restrictedROCAModel: ROCAModel[] = [];
 
-    for (const [section, key] of sampleKeys) {
+    for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
       const newSection = await updateDocumentsPage.moveDocument(
-        sampleKeys,
+        sampleKey,
         newSections
       );
       await rocaPage.updateROCAModelMove(
@@ -135,21 +136,23 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
       expectedRestrictedROCA,
       rocaPage.restrictedTable
     );
-
-    //Results summary
-    const { summaryLines, anyIssues } = assertNoIssues(
-      [
-        {
-          label: "Unrestricted ROCA",
-          issues: [...unrestrictedResult, ...restrictedResult],
-        },
-      ],
-      "ROCA Validation: Move Unrestricted Document"
-    );
-    if (anyIssues) {
-      const message = ["ROCA issues detected:", "", ...summaryLines].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
+    // Aggragate Results
+    pushTestResult({
+      user: config.users.hmctsAdmin.group,
+      heading: `ROCA Validation: Move Unrestricted Document`,
+      category: "ROCA",
+      issues: [...unrestrictedResult, ...restrictedResult],
+    });
+    // Fail the test if any issues were found
+    expect(
+      [...unrestrictedResult, ...restrictedResult].length,
+      `User ${
+        config.users.hmctsAdmin.group
+      } was unable to move unrestricted document:\n${[
+        ...unrestrictedResult,
+        ...restrictedResult,
+      ].join("\n")}`
+    ).toBe(0);
   });
 
   test(`Validate document edit in unrestricted sections for user: HMCTS Admin`, async ({
@@ -157,7 +160,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
     sectionsPage,
     updateDocumentsPage,
   }) => {
-    for (const [section, key] of sampleKeys) {
+    for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
       await rocaPage.updateROCAModel(
         rocaExpected,
@@ -178,20 +181,20 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
       rocaPage.unrestrictedTable
     );
 
-    //Results summary
-    const { summaryLines, anyIssues } = assertNoIssues(
-      [
-        {
-          label: "Unrestricted ROCA",
-          issues: editIssues,
-        },
-      ],
-      "ROCA Validation: Edit Unrestricted Document"
-    );
-    if (anyIssues) {
-      const message = ["ROCA issues detected:", "", ...summaryLines].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
+    // Aggragate Results
+    pushTestResult({
+      user: config.users.hmctsAdmin.group,
+      heading: `ROCA Validation: Edit Unrestricted Document`,
+      category: "ROCA",
+      issues: editIssues,
+    });
+    // Fail the test if any issues were found
+    expect(
+      editIssues.length,
+      `User ${
+        config.users.hmctsAdmin.group
+      } was unable to delete unrestricted document:\n${editIssues.join("\n")}`
+    ).toBe(0);
   });
 
   test.afterEach(
@@ -219,7 +222,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
 // So that I can accurately track document activity
 
 test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
-  let sampleKeys: [string, string][];
+  let sampleKey: [string, string][];
   let newCaseName: string;
   let rocaExpected: ROCAModel[] = [];
 
@@ -239,7 +242,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
 
-      const newCase = await createNewCaseWithRestrictedDocumentsROCA(
+      const newCase = await createNewCaseWithRestrictedDocument(
         createCasePage,
         caseDetailsPage,
         addDefendantPage,
@@ -250,7 +253,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
         "TestCase",
         "TestURN"
       );
-      sampleKeys = newCase.sampleKeys as [string, string][];
+      sampleKey = newCase.sampleKey as [string, string][];
       newCaseName = newCase.newCaseName;
       rocaExpected = newCase.uploadedDocuments;
     }
@@ -276,7 +279,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
       newCaseName
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
-    for (const [section, key] of sampleKeys) {
+    for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
       await rocaPage.updateROCAModel(
         rocaExpected,
@@ -298,20 +301,20 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
       rocaPage.restrictedTable
     );
 
-    //Results summary
-    const { summaryLines, anyIssues } = assertNoIssues(
-      [
-        {
-          label: "Restricted ROCA",
-          issues: deletionIssues,
-        },
-      ],
-      "ROCA Validation: Delete Restricted Document"
-    );
-    if (anyIssues) {
-      const message = ["ROCA issues detected:", "", ...summaryLines].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
+    // Aggragate Results
+    pushTestResult({
+      user: config.users.defenceAdvocateA.group,
+      heading: `ROCA Validation: Delete Restricted Document`,
+      category: "ROCA",
+      issues: deletionIssues,
+    });
+    // Fail the test if any issues were found
+    expect(
+      deletionIssues.length,
+      `User ${
+        config.users.defenceAdvocateA.group
+      } was unable to delete restricted document:\n${deletionIssues.join("\n")}`
+    ).toBe(0);
   });
 
   test(`ROCA - Validate document move from restricted sections`, async ({
@@ -337,10 +340,10 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
       newCaseName
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
-    for (const [section, key] of sampleKeys) {
+    for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
       const newSection = await updateDocumentsPage.moveDocument(
-        sampleKeys,
+        sampleKey,
         newSections
       );
       await rocaPage.updateROCAModelMove(
@@ -370,20 +373,23 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
       rocaPage.unrestrictedTable
     );
 
-    //Results summary
-    const { summaryLines, anyIssues } = assertNoIssues(
-      [
-        {
-          label: "Restricted ROCA",
-          issues: [...unrestrictedResult, ...restrictedResult],
-        },
-      ],
-      "ROCA Validation: Move Restricted Document"
-    );
-    if (anyIssues) {
-      const message = ["ROCA issues detected:", "", ...summaryLines].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
+    // Aggragate Results
+    pushTestResult({
+      user: config.users.defenceAdvocateA.group,
+      heading: `ROCA Validation: Move Restricted Document`,
+      category: "ROCA",
+      issues: [...unrestrictedResult, ...restrictedResult],
+    });
+    // Fail the test if any issues were found
+    expect(
+      [...unrestrictedResult, ...restrictedResult].length,
+      `User ${
+        config.users.defenceAdvocateA.group
+      } was unable to move restricted document:\n${[
+        ...unrestrictedResult,
+        ...restrictedResult,
+      ].join("\n")}`
+    ).toBe(0);
   });
 
   test(`ROCA - Validate document edit in restricted sections`, async ({
@@ -407,7 +413,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
       newCaseName
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
-    for (const [section, key] of sampleKeys) {
+    for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
       await rocaPage.updateROCAModel(
         rocaExpected,
@@ -429,20 +435,20 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
       rocaPage.restrictedTable
     );
 
-    //Results summary
-    const { summaryLines, anyIssues } = assertNoIssues(
-      [
-        {
-          label: "Restricted ROCA",
-          issues: editIssues,
-        },
-      ],
-      "ROCA Validation: Edit Restricted Document"
-    );
-    if (anyIssues) {
-      const message = ["ROCA issues detected:", "", ...summaryLines].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
+    // Aggragate Results
+    pushTestResult({
+      user: config.users.defenceAdvocateC.group,
+      heading: `ROCA Validation: Edit Restricted Document`,
+      category: "ROCA",
+      issues: editIssues,
+    });
+    // Fail the test if any issues were found
+    expect(
+      editIssues.length,
+      `User ${
+        config.users.defenceAdvocateC.group
+      } was unable to delete unrestricted document:\n${editIssues.join("\n")}`
+    ).toBe(0);
   });
 
   test.afterEach(
