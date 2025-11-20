@@ -40,6 +40,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
     rocaPage,
     peoplePage,
   }) => {
+    await peoplePage.caseNavigation.navigateTo("Sections");
     const unrestrictedSectionKeys = await sectionsPage.getSectionKeys(
       sections.unrestricted
     );
@@ -49,7 +50,6 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
     const sampleEntries = Object.entries(unrestrictedSectionKeys)
       .sort(() => Math.random() - 0.5)
       .slice(0, 3);
-    await peoplePage.caseNavigation.navigateTo("Sections");
     for (const [sectionIndex, sectionKey] of sampleEntries) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadUnrestrictedDocument(
@@ -110,6 +110,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
     rocaPage,
     peoplePage,
   }) => {
+    await peoplePage.caseNavigation.navigateTo("Sections");
     const restrictedSectionKeys = await sectionsPage.getSectionKeys(
       sections.restricted
     );
