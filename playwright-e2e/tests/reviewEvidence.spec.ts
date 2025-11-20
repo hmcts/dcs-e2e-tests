@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { test, expect } from "../fixtures";
 import ReviewEvidencePage from "../page-objects/pages/reviewEvidence.page";
-import { UserCredentials, config, assertNoIssues } from "../utils";
+import { config, pushTestResult } from "../utils";
 
 // ============================================================
 // Test 1: Sections & Documents Availability
@@ -13,23 +12,21 @@ import { UserCredentials, config, assertNoIssues } from "../utils";
 
 test.describe("Sections and Documents availability", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
-
   test.beforeEach(async ({ homePage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("LogOn");
   });
 
-  const documentResults: { user: string; issues: string[] }[] = [];
-
   const excludedGroups = [
     "AccessCoordinator",
     "DefenceAdvocateB",
     "DefenceAdvocateC",
+    "Admin",
   ];
 
-  for (const [_, user] of Object.entries(config.users).filter(
-    ([_, user]) => !excludedGroups.includes(user.group)
-  ) as [string, UserCredentials][]) {
+  for (const user of Object.values(config.users).filter(
+    (user) => !excludedGroups.includes(user.group)
+  )) {
     test(`Verify Sections & Documents in Navigation Panel for: ${user.group}`, async ({
       loginPage,
       homePage,
@@ -43,7 +40,7 @@ test.describe("Sections and Documents availability", () => {
         await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
         const [popup] = await Promise.all([
           caseSearchPage.page.waitForEvent("popup"),
-          caseSearchPage.goToReviewEvidence(),
+          caseSearchPage.goToReviewEvidence("01AD111111"),
         ]);
 
         const reviewEvidencePage = new ReviewEvidencePage(popup);
@@ -67,32 +64,28 @@ test.describe("Sections and Documents availability", () => {
         // If there are any section or document issues, push to currentUserIssues
         currentUserIssues.push(...missingDocuments, ...unexpectedDocuments);
       } catch (error: unknown) {
-        if (error instanceof Error) {
-          console.error(error.message);
-        } else {
-          console.error(String(error));
-        }
+        console.error(
+          `Error assessing document availability for ${user.group}:`,
+          error
+        );
       } finally {
-        // Push each User result to documentResults for later analysis
-        documentResults.push({ user: user.group, issues: currentUserIssues });
+        //Aggragate results across users
+        pushTestResult({
+          user: user.group,
+          heading: `Verify Sections & Documents for ${user.group}`,
+          category: "Sections",
+          issues: currentUserIssues,
+        });
+        // Fail the test if any issues were found
+        expect(
+          currentUserIssues.length,
+          `User ${
+            user.group
+          } has missing/unexpected documents:\n${currentUserIssues.join("\n")}`
+        ).toBe(0);
       }
     });
   }
-
-  test.afterAll(() => {
-    const documentsCheck = documentResults.map((r) => ({
-      label: r.user,
-      issues: r.issues,
-    }));
-    const { summaryLines, anyIssues } = assertNoIssues(
-      documentsCheck,
-      "SECTION & DOCUMENT AVAILABILITY SUMMARY"
-    );
-    if (anyIssues) {
-      const message = ["Issues detected:", "", ...summaryLines].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
-  });
 });
 
 // ============================================================
@@ -105,23 +98,21 @@ test.describe("Sections and Documents availability", () => {
 
 test.describe("Document rendering / photosnaps", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
-
   test.beforeEach(async ({ homePage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("LogOn");
   });
 
-  const renderResults: { user: string; issues: string[] }[] = [];
-
   const excludedGroups = [
     "AccessCoordinator",
     "DefenceAdvocateB",
     "DefenceAdvocateC",
+    "Admin",
   ];
 
-  for (const [_, user] of Object.entries(config.users).filter(
-    ([_, user]) => !excludedGroups.includes(user.group)
-  ) as [string, UserCredentials][]) {
+  for (const user of Object.values(config.users).filter(
+    (user) => !excludedGroups.includes(user.group)
+  )) {
     test(`Render a sample of documents for: ${user.group}`, async ({
       loginPage,
       homePage,
@@ -135,7 +126,7 @@ test.describe("Document rendering / photosnaps", () => {
         await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
         const [popup] = await Promise.all([
           caseSearchPage.page.waitForEvent("popup"),
-          caseSearchPage.goToReviewEvidence(),
+          caseSearchPage.goToReviewEvidence("01AD111111"),
         ]);
 
         const reviewEvidencePage = new ReviewEvidencePage(popup);
@@ -198,33 +189,26 @@ test.describe("Document rendering / photosnaps", () => {
           }
         }
       } catch (error: unknown) {
-        if (error instanceof Error) {
-          console.error(error.message);
-        } else {
-          console.error(String(error));
-        }
+        console.error(
+          `Error during document rendering for ${user.group}:`,
+          error
+        );
       } finally {
-        renderResults.push({ user: user.group, issues: currentUserIssues });
+        //Aggragate results across users
+        pushTestResult({
+          user: user.group,
+          heading: `Verify Document Rendering for ${user.group}`,
+          category: "Sections",
+          issues: currentUserIssues,
+        });
+        // Fail the test if any issues were found
+        expect(
+          currentUserIssues.length,
+          `User ${
+            user.group
+          } has document mismatches:\n${currentUserIssues.join("\n")}`
+        ).toBe(0);
       }
     });
   }
-
-  test.afterAll(() => {
-    const renderCheck = renderResults.map((r) => ({
-      label: r.user,
-      issues: r.issues,
-    }));
-    const { summaryLines, anyIssues } = assertNoIssues(
-      renderCheck,
-      "DOCUMENT RENDERING SUMMARY"
-    );
-    if (anyIssues) {
-      const message = [
-        "User had document rendering issues:",
-        "",
-        ...summaryLines,
-      ].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
-  });
 });

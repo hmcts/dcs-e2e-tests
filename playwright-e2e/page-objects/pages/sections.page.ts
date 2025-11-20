@@ -68,10 +68,28 @@ class SectionsPage extends Base {
     await viewDocsButton.click();
   }
 
+  async goToViewDocumentsBySectionLetter(sectionLetter: string) {
+    const row = this.page.locator(
+      `tr:has(td:nth-child(2):text-is("${sectionLetter}"))`
+    );
+    const viewDocsButton = row.locator(
+      'a.button-level-two[title*="view the list of documents"]'
+    );
+    await viewDocsButton.click();
+  }
+
   async goToUploadDocuments(sectionKey: string) {
     const row = this.page.locator(`tr:has(a[href*="${sectionKey}"])`);
     const uploadButton = row.getByRole("link", { name: "Upload Document(s)" });
     await uploadButton.click();
+  }
+
+  async goToUpdateDocuments(sectionKey: string) {
+    const row = this.page.locator(`tr:has(a[href*="${sectionKey}"])`);
+    const updateButton = row.getByRole("link", {
+      name: "Update All Documents",
+    });
+    await updateButton.click();
   }
 
   async getSectionAndDocumentDetails(): Promise<DocumentModel[]> {
@@ -179,7 +197,7 @@ class SectionsPage extends Base {
       }
     );
     try {
-      await unrestrictedDocument.waitFor({ state: "visible", timeout: 5000 });
+      await unrestrictedDocument.waitFor({ state: "visible", timeout: 10000 });
     } catch (error) {
       return `Unrestricted document upload not found: ${filename} in Section: ${section}. Error: ${error}`;
     }

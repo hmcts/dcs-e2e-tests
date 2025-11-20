@@ -1,6 +1,7 @@
 import { Base } from "../base";
 import { DocumentModel } from "../../data/documentModel";
 import ViewDocumentPage from "./viewDocument.page";
+import { expect } from "../../fixtures";
 
 interface DocumentCheck {
   name: string;
@@ -13,6 +14,20 @@ class SectionDocumentsPage extends Base {
   constructor(page) {
     super(page);
     this.viewDocumentPage = new ViewDocumentPage(page);
+  }
+
+  async verifyDocumentRemoval(user, section) {
+    await this.page
+      .locator("table.formTable-zebra tbody tr:nth-child(n+2)")
+      .first()
+      .waitFor({ state: "visible", timeout: 20000 });
+    const rows = this.page.locator(
+      "table.formTable-zebra tbody tr:nth-child(n+3)"
+    );
+    const count = await rows.count();
+    if (count > 0) {
+      return `Document removal failed for ${user} in Section ${section}`;
+    }
   }
 
   async getSectionDocuments(
@@ -96,14 +111,12 @@ class SectionDocumentsPage extends Base {
   ) {
     const issues: string[] = [];
 
-    await this.page
-      .locator("td.documentInContentsIndex span")
-      .first()
-      .waitFor({
-        state: "visible",
-        timeout: 10000,
-      })
-      .catch(() => {});
+    await this.page;
+
+    await expect(
+      this.page.locator("td.documentInContentsIndex span").first(),
+      `Documents table did not load for User: ${user}, Section: ${section}`
+    ).toBeVisible();
 
     for (const doc of documents) {
       const locator = this.page.locator("td.documentInContentsIndex span", {
@@ -125,6 +138,42 @@ class SectionDocumentsPage extends Base {
       return `Validation failed for ${user} in Section ${section}:\n - ${issues.join(
         "\n - "
       )}`;
+    }
+  }
+
+  async validateUnrestrictedSectionDocument(filename, section) {
+    await expect(
+      this.page.locator("td.documentInContentsIndex span").first(),
+      `Documents table did not load for Section: ${section}, filename: ${filename}`
+    ).toBeVisible();
+
+    const locator = this.page.locator("td.documentInContentsIndex span", {
+      hasText: `${filename}`,
+    });
+
+    const count = await locator.count();
+    const isVisible = count > 0;
+
+    if (!isVisible) {
+      return `Edit: Unable to locate edited filename for unrestricted document in Section ${section}`;
+    }
+  }
+
+  async validateSingleRestrictedSectionDocument(filename, section) {
+    await expect(
+      this.page.locator("td.documentInContentsIndex span").first(),
+      `Documents table did not load for Section: ${section}, Filename: ${filename}`
+    ).toBeVisible();
+
+    const locator = this.page.locator("td.documentInContentsIndex span", {
+      hasText: `${filename}`,
+    });
+
+    const count = await locator.count();
+    const isVisible = count > 0;
+
+    if (!isVisible) {
+      return `Edit: Unable to locate edited filename for restricted document in Section ${section}`;
     }
   }
 }

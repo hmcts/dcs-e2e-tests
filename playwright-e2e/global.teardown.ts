@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { logFinalSummary } from "./utils";
 
 export default async function globalTeardown() {
   //tears down user session and deletes session files
@@ -9,6 +10,8 @@ export default async function globalTeardown() {
     fs.rmSync(sessionsDir, { recursive: true, force: true });
     console.log("Deleted all session files.");
   }
+
+  logFinalSummary();
 
   console.log("Global teardown complete.");
 }

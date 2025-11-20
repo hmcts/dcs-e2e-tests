@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { test, expect } from "../fixtures";
-import fs from "fs";
-import { config } from "../utils";
 import ReviewEvidencePage from "../page-objects/pages/reviewEvidence.page";
 
 test.describe("Search Auto Case 1 (Documents Testing) and navigate into case", () => {
@@ -15,7 +12,7 @@ test.describe("Search Auto Case 1 (Documents Testing) and navigate into case", (
     caseSearchPage,
     caseDetailsPage,
   }) => {
-    await caseSearchPage.goToUpdateCase();
+    await caseSearchPage.goToUpdateCase("01AD111111");
     await expect(caseDetailsPage.caseNameHeading).toContainText(
       "Auto Case1 - DO NOT AMEND"
     );
@@ -28,7 +25,7 @@ test.describe("Search Auto Case 1 (Documents Testing) and navigate into case", (
     caseSearchPage,
     updateFrontPage,
   }) => {
-    await caseSearchPage.goToUpdateFrontPage();
+    await caseSearchPage.goToUpdateFrontPage("01AD111111");
     await expect(updateFrontPage.caseNameHeading).toContainText(
       "Auto Case1 - DO NOT AMEND"
     );
@@ -40,7 +37,7 @@ test.describe("Search Auto Case 1 (Documents Testing) and navigate into case", (
   test("Review Evidence - Auto Case1", async ({ caseSearchPage }) => {
     const [popup] = await Promise.all([
       caseSearchPage.page.waitForEvent("popup"),
-      caseSearchPage.goToReviewEvidence(),
+      caseSearchPage.goToReviewEvidence("01AD111111"),
     ]);
 
     const reviewEvidencePage = new ReviewEvidencePage(popup);
@@ -62,7 +59,7 @@ test.describe("Search Comment Case (Notes Testing) and navigate into case", () =
     caseSearchPage,
     caseDetailsPage,
   }) => {
-    await caseSearchPage.goToUpdateCase();
+    await caseSearchPage.goToUpdateCase("01SJ1111");
     await expect(caseDetailsPage.caseNameHeading).toContainText(
       "Comment Case - DO NOT AMEND"
     );
@@ -75,7 +72,7 @@ test.describe("Search Comment Case (Notes Testing) and navigate into case", () =
     caseSearchPage,
     updateFrontPage,
   }) => {
-    await caseSearchPage.goToUpdateFrontPage();
+    await caseSearchPage.goToUpdateFrontPage("01SJ1111");
     await expect(updateFrontPage.caseNameHeading).toContainText(
       "Comment Case - DO NOT AMEND"
     );
@@ -87,7 +84,7 @@ test.describe("Search Comment Case (Notes Testing) and navigate into case", () =
   test("Review Evidence - Comment Case", async ({ caseSearchPage }) => {
     const [popup] = await Promise.all([
       caseSearchPage.page.waitForEvent("popup"),
-      caseSearchPage.goToReviewEvidence(),
+      caseSearchPage.goToReviewEvidence("01SJ1111"),
     ]);
 
     const reviewEvidencePage = new ReviewEvidencePage(popup);

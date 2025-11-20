@@ -21,7 +21,7 @@ import UserSettingsPage from "./userSettings.page";
 import ApprovalRequestsPage from "./approvalRequests.page";
 import ApproveAccessRequestPage from "./approveAccessRequest.page";
 import RejectAccessRequestPage from "./rejectAccessRequest.page";
-
+import UpdateDocumentsPage from "./updateDocuments.page";
 
 export interface PageFixtures {
   homePage: HomePage;
@@ -47,6 +47,7 @@ export interface PageFixtures {
   approvalRequestsPage: ApprovalRequestsPage;
   approveAccessRequestPage: ApproveAccessRequestPage;
   rejectAccessRequestPage: RejectAccessRequestPage;
+  updateDocumentsPage: UpdateDocumentsPage;
 }
 
 export const pageFixtures = {
@@ -120,5 +121,8 @@ export const pageFixtures = {
   },
   rejectAccessRequestPage: async ({ page }, use) => {
     await use(new RejectAccessRequestPage(page));
+  },
+  updateDocumentsPage: async ({ page }, use) => {
+    await use(new UpdateDocumentsPage(page));
   },
 };

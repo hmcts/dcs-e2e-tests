@@ -6,7 +6,7 @@ test.describe.serial("Case navigation links", () => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");
     await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
-    await caseSearchPage.goToUpdateCase();
+    await caseSearchPage.goToUpdateCase("01AD111111");
   });
 
   for (const link of caseLinks) {

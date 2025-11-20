@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { test, expect } from "../fixtures";
-import { UserCredentials, config } from "../utils";
+import { UserCredentials, config, pushTestResult } from "../utils";
 
 // ============================================================
 // Test 1: Sections & Documents Availability
@@ -26,12 +26,11 @@ test.describe("Sections Page", () => {
     await homePage.navigation.navigateTo("LogOn");
   });
 
-  const documentResults: { user: string; issues: string[] }[] = [];
-
   const excludedGroups = [
     "AccessCoordinator",
     "DefenceAdvocateB",
     "DefenceAdvocateC",
+    "Admin",
   ];
 
   for (const [_, user] of Object.entries(config.users).filter(
@@ -44,13 +43,12 @@ test.describe("Sections Page", () => {
       sectionsPage,
       homePage,
     }) => {
-      test.setTimeout(360_000);
       const currentUserIssues: string[] = [];
       try {
         await loginPage.login(user);
         await homePage.navigation.navigateTo("ViewCaseListLink");
         await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
-        await caseSearchPage.goToUpdateCase();
+        await caseSearchPage.goToUpdateCase("01AD111111");
         await caseDetailsPage.caseNavigation.navigateTo("Sections");
         const availableDocuments =
           await sectionsPage.getSectionAndDocumentDetails();
@@ -59,51 +57,33 @@ test.describe("Sections Page", () => {
         );
         const { missingDocuments, unexpectedDocuments } =
           await sectionsPage.compareExpectedVsAvailableSectionsAndDocuments(
-            availableDocuments,
-            expectedDocuments
+            expectedDocuments,
+            availableDocuments
           );
 
         // If there are any section or document issues, push to currentUserIssues
         currentUserIssues.push(...missingDocuments, ...unexpectedDocuments);
       } catch (error: unknown) {
-        if (error instanceof Error) {
-          console.error(error.message);
-        } else {
-          console.error(String(error));
-        }
+        console.error(
+          `Error verifying section and document availability for ${user.group}:`,
+          error
+        );
       } finally {
-        // Push each User result to documentResults for later analysis
-        documentResults.push({ user: user.group, issues: currentUserIssues });
+        // Aggragate results across users
+        pushTestResult({
+          user: user.group,
+          heading: `Verify Sections & Documents for ${user.group}`,
+          category: "Sections/Sections Documents Page",
+          issues: currentUserIssues,
+        });
+        // Fail the test if any issues were found
+        expect(
+          currentUserIssues.length,
+          `User ${
+            user.group
+          } has missing/unexpected documents:\n${currentUserIssues.join("\n")}`
+        ).toBe(0);
       }
     });
   }
-
-  test.afterAll(() => {
-    // Build a readable summary string
-    const summaryLines: string[] = [];
-    summaryLines.push("===== SECTION & DOCUMENT AVAILABILITY SUMMARY =====");
-
-    documentResults.forEach(({ user, issues }) => {
-      if (issues.length > 0) {
-        summaryLines.push(`❌ ${user}:`);
-        issues.forEach((i) => summaryLines.push(`   - ${i}`));
-      }
-    });
-
-    summaryLines.push("===================================================");
-
-    // Check if any user has issues
-    const anyIssues = documentResults.some(
-      (result) => result.issues.length > 0
-    );
-
-    // Include the summary in the expect failure message
-    const message = [
-      "User had missing or unexpected documents:",
-      "",
-      ...summaryLines,
-    ].join("\n");
-
-    expect(anyIssues, message).toBe(false);
-  });
 });

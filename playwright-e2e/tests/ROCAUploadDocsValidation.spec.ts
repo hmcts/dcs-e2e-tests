@@ -2,8 +2,7 @@ import { test, expect } from "../fixtures";
 import { ROCAModel } from "../data/ROCAModel";
 import { config } from "../utils";
 import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
-import { assertNoIssues } from "../utils";
-import { sections } from "../utils";
+import { sections, pushTestResult } from "../utils";
 import { loginAndOpenCase } from "../helpers/login.helper";
 
 test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", () => {
@@ -39,6 +38,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
     sectionDocumentsPage,
     uploadDocumentPage,
     rocaPage,
+    peoplePage,
   }) => {
     const unrestrictedSectionKeys = await sectionsPage.getSectionKeys(
       sections.unrestricted
@@ -49,7 +49,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
     const sampleEntries = Object.entries(unrestrictedSectionKeys)
       .sort(() => Math.random() - 0.5)
       .slice(0, 3);
-
+    await peoplePage.caseNavigation.navigateTo("Sections");
     for (const [sectionIndex, sectionKey] of sampleEntries) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadUnrestrictedDocument(
@@ -80,20 +80,23 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
         availableROCA
       );
 
-    //Results summary
-    const { summaryLines, anyIssues } = assertNoIssues(
-      [
-        {
-          label: "Unrestricted ROCA",
-          issues: [...missingDocuments, ...unexpectedDocuments],
-        },
-      ],
-      "Unrestricted ROCA Validation"
-    );
-    if (anyIssues) {
-      const message = ["ROCA issues detected:", "", ...summaryLines].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
+    // Aggragate Results
+    pushTestResult({
+      user: config.users.hmctsAdmin.group,
+      heading: `ROCA Validation: Upload Unrestricted Document`,
+      category: "ROCA",
+      issues: [...missingDocuments, ...unexpectedDocuments],
+    });
+    // Fail the test if any issues were found
+    expect(
+      [...missingDocuments, ...unexpectedDocuments].length,
+      `User ${
+        config.users.hmctsAdmin.group
+      } was unable to upload unrestricted document:\n${[
+        ...missingDocuments,
+        ...unexpectedDocuments,
+      ].join("\n")}`
+    ).toBe(0);
   });
 
   test(`Validate ROCA for restricted document uploads`, async ({
@@ -105,6 +108,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
     sectionDocumentsPage,
     uploadDocumentPage,
     rocaPage,
+    peoplePage,
   }) => {
     const restrictedSectionKeys = await sectionsPage.getSectionKeys(
       sections.restricted
@@ -115,8 +119,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
     const sampleEntries = Object.entries(restrictedSectionKeys)
       .sort(() => Math.random() - 0.5)
       .slice(0, 3);
-
-    await sectionsPage.navigation.navigateTo("LogOff");
+    await peoplePage.navigation.navigateTo("LogOff");
 
     // Upload documents to restricted section as Defence Advocate A
     await loginAndOpenCase(
@@ -244,21 +247,21 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
       expectedROCADefenceC,
       rocaPage.restrictedTable
     );
-
-    //Results summary
-    const allIssues = [...issuesA, ...issuesB, ...issuesC];
-    const { summaryLines, anyIssues } = assertNoIssues(
-      [
-        {
-          label: "Restricted ROCA",
-          issues: allIssues,
-        },
-      ],
-      "Restricted ROCA Validation"
-    );
-    if (anyIssues) {
-      const message = ["ROCA issues detected:", "", ...summaryLines].join("\n");
-      expect(anyIssues, message).toBe(false);
-    }
+    // Aggragate Results
+    pushTestResult({
+      user: "Defence Users",
+      heading: `ROCA Validation: Upload and Access to Restricted Documents`,
+      category: "ROCA",
+      issues: [...issuesA, ...issuesB, ...issuesC],
+    });
+    // Fail the test if any issues were found
+    expect(
+      [...issuesA, ...issuesB, ...issuesC].length,
+      `Error uploading and accessing restricted documents:\n${[
+        ...issuesA,
+        ...issuesB,
+        ...issuesC,
+      ].join("\n")}`
+    ).toBe(0);
   });
 });
