@@ -1,12 +1,10 @@
 import { test, expect } from "../fixtures";
-import { sections, config, assertNoIssues } from "../utils";
+import { sections, config } from "../utils";
 import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
 import { loginAndOpenCase } from "../helpers/login.helper";
-import { uploadAndValidateRestrictedDocumentUpload } from "../helpers/sectionDocuments.helper";
-import { deleteCaseByName } from "../helpers/deleteCase.helper";
 
 // ============================================================
-// Test 1: Split Case Functionality 
+// Test 1: Split & Merge Case Functionality 
 // ============================================================
 
 // The Split function allows a case with more than one defendant to be split into a number of cases as set by the user,
@@ -33,7 +31,17 @@ import { deleteCaseByName } from "../helpers/deleteCase.helper";
 // A status bar will display detailing the progress of the splits and confirm when it has been completed. 
 // Search for your split cases to find them in your case list. 
 
-test.describe("Split Case Functionality", () => {
+// The Merge function allows multiple cases to be combined into one DCS case. 
+// It can be used when a number of cases need to be consolidated, or when a defendant is sent to the Crown Court after his co-accused. 
+// When the cases are merged, all defendants and listed users will be copied across to the merged case. 
+// All documents, comments and memos will be copied across to the merged cases, 
+// but a de-duplication process will ensure that only one copy of each unique document will end up in the merged case. 
+// Where there are different comments on the same document in multiple cases, 
+// these will be consolidated as part of the de-duplication process. 
+// Any access permissions applied to documents in sections with defence access restrictions will remain in place on the new merged case. 
+// Only users of role HMCTS Admin have access to the Merge function. 
+
+test.describe("Split & Merge Case Functionality", () => {
   let newCaseName: string;
 
 test.beforeEach(
@@ -62,7 +70,7 @@ test.beforeEach(
     }
   );
 
-test(`Splitting a Case by HMCTS Admin`, async ({
+test(`Split & Merge Cases by HMCTS Admin`, async ({
     sectionsPage,
     createNewSectionPage,
     sectionDocumentsPage,
@@ -72,9 +80,10 @@ test(`Splitting a Case by HMCTS Admin`, async ({
     homePage,
     memoPage,
     uploadDocumentPage,
-    splitCasePage
+    splitCasePage,
+    mergeCasePage
   }) => {
-
+ 
 // Add Memo, documents to unrestricted section as HMCTS Admin
     await caseDetailsPage.caseNavigation.navigateTo('Memos')
     await memoPage.addMemo();
@@ -160,6 +169,20 @@ test(`Splitting a Case by HMCTS Admin`, async ({
   await sectionsPage.caseNavigation.navigateTo("Split");
   await splitCasePage.splitACase(newCaseName)
   await expect(splitCasePage.progressBar).toContainText('50%',{timeout: 90_000 })
+  await caseDetailsPage.navigation.navigateTo("LogOff"); 
+
+
+  // Merge two cases by HMCTS Admin
+  await loginAndOpenCase(
+      homePage,
+      loginPage,
+      caseSearchPage,
+      config.users.hmctsAdmin,
+      `${newCaseName}one`
+    );
+  await sectionsPage.caseNavigation.navigateTo("Merge");
+  await mergeCasePage.mergeCases(`${newCaseName}one`,`${newCaseName}two`)
+  await expect(mergeCasePage.progressBar).toContainText('50%',{timeout: 90_000 })
 }}
 });
 });

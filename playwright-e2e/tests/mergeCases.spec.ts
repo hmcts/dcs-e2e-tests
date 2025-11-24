@@ -1,5 +1,5 @@
 import { test, expect } from "../fixtures";
-import { sections, config, assertNoIssues } from "../utils";
+import { sections, config } from "../utils";
 import { createNewCaseWithDefendantsAndUsersForMerge1, createNewCaseWithDefendantsAndUsersForMerge2 } from "../helpers/createCase.helper";
 import { loginAndOpenCase } from "../helpers/login.helper";
 import { uploadAndValidateRestrictedDocumentUpload } from "../helpers/sectionDocuments.helper";
