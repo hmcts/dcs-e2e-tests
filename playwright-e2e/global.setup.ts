@@ -3,6 +3,7 @@ import fs from "fs";
 import { Cookie } from "@playwright/test";
 import { CookieUtils } from "./utils/cookie.utils";
 const cookieUtils = new CookieUtils();
+import { clearResultsFile } from "./utils";
 
 function isSessionValid(sessionFile: string, cookieName: string): boolean {
   // In the case the file doesn't exist, it should attempt to login
@@ -22,6 +23,8 @@ function isSessionValid(sessionFile: string, cookieName: string): boolean {
   }
 }
 setup.describe("Set up user session", () => {
+  clearResultsFile();
+  console.log("Cleared previous test results.");
   /**
    * Signs in as a HMCTS Admin and stores session data.
    * Skips login if a valid session already exists.
