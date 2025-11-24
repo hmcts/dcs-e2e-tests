@@ -4,6 +4,7 @@ import { config } from "../utils";
 import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
 import { sections, pushTestResult } from "../utils";
 import { loginAndOpenCase } from "../helpers/login.helper";
+import { deleteCaseByName } from "../helpers/deleteCase.helper";
 
 test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", () => {
   let newCaseName: string;
@@ -40,6 +41,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
     rocaPage,
     peoplePage,
   }) => {
+    await peoplePage.caseNavigation.navigateTo("Sections");
     const unrestrictedSectionKeys = await sectionsPage.getSectionKeys(
       sections.unrestricted
     );
@@ -49,7 +51,6 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
     const sampleEntries = Object.entries(unrestrictedSectionKeys)
       .sort(() => Math.random() - 0.5)
       .slice(0, 3);
-    await peoplePage.caseNavigation.navigateTo("Sections");
     for (const [sectionIndex, sectionKey] of sampleEntries) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadUnrestrictedDocument(
@@ -81,22 +82,23 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
       );
 
     // Aggragate Results
+    const uploadIssues = [...missingDocuments, ...unexpectedDocuments];
     pushTestResult({
       user: config.users.hmctsAdmin.group,
       heading: `ROCA Validation: Upload Unrestricted Document`,
       category: "ROCA",
-      issues: [...missingDocuments, ...unexpectedDocuments],
+      issues: uploadIssues,
     });
     // Fail the test if any issues were found
-    expect(
-      [...missingDocuments, ...unexpectedDocuments].length,
-      `User ${
-        config.users.hmctsAdmin.group
-      } was unable to upload unrestricted document:\n${[
-        ...missingDocuments,
-        ...unexpectedDocuments,
-      ].join("\n")}`
-    ).toBe(0);
+    if (uploadIssues.length > 0) {
+      throw new Error(
+        `User ${
+          config.users.hmctsAdmin.group
+        } had issues uploading unrestricted documents:\n${uploadIssues.join(
+          "\n"
+        )}`
+      );
+    }
   });
 
   test(`Validate ROCA for restricted document uploads`, async ({
@@ -110,6 +112,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
     rocaPage,
     peoplePage,
   }) => {
+    await peoplePage.caseNavigation.navigateTo("Sections");
     const restrictedSectionKeys = await sectionsPage.getSectionKeys(
       sections.restricted
     );
@@ -248,20 +251,34 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
       rocaPage.restrictedTable
     );
     // Aggragate Results
+    const uploadIssues = [...issuesA, ...issuesB, ...issuesC];
     pushTestResult({
       user: "Defence Users",
       heading: `ROCA Validation: Upload and Access to Restricted Documents`,
       category: "ROCA",
-      issues: [...issuesA, ...issuesB, ...issuesC],
+      issues: uploadIssues,
     });
     // Fail the test if any issues were found
-    expect(
-      [...issuesA, ...issuesB, ...issuesC].length,
-      `Error uploading and accessing restricted documents:\n${[
-        ...issuesA,
-        ...issuesB,
-        ...issuesC,
-      ].join("\n")}`
-    ).toBe(0);
+    if (uploadIssues.length > 0) {
+      throw new Error(
+        `Defence Users had issues uploading and accessing restricted documents:\n${uploadIssues.join(
+          "\n"
+        )}`
+      );
+    }
   });
+  test.afterEach(
+    async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
+      if (newCaseName) {
+        await deleteCaseByName(
+          newCaseName,
+          caseSearchPage,
+          caseDetailsPage,
+          homePage,
+          loginPage,
+          page
+        );
+      }
+    }
+  );
 });

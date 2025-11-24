@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures";
+import { test } from "../fixtures";
 import { sections, config, pushTestResult } from "../utils";
 import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
 import { loginAndOpenCase } from "../helpers/login.helper";
@@ -77,14 +77,15 @@ test.describe("Document Upload Tests", () => {
       issues: unrestrictedUploadResults,
     });
     // Fail the test if any issues were found
-    expect(
-      unrestrictedUploadResults.length,
-      `User ${
-        config.users.hmctsAdmin.group
-      } experienced issues uploading an unrestricted document:\n${unrestrictedUploadResults.join(
-        "\n"
-      )}`
-    ).toBe(0);
+    if (unrestrictedUploadResults.length > 0) {
+      throw new Error(
+        `User ${
+          config.users.hmctsAdmin.group
+        } experienced issues uploading unrestricted documents:\n${unrestrictedUploadResults.join(
+          "\n"
+        )}`
+      );
+    }
   });
 
   // ============================================================
@@ -204,12 +205,13 @@ test.describe("Document Upload Tests", () => {
       issues: restrictedUploadResults,
     });
     // Fail the test if any issues were found
-    expect(
-      restrictedUploadResults.length,
-      `Defence Users experienced issues uploading and accessing restricted documents:\n${unrestrictedUploadResults.join(
-        "\n"
-      )}`
-    ).toBe(0);
+    if (restrictedUploadResults.length > 0) {
+      throw new Error(
+        `Defence Users experienced issues uploading and accessing restricted documents:\n${restrictedUploadResults.join(
+          "\n"
+        )}`
+      );
+    }
   });
 
   test.afterEach(

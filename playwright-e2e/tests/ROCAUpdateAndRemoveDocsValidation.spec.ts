@@ -87,14 +87,15 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
       issues: deletionIssues,
     });
     // Fail the test if any issues were found
-    expect(
-      deletionIssues.length,
-      `User ${
-        config.users.hmctsAdmin.group
-      } was unable to delete unrestricted document:\n${deletionIssues.join(
-        "\n"
-      )}`
-    ).toBe(0);
+    if (deletionIssues.length > 0) {
+      throw new Error(
+        `User ${
+          config.users.hmctsAdmin.group
+        } had issues deleting unrestricted document:\n${deletionIssues.join(
+          "\n"
+        )}`
+      );
+    }
   });
 
   test(`Validate ROCA: Moving a document from an unrestricted section`, async ({
@@ -137,22 +138,21 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
       rocaPage.restrictedTable
     );
     // Aggragate Results
+    const moveIssues = [...unrestrictedResult, ...restrictedResult];
     pushTestResult({
       user: config.users.hmctsAdmin.group,
       heading: `ROCA Validation: Move Unrestricted Document`,
       category: "ROCA",
-      issues: [...unrestrictedResult, ...restrictedResult],
+      issues: moveIssues,
     });
-    // Fail the test if any issues were found
-    expect(
-      [...unrestrictedResult, ...restrictedResult].length,
-      `User ${
-        config.users.hmctsAdmin.group
-      } was unable to move unrestricted document:\n${[
-        ...unrestrictedResult,
-        ...restrictedResult,
-      ].join("\n")}`
-    ).toBe(0);
+    // Fail the test if any issues were found;
+    if (moveIssues.length > 0) {
+      throw new Error(
+        `User ${
+          config.users.hmctsAdmin.group
+        } had issues moving unrestricted document:\n${moveIssues.join("\n")}`
+      );
+    }
   });
 
   test(`Validate document edit in unrestricted sections for user: HMCTS Admin`, async ({
@@ -189,12 +189,13 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
       issues: editIssues,
     });
     // Fail the test if any issues were found
-    expect(
-      editIssues.length,
-      `User ${
-        config.users.hmctsAdmin.group
-      } was unable to delete unrestricted document:\n${editIssues.join("\n")}`
-    ).toBe(0);
+    if (editIssues.length > 0) {
+      throw new Error(
+        `User ${
+          config.users.hmctsAdmin.group
+        } had issues editing unrestricted document:\n${editIssues.join("\n")}`
+      );
+    }
   });
 
   test.afterEach(
@@ -309,12 +310,15 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
       issues: deletionIssues,
     });
     // Fail the test if any issues were found
-    expect(
-      deletionIssues.length,
-      `User ${
-        config.users.defenceAdvocateA.group
-      } was unable to delete restricted document:\n${deletionIssues.join("\n")}`
-    ).toBe(0);
+    if (deletionIssues.length > 0) {
+      throw new Error(
+        `User ${
+          config.users.defenceAdvocateA.group
+        } had issues deleting restricted document:\n${deletionIssues.join(
+          "\n"
+        )}`
+      );
+    }
   });
 
   test(`ROCA - Validate document move from restricted sections`, async ({
@@ -374,22 +378,21 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
     );
 
     // Aggragate Results
+    const moveIssues = [...unrestrictedResult, ...restrictedResult];
     pushTestResult({
       user: config.users.defenceAdvocateA.group,
       heading: `ROCA Validation: Move Restricted Document`,
       category: "ROCA",
-      issues: [...unrestrictedResult, ...restrictedResult],
+      issues: moveIssues,
     });
-    // Fail the test if any issues were found
-    expect(
-      [...unrestrictedResult, ...restrictedResult].length,
-      `User ${
-        config.users.defenceAdvocateA.group
-      } was unable to move restricted document:\n${[
-        ...unrestrictedResult,
-        ...restrictedResult,
-      ].join("\n")}`
-    ).toBe(0);
+    // Fail the test if any issues were found;
+    if (moveIssues.length > 0) {
+      throw new Error(
+        `User ${
+          config.users.defenceAdvocateA.group
+        } had issues moving restricted document:\n${moveIssues.join("\n")}`
+      );
+    }
   });
 
   test(`ROCA - Validate document edit in restricted sections`, async ({
@@ -443,12 +446,13 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
       issues: editIssues,
     });
     // Fail the test if any issues were found
-    expect(
-      editIssues.length,
-      `User ${
-        config.users.defenceAdvocateC.group
-      } was unable to delete unrestricted document:\n${editIssues.join("\n")}`
-    ).toBe(0);
+    if (editIssues.length > 0) {
+      throw new Error(
+        `User ${
+          config.users.defenceAdvocateC.group
+        } had issues editing restricted document:\n${editIssues.join("\n")}`
+      );
+    }
   });
 
   test.afterEach(
