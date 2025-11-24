@@ -38,7 +38,7 @@ class UpdateDocumentsPage extends Base {
     try {
       await dialog.accept();
     } catch (err) {
-      console.warn("⚠️ Failed to accept deletion dialog:", err);
+      console.warn("⚠️ Failed to accept document deletion dialog:", err);
     }
   }
 
