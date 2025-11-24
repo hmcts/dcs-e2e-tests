@@ -149,7 +149,7 @@ test(`Splitting a Case by HMCTS Admin`, async ({
     await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     await sectionsPage.navigation.navigateTo("LogOff"); 
 
-// Split a case between two Defendants
+// Split a case between two Defendants by HMCTS Admin
   await loginAndOpenCase(
       homePage,
       loginPage,
@@ -159,8 +159,7 @@ test(`Splitting a Case by HMCTS Admin`, async ({
     );
   await sectionsPage.caseNavigation.navigateTo("Split");
   await splitCasePage.splitACase(newCaseName)
-  await expect(splitCasePage.progressBar.getByText('50%')).toBeVisible({timeout: 90_000 })
-
+  await expect(splitCasePage.progressBar).toContainText('50%',{timeout: 90_000 })
 }}
 });
 });
