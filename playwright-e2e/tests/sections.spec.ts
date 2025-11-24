@@ -77,12 +77,15 @@ test.describe("Sections Page", () => {
           issues: currentUserIssues,
         });
         // Fail the test if any issues were found
-        expect(
-          currentUserIssues.length,
-          `User ${
-            user.group
-          } has missing/unexpected documents:\n${currentUserIssues.join("\n")}`
-        ).toBe(0);
+        if (currentUserIssues.length > 0) {
+          throw new Error(
+            `User ${
+              user.group
+            } has missing/unexpected documents:\n${currentUserIssues.join(
+              "\n"
+            )}`
+          );
+        }
       }
     });
   }

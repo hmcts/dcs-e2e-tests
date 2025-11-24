@@ -231,7 +231,13 @@ class ROCAPage extends Base {
       );
       if (!found) {
         missingDocuments.push(
-          `Missing Record - Section: ${expected.sectionIndex} / Document: ${expected.documentName}(${expected.documentNumber})`
+          `Missing Record 
+          EXPECTED:
+          Section: ${expected.sectionIndex}
+          Document: ${expected.documentName}(${expected.documentNumber})
+          Action: ${expected.action}
+          Username: ${expected.username}
+          Defendants: ${expected.defendants}`
         );
       }
     }
@@ -250,7 +256,13 @@ class ROCAPage extends Base {
       );
       if (!found) {
         unexpectedDocuments.push(
-          `Unexpected Record - Section: ${actual.sectionIndex} / Document: ${actual.documentName}(${actual.documentNumber})`
+          `Unexpected Record
+          FOUND:
+          Section: ${actual.sectionIndex}
+          Document: ${actual.documentName} (${actual.documentNumber})
+          Action: ${actual.action}
+          Username: ${actual.username}
+          Defendants: ${actual.defendants}`
         );
       }
     }
