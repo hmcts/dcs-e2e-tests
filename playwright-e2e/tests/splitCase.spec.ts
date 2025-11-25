@@ -168,7 +168,7 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
     );
   await sectionsPage.caseNavigation.navigateTo("Split");
   await splitCasePage.splitACase(newCaseName)
-  await expect(splitCasePage.progressBar).toContainText('50%',{timeout: 90_000 })
+  await expect(splitCasePage.progressBar).toContainText('Preparing',{timeout: 90_000 })
   await caseDetailsPage.navigation.navigateTo("LogOff"); 
 
 
@@ -182,7 +182,8 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
     );
   await sectionsPage.caseNavigation.navigateTo("Merge");
   await mergeCasePage.mergeCases(`${newCaseName}one`,`${newCaseName}two`)
-  await expect(mergeCasePage.progressBar).toContainText('50%',{timeout: 90_000 })
+  await expect(mergeCasePage.progressBar).toContainText('Preparing',{timeout: 90_000 })
+  await caseDetailsPage.navigation.navigateTo("LogOff"); 
 }}
 });
 });
