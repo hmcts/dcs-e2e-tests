@@ -100,7 +100,7 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
         await sectionsPage.uploadAndValidateUnrestrictedSectionDocument(
           key,
           "unrestrictedSectionUpload",
-          'J'
+          section
         );
     await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     await sectionsPage.navigation.navigateTo("LogOff");
