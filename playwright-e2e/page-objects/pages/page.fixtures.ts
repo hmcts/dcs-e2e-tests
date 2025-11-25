@@ -25,6 +25,7 @@ import CreateNewSectionPage from "./createNewSection.page"
 import SplitCasePage from "./splitCase.page";
 import MergeCasePage from "./mergeCase.page";
 import UpdateDocumentsPage from "./updateDocuments.page";
+import IndexPage from "./index.page";
 
 export interface PageFixtures {
   homePage: HomePage;
@@ -54,6 +55,7 @@ export interface PageFixtures {
   splitCasePage: SplitCasePage;
   mergeCasePage: MergeCasePage;
   updateDocumentsPage: UpdateDocumentsPage;
+  indexPage: IndexPage;
 }
 
 export const pageFixtures = {
@@ -137,5 +139,8 @@ export const pageFixtures = {
   },
   updateDocumentsPage: async ({ page }, use) => {
     await use(new UpdateDocumentsPage(page));
+  },
+  indexPage: async ({ page }, use) => {
+    await use(new IndexPage(page));
   },
 };
