@@ -22,14 +22,16 @@ constructor(page) {
     this.mergeCaseSelect = page.locator('.typeahead')
     this.removeFromMergeButton = page.getByRole('link', { name: 'Remove from Merge' })
     // this.mergeCasesButton = page.getByRole('link', { name: 'Merge cases' });
-    this.mergeCasesButton = page.locator('#mergeCase')
+    // this.mergeCasesButton = page.locator('#mergeCase')
+    this.mergeCasesButton = page.locator('a:has-text("Merge cases")')
     this.progressBar = page.locator('div.progress')
     this.iframe = this.page.locator('icon-iframe')
     this.caseListTable = page.locator('#caseListTable')
 }
 
 async mergeCases(caseName1: string, caseName2: string){
-    // await this.page.waitForLoadState('networkidle');
+    await this.page.setViewportSize({ width: 1280, height: 720 });
+    await this.page.waitForLoadState('networkidle');
     await expect(this.newCaseUrn).toBeEditable();
     await this.newCaseUrn.clear();
     await this.newCaseUrn.fill(caseName1+'(M)')
@@ -39,8 +41,9 @@ async mergeCases(caseName1: string, caseName2: string){
     await this.page.locator('strong').nth(0).click();
     await this.page.locator("td:nth-child(3)").isVisible({timeout: 20000});
     await expect(this.caseListTable).toBeEnabled();
-    await expect(this.mergeCasesButton).toBeEnabled();
+    await expect(this.mergeCasesButton).toBeVisible({timeout: 20000});
     await this.mergeCasesButton.click();
+    await this.mergeCasesButton.click({timeout: 20000});
     // await this.mergeCasesButton.click({force:true})
     // await this.mergeCasesButton.press('Enter');
     // await this.mergeCasesButton.dispatchEvent('click');
