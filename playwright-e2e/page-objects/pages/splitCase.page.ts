@@ -45,19 +45,29 @@ async splitACase(caseName: string){
 
     await this.newCaseName1.fill(caseName+ "one")
     await this.newCaseName2.fill(caseName+ "two")
-    const firstDefendant = await this.firstDefendant.getByText('Defendant Two');
-        if (firstDefendant)
-        {
-            await this.caseSelect1.selectOption("Case2");
-            await this.caseSelect2.selectOption("Case1");
+    const defendantLocator = await this.firstDefendant.getByText('Defendant Two');
+    const defendantTwoIsVisible = await defendantLocator.isVisible();
 
-        }
-        else{
-            await this.caseSelect1.selectOption("Case1");
-            await this.caseSelect2.selectOption("Case2");   
-        }
+    if (defendantTwoIsVisible) {
+        // This block executes if 'Defendant Two' IS found and visible.
+        await this.caseSelect1.selectOption("Case2");
+        await this.caseSelect2.selectOption("Case1");
+
+    } else {
+        // This block executes if 'Defendant Two' is NOT found or is NOT visible.
+        await this.caseSelect1.selectOption("Case1");
+        await this.caseSelect2.selectOption("Case2");
+    }
+    
     await this.splitCaseButton.click();
 }
+
+
+async waitForSplitCaseCompletion(){
+    await this.page.waitForTimeout(50_000);
+    console.log('Split case completion')
+}
+
 }
 export default SplitCasePage;
 

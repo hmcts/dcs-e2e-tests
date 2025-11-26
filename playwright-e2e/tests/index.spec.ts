@@ -56,7 +56,13 @@ test(`Get Sections & Documents from Index Page`, async ({
     await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     await caseDetailsPage.caseNavigation.navigateTo('Index')
     const documentList = await indexPage.getIndexDocuments();
-    await expect(documentList.length).toBeGreaterThan(0);
-  }}
-)}
-)
+    await expect(documentList.length).toBeGreaterThan(0); 
+    try {
+    await sectionDocumentsPage.validateSingleRestrictedSectionDocument("restrictedSectionUploadDefendantOne", section);
+    console.log('✅ Success: Section with matched unrestricted document:', section);
+    } catch (error) {
+    console.error(`❌ Validation Failed in Section ${section}:`);
+    }
+  }
+})
+})
