@@ -193,7 +193,7 @@ class SectionsPage extends Base {
     section: string
   ) {
     await this.goToUploadDocuments(key);
-    await this.uploadDocumentPage.uploadUnrestrictedDocument(filename);
+    await this.uploadDocumentPage.uploadUnrestrictedDocument(filename, section);
 
     const unrestrictedDocument = this.sectionDocumentsPage.page.locator(
       "td.documentInContentsIndex span",
@@ -207,6 +207,16 @@ class SectionsPage extends Base {
       return `Unrestricted document upload not found: ${filename} in Section: ${section}. Error: ${error}`;
     }
   }
+
+  async uploadUnrestrictedSectionDocument(
+    key: string,
+    filename: string,
+    section: string
+  ) {
+    await this.goToUploadDocuments(key);
+    await this.uploadDocumentPage.uploadUnrestrictedDocument(filename, section);
+  }
+
 
   async uploadRestrictedSectionDocument(
     key: string,

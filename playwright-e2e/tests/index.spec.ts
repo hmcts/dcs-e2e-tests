@@ -48,7 +48,7 @@ test(`Retrieve & Validate Sections & Documents from Index Page`, async ({
           .slice(0, 1);
     
     for (const [section, key] of sampleEntries) {
-            await sectionsPage.uploadAndValidateUnrestrictedSectionDocument(
+            await sectionsPage.uploadUnrestrictedSectionDocument(
               key,
               "unrestrictedSectionUpload",
               section
@@ -57,12 +57,9 @@ test(`Retrieve & Validate Sections & Documents from Index Page`, async ({
     await caseDetailsPage.caseNavigation.navigateTo('Index')
     const documentList = await indexPage.getIndexDocuments();
     await expect(documentList.length).toBeGreaterThan(0); 
-    try {
-    await sectionDocumentsPage.validateUnrestrictedSectionDocument("unrestrictedSectionUpload", section);
-    console.log('✅ Success: Section with matched unrestricted document:', section);
-    } catch (error) {
-    console.error(`❌ Validation Failed in Section ${section}:`);
+    const validationResult = await sectionDocumentsPage.validateUnrestrictedSectionDocument("unrestrictedSectionUpload", section);
+    await expect(validationResult).toBeUndefined();
     }
-  }
+  
 })
 })
