@@ -1,6 +1,6 @@
 import { test, expect } from "../fixtures";
 import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
-import { sections, config } from "../utils";
+import { sections } from "../utils";
 
 test.describe("Index Page Functionality", () => {
   let newCaseName: string;
@@ -31,7 +31,7 @@ test.beforeEach(
     }
   );
 
-test(`Get Sections & Documents from Index Page`, async ({
+test(`Retrieve & Validate Sections & Documents from Index Page`, async ({
     caseDetailsPage,
     indexPage,
     sectionDocumentsPage,

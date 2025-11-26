@@ -1,6 +1,6 @@
 import { Locator, expect } from '@playwright/test'; 
 import { Base } from "../base";
-import { DocumentModel, documents } from "../../data/documentModel";
+import { DocumentModel } from "../../data/documentModel";
 
 class IndexPage extends Base {
  indexLink: Locator;
@@ -11,7 +11,6 @@ constructor(page) {
     super(page);
     this.indexLink = page.getByRole('link', { name: 'Index' }); 
     this.indexSectionTable = page.locator('.contentsIndex');
-    // Base locator for all rows (tr) in the table 
     this.baseTableRows = page.locator('xpath=//*[@id="aspnetForm"]/table[2]/tbody/tr');
 }
 
@@ -28,7 +27,6 @@ constructor(page) {
         return await rowLocator.locator('td').count();
     }
 
-
     async indexSectionKey(row: number){
         const rowLocator = this.baseTableRows.nth(row - 1);
         const sectionLinkLocator = rowLocator.locator('xpath=./td/table/tbody/tr/td[2]//a');
@@ -40,7 +38,6 @@ constructor(page) {
         return null; 
     }
 
-
     async indexSectionTitle(row: number): Promise<string | null> {
         const rowLocator = this.baseTableRows.nth(row - 1);
         const sectionTitleLocator = rowLocator.locator('xpath=./td/table/tbody/tr/td[2]/a/div');
@@ -51,7 +48,7 @@ constructor(page) {
         const trimmedTitle = sectionTitle.trim();
         const doubleSpaceIndex = trimmedTitle.indexOf("  "); 
 
-        // Check if the delimiter was found AFTER the start of the string (index > 0).
+        // Check if the delimiter was found AFTER the start of the string 
         if (doubleSpaceIndex > 0) {
             // Return the substring before the delimiter
             return trimmedTitle.substring(0, doubleSpaceIndex); 
@@ -68,8 +65,7 @@ constructor(page) {
             let docName = await docNameLocator.textContent();
 
             if (docName) {
-            // Remove Audit Trail from docName 
-            docName = docName.slice(0, -14);
+            docName = docName.slice(0, -14);             // Remove Audit Trail from docName 
             return docName ? docName.trim() : "No Name";
             }
         }
@@ -85,20 +81,13 @@ constructor(page) {
             
             if (docNum) {
                 docNum = docNum.trim();
-                // Remove Audit Trail from docNum 
-                docNum = docNum.slice(0, -12);
+                docNum = docNum.slice(0, -12);          // Remove Audit Trail from docNum 
                 
-                // Replace first leading zeros (replaceFirst("^0+(?!$)", "")) using regex
                 // This removes leading zeros unless the whole string is "0".
                 return docNum.replace(/^0+(?!$)/, "");
             }
         }
         return "No Num";
-    }
-
-    async waitForGreenFlag(): Promise<void> {
-        const greenFlagLocator = this.page.getByRole('img', { name: 'working' }); 
-        await expect(greenFlagLocator).toBeVisible({ timeout: 10000 }); 
     }
 
 
@@ -112,7 +101,6 @@ async getIndexDocuments(): Promise<DocumentModel[]> {
 
     await this.clickIndexLink();
     await this.page.waitForLoadState('networkidle', {timeout:50000});
-    
     const indexRowCount = await this.rowCount(); 
 
     for (let row = 1; row <= indexRowCount; row++) {
@@ -175,6 +163,5 @@ async getIndexDocumentArray(
     };
     console.log(documentModel);
     return [documentModel];
-}
-}
+}}
 export default IndexPage;
