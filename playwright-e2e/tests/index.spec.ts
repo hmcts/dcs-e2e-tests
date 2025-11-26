@@ -58,7 +58,7 @@ test(`Get Sections & Documents from Index Page`, async ({
     const documentList = await indexPage.getIndexDocuments();
     await expect(documentList.length).toBeGreaterThan(0); 
     try {
-    await sectionDocumentsPage.validateSingleRestrictedSectionDocument("restrictedSectionUploadDefendantOne", section);
+    await sectionDocumentsPage.validateUnrestrictedSectionDocument("unrestrictedSectionUpload", section);
     console.log('✅ Success: Section with matched unrestricted document:', section);
     } catch (error) {
     console.error(`❌ Validation Failed in Section ${section}:`);
