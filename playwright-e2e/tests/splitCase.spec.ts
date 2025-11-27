@@ -80,6 +80,7 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
     homePage,
     memoPage,
     uploadDocumentPage,
+    indexPage,
     splitCasePage,
     mergeCasePage
   }) => {
@@ -97,7 +98,7 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
       .slice(0, 1);
 
     for (const [section, key] of sampleEntries) {
-        await sectionsPage.uploadAndValidateUnrestrictedSectionDocument(
+        await sectionsPage.uploadUnrestrictedSectionDocument(
           key,
           "unrestrictedSectionUpload",
           section
@@ -118,22 +119,22 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     await sectionsPage.gotoCreateNewSection();
     await createNewSectionPage.createPrivateSection("Defence A", 'PD1')
-    const restrictedSections = sections.restricted;
-    const restrictedSectionKeys = await sectionsPage.getSectionKeys(
-      restrictedSections
+    const restrictedSectionsA = sections.restricted;
+    const restrictedSectionKeysA = await sectionsPage.getSectionKeys(
+      restrictedSectionsA
     );
-    const sampleEntries = Object.entries(restrictedSectionKeys)
+    const sampleEntriesA = Object.entries(restrictedSectionKeysA)
       .sort(() => Math.random() - 0.5)
       .slice(0, 1);
 
-    for (const [_, sectionKey] of sampleEntries) {
+    for (const [sectionA, sectionKey] of sampleEntriesA) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadRestrictedSectionDocument(
         "One, Defendant",
         "restrictedSectionUploadDefendantOne"
       );
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
-    }
+    
     await sectionsPage.navigation.navigateTo("LogOff");
 
 // Add memo, new Private section & documents to restricted section as Defence Advocate B
@@ -149,7 +150,14 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     await sectionsPage.gotoCreateNewSection();
     await createNewSectionPage.createPrivateSection("Defence B", 'PD2')
-    for (const [_, sectionKey] of sampleEntries) {
+    const restrictedSectionsB = sections.restricted;
+    const restrictedSectionKeysB = await sectionsPage.getSectionKeys(
+      restrictedSectionsB
+    );
+    const sampleEntriesB = Object.entries(restrictedSectionKeysB)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 1);
+    for (const [sectionB, sectionKey] of sampleEntriesB) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadRestrictedSectionDocument(
         "Two, Defendant",
@@ -168,8 +176,49 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
     );
   await sectionsPage.caseNavigation.navigateTo("Split");
   await splitCasePage.splitACase(newCaseName)
-  await expect(splitCasePage.progressBar).toContainText('Preparing',{timeout: 90_000 })
+  await expect(splitCasePage.progressBar).toContainText('Preparing',{timeout: 40_000 })
+  await splitCasePage.waitForSplitCaseCompletion();
   await caseDetailsPage.navigation.navigateTo("LogOff"); 
+
+
+  // Validate Memo, new Section & Documents for Defence A
+  await loginAndOpenCase(
+      homePage,
+      loginPage,
+      caseSearchPage,
+      config.users.defenceAdvocateA,
+      `${newCaseName}one`
+    );
+    await caseDetailsPage.caseNavigation.navigateTo('Index')
+    const documentList = await indexPage.getIndexDocuments();
+    await expect(documentList.length).toBeGreaterThan(0); 
+    await sectionDocumentsPage.validateUnrestrictedSectionDocument("unrestrictedSectionUpload", section);
+    await sectionDocumentsPage.validateSingleRestrictedSectionDocument("restrictedSectionUploadDefendantOne", sectionA);
+    const privateDefASection = await sectionsPage.validateSectionName('PD1');
+    await expect(privateDefASection).toEqual('PD1');
+    console.log('Unrestricted Section for Defence A:',section)
+    console.log('Restricted Section for Defence A:',sectionA)
+    await sectionDocumentsPage.navigation.navigateTo("LogOff"); 
+
+
+  // Validate Memo, new Section & Documents for Defence B
+  await loginAndOpenCase(
+      homePage,
+      loginPage,
+      caseSearchPage,
+      config.users.defenceAdvocateB,
+      `${newCaseName}two`
+    );
+    await caseDetailsPage.caseNavigation.navigateTo('Index')
+    const documentList2 = await indexPage.getIndexDocuments();
+    await expect(documentList2.length).toBeGreaterThan(0); 
+    await sectionDocumentsPage.validateUnrestrictedSectionDocument("unrestrictedSectionUpload", section);
+    await sectionDocumentsPage.validateSingleRestrictedSectionDocument("restrictedSectionUploadDefendantTwo", sectionB);
+    const privateDefBSection = await sectionsPage.validateSectionName('PD2');
+    await expect(privateDefBSection).toEqual('PD2');
+    console.log('Unrestricted Section for Defence B:',section)
+    console.log('Restricted Section for Defence B:',sectionB)
+    await sectionDocumentsPage.navigation.navigateTo("LogOff"); 
 
 
   // Merge two cases by HMCTS Admin
@@ -183,7 +232,8 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
   await sectionsPage.caseNavigation.navigateTo("Merge");
   await mergeCasePage.mergeCases(`${newCaseName}one`,`${newCaseName}two`)
   await expect(mergeCasePage.progressBar).toContainText('Preparing',{timeout: 90_000 })
+  await mergeCasePage.waitForMergeCasesCompletion();
   await caseDetailsPage.navigation.navigateTo("LogOff"); 
-}}
+}}}
 });
 });

@@ -64,7 +64,8 @@ async splitACase(caseName: string){
 
 
 async waitForSplitCaseCompletion(){
-    await this.page.waitForTimeout(50_000);
+    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForTimeout(60_000);
     console.log('Split case completion')
 }
 
