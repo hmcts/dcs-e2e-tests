@@ -1,4 +1,4 @@
-import { Locator, expect } from '@playwright/test'; 
+import { Locator } from '@playwright/test'; 
 import { Base } from "../base";
 import { DocumentModel } from "../../data/documentModel";
 import UploadDocumentPage from "./uploadDocument.page";
@@ -9,6 +9,9 @@ class IndexPage extends Base {
  indexSectionTable: Locator;   
  baseTableRows: Locator; 
  sectionLinks: Locator;
+ pd1SectionLocator: Locator;
+ pd2SectionLocator: Locator;
+ 
 
 constructor(page) {
     super(page);
@@ -17,6 +20,8 @@ constructor(page) {
     this.indexSectionTable = page.locator('.contentsIndex');
     this.baseTableRows = page.locator('xpath=//*[@id="aspnetForm"]/table[2]/tbody/tr');
     this.sectionLinks = page.locator('a.contentsAnchor');
+    this.pd1SectionLocator = page.getByText('PD1:', { exact: true })
+    this.pd2SectionLocator = page.getByText('PD2:', { exact: true })
 }
   
     async rowCount(): Promise<number> {

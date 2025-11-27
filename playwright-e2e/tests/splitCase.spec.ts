@@ -234,6 +234,28 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
   await expect(mergeCasePage.progressBar).toContainText('Preparing',{timeout: 90_000 })
   await mergeCasePage.waitForMergeCasesCompletion();
   await caseDetailsPage.navigation.navigateTo("LogOff"); 
+
+// Validate Memo, new Section & Documents for Defence A
+await loginAndOpenCase(
+      homePage,
+      loginPage,
+      caseSearchPage,
+      config.users.defenceAdvocateA,
+      `${newCaseName}one`
+    );
+    await caseDetailsPage.caseNavigation.navigateTo('Index')
+    const mergedDocumentList1 = await indexPage.getIndexDocuments();
+    await expect(mergedDocumentList1.length).toBeGreaterThan(0); 
+    await sectionDocumentsPage.validateUnrestrictedSectionDocument("unrestrictedSectionUpload", section);
+    await sectionDocumentsPage.validateSingleRestrictedSectionDocument("restrictedSectionUploadDefendantone", sectionA);
+    const privateDefSections = await sectionsPage.validateSections(['PD1','PD2'])
+    await expect(privateDefSections).toContain('PD1');
+    await expect(indexPage.pd2SectionLocator).not.toBeVisible({ timeout: 10000 });
+    console.log('Unrestricted Section for Defence A:',section)
+    console.log('Restricted Section for Defence A:',sectionA)
+    await sectionDocumentsPage.navigation.navigateTo("LogOff")
+
+
 }}}
 });
 });
