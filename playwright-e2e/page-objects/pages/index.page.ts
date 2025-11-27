@@ -1,25 +1,30 @@
 import { Locator, expect } from '@playwright/test'; 
 import { Base } from "../base";
 import { DocumentModel } from "../../data/documentModel";
+import UploadDocumentPage from "./uploadDocument.page";
 
 class IndexPage extends Base {
+ uploadDocumentPage: UploadDocumentPage;
  indexLink: Locator;
  indexSectionTable: Locator;   
  baseTableRows: Locator; 
+ sectionLinks: Locator;
 
 constructor(page) {
     super(page);
+    this.uploadDocumentPage = new UploadDocumentPage(page);
     this.indexLink = page.getByRole('link', { name: 'Index' }); 
     this.indexSectionTable = page.locator('.contentsIndex');
     this.baseTableRows = page.locator('xpath=//*[@id="aspnetForm"]/table[2]/tbody/tr');
+    this.sectionLinks = page.locator('a.contentsAnchor');
 }
-
-    async clickIndexLink(): Promise<void> {
-        await this.indexLink.click();
-    }
-    
+  
     async rowCount(): Promise<number> {
         return await this.baseTableRows.count();
+    }
+
+    async sectionsCount(): Promise<number> {
+        return await this.sectionLinks.count();
     }
 
     async colCount(row: number): Promise<number> {
@@ -91,7 +96,7 @@ constructor(page) {
     }
 
 
-async getIndexDocuments(): Promise<DocumentModel[]> { 
+async getIndexDocuments(): Promise<DocumentModel[]>{ 
     let sectionTitle: string | null = null;
     let sectionKey: string | null = null;
     const docNoName: string = "No Name";
@@ -99,7 +104,6 @@ async getIndexDocuments(): Promise<DocumentModel[]> {
     let colCountNext: number = 0;
     let indexArrayList: DocumentModel[] = []; 
 
-    await this.clickIndexLink();
     await this.page.waitForLoadState('networkidle', {timeout:50000});
     const indexRowCount = await this.rowCount(); 
 
@@ -161,7 +165,48 @@ async getIndexDocumentArray(
         documentName: docNum, 
         documentNumber: docName,
     };
-    console.log(documentModel);
     return [documentModel];
+}
+
+async goToUploadDocumentsFromIndex(sectionKey: string) {
+    const uploadButton = this.page.getByRole("link", { name: "Upload Document(s)" });
+    await uploadButton.click();
+}
+
+  
+async uploadDocumentFromIndex(
+    key: string,
+    filename: string,
+    section: string
+){
+    await this.goToUploadDocumentsFromIndex(key);
+    await this.uploadDocumentPage.uploadUnrestrictedDocument(filename, section);
+}
+
+
+async goToIndexSectionLink(sectionKey: string, section: string): Promise<void> {
+    let matchFound = false;
+    await this.page.waitForLoadState('networkidle', { timeout: 50000 });
+    const sectionCount = await this.sectionsCount(); 
+
+    for (let row = 1; row <= sectionCount; row++) {
+        const targetSection = this.sectionLinks.nth(row - 1); 
+        const isSectionButtonAttached = await targetSection.isVisible({ timeout: 1000 }); 
+
+        if (!isSectionButtonAttached) {
+            break; 
+        }
+        const sectionHref = await targetSection.getAttribute('href');
+        if (sectionHref && sectionHref.includes(sectionKey)) {
+            console.log(`✅ SUCCESS: Found and clicking Section: ${section}`);
+            await targetSection.click();
+            matchFound = true;
+            break; 
+        }
+    }
+    // Fail the test if the target section was never found after iterating
+    if (!matchFound) {
+        throw new Error(`Target section link not found for Key: ${sectionKey} and Section: ${section} within the index table.`);
+    }
 }}
 export default IndexPage;

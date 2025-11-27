@@ -45,5 +45,10 @@ async mergeCases(caseName1: string, caseName2: string){
     // }); 
 
 }
+
+async waitForMergeCasesCompletion(){
+  await this.page.waitForLoadState('networkidle');
+  console.log('Merge Cases completion')
+}
 }
 export default MergeCasePage;

@@ -19,7 +19,6 @@ class UploadDocumentPage extends Base {
     await this.fileInput.setInputFiles(`playwright-e2e/data/${filename}.pdf`);
     await this.startUploadBtn.click();
     await this.viewSectionDocsBtn.click();
-    console.log('Section for Unrestricted document upload:', section)
   }
 
   async uploadRestrictedSectionDocument(

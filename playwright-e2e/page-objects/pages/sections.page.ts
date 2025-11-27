@@ -187,6 +187,14 @@ class SectionsPage extends Base {
     return sectionKeys;
   }
 
+async validateSectionName(section: string) {
+      const cell = this.page
+        .getByRole("cell", { name: `${section}`, exact: true })
+        .first();
+    return section;
+  }
+
+
   async uploadAndValidateUnrestrictedSectionDocument(
     key: string,
     filename: string,

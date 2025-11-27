@@ -46,14 +46,15 @@ test(`Retrieve & Validate Sections & Documents from Index Page`, async ({
     const sampleEntries = Object.entries(unrestrictedSectionKeys)
           .sort(() => Math.random() - 0.5)
           .slice(0, 1);
-    
+
+    await caseDetailsPage.caseNavigation.navigateTo('Index')
     for (const [section, key] of sampleEntries) {
-            await sectionsPage.uploadUnrestrictedSectionDocument(
+       await indexPage.goToIndexSectionLink(key, section)
+            await indexPage.uploadDocumentFromIndex(
               key,
               "unrestrictedSectionUpload",
               section
     );
-    await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     await caseDetailsPage.caseNavigation.navigateTo('Index')
     const documentList = await indexPage.getIndexDocuments();
     await expect(documentList.length).toBeGreaterThan(0); 
