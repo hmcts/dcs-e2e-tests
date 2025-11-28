@@ -15,14 +15,12 @@ import { loginAndOpenCase } from "../helpers/login.helper";
 // but documents in sections with defence access restrictions will only be copied to the cases 
 // containing defendants to which access has been granted. 
 
-// Only users of role HMCTS Admin have access to the Split function. 
+// Only users of role HMCTS Admin have access to the Split & Merge function. 
 
 // On the Split Cases screen: 
-// Step 1: 
 // 1. Enter the number of cases you want to split this case into 
 // 2. Click the Update button to confirm this number
 //    The fields in Step 2 will now populate with the number of cases specified.
-// Step 2: 
 // 3. The names of the new split cases will default to the same name as the source case. 
 //    Edit the new Case Names to those you wish to use. 
 // 4. The URNs of the new split cases will default to the same URN as the source case with the addition of /1, /2, etc. Amend as necessary.
@@ -40,6 +38,20 @@ import { loginAndOpenCase } from "../helpers/login.helper";
 // these will be consolidated as part of the de-duplication process. 
 // Any access permissions applied to documents in sections with defence access restrictions will remain in place on the new merged case. 
 // Only users of role HMCTS Admin have access to the Merge function. 
+
+// On the Merge Cases screen: 
+// The top left section of the screen will display details about the current case, namely the case name, URN and Crest case numbers. 
+// It will also list the defendants attached to this case. 
+// The top right section of the screen will display proposed details for the new merged case. 
+// 1. The New Case Name will default to the existing case name so will likely need to be amended to include the names of the additional defendants. 
+// 2. The New Case URN will default to the existing URN with (M) added on the end. Amend as necessary. 
+// 3. Search for the cases to be merged by typing in the Find cases to merge box. 
+//    You can search by Case Name, URN or Crest Case Number. Results will be filtered to cases at the same courthouse as the current case. 
+// 4. As you type a drop-down box will auto-populate with a list of matching cases. 
+//    Click on a case to add it to the list of cases to be merged. 
+// 5. If a case is added to the list in error, it can be removed with the Remove from Merge button. 
+// 6. When all the cases to be merged have been added to the list, confirm the New Case Name and New Case URN and then click on Merge cases button.
+// A status bar will display detailing the progress of the merge. Once completed you will be taken to the new merged case.
 
 test.describe("Split & Merge Case Functionality", () => {
   let newCaseName: string;
@@ -82,7 +94,8 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
     uploadDocumentPage,
     indexPage,
     splitCasePage,
-    mergeCasePage
+    mergeCasePage,
+    rocaPage
   }) => {
  
 // Add Memo, documents to unrestricted section as HMCTS Admin
@@ -106,7 +119,7 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
     await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     await sectionsPage.navigation.navigateTo("LogOff");
 
-// Add memo, new Private section & documents to restricted section as Defence Advocate A
+// Add memo, new section & documents to restricted section as Defence Advocate A
     await loginAndOpenCase(
       homePage,
       loginPage,
@@ -134,10 +147,10 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
         "restrictedSectionUploadDefendantOne"
       );
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
-    
     await sectionsPage.navigation.navigateTo("LogOff");
 
-// Add memo, new Private section & documents to restricted section as Defence Advocate B
+
+// Add memo, new section & documents to restricted section as Defence Advocate B
     await loginAndOpenCase(
       homePage,
       loginPage,
@@ -165,6 +178,7 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
       );
     await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     await sectionsPage.navigation.navigateTo("LogOff"); 
+    
 
 // Split a case between two Defendants by HMCTS Admin
   await loginAndOpenCase(
@@ -174,14 +188,14 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
       config.users.hmctsAdmin,
       newCaseName
     );
-  await sectionsPage.caseNavigation.navigateTo("Split");
-  await splitCasePage.splitACase(newCaseName)
-  await expect(splitCasePage.progressBar).toContainText('Preparing',{timeout: 40_000 })
-  await splitCasePage.waitForSplitCaseCompletion();
-  await caseDetailsPage.navigation.navigateTo("LogOff"); 
+    await sectionsPage.caseNavigation.navigateTo("Split");
+    await splitCasePage.splitACase(newCaseName)
+    await expect(splitCasePage.progressBar).toContainText('Preparing',{ timeout: 20_000 })
+    await splitCasePage.waitForSplitCaseCompletion();
+    await splitCasePage.navigation.navigateTo("LogOff"); 
 
 
-  // Validate Memo, new Section & Documents for Defence A
+// Split Case Validation - Memo, new Section, Index Documents & ROCA for Defence A
   await loginAndOpenCase(
       homePage,
       loginPage,
@@ -189,19 +203,27 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
       config.users.defenceAdvocateA,
       `${newCaseName}one`
     );
+    await caseDetailsPage.caseNavigation.navigateTo('Memos')
+    await expect (memoPage.memoTableRow1).toHaveText('Defence A memo test textbox directly available')
     await caseDetailsPage.caseNavigation.navigateTo('Index')
     const documentList = await indexPage.getIndexDocuments();
     await expect(documentList.length).toBeGreaterThan(0); 
     await sectionDocumentsPage.validateUnrestrictedSectionDocument("unrestrictedSectionUpload", section);
     await sectionDocumentsPage.validateSingleRestrictedSectionDocument("restrictedSectionUploadDefendantOne", sectionA);
-    const privateDefASection = await sectionsPage.validateSectionName('PD1');
-    await expect(privateDefASection).toEqual('PD1');
-    console.log('Unrestricted Section for Defence A:',section)
-    console.log('Restricted Section for Defence A:',sectionA)
-    await sectionDocumentsPage.navigation.navigateTo("LogOff"); 
+    const expectedSectionsA = ['PD1']; 
+    const foundSectionsA = await indexPage.validateSections(expectedSectionsA);
+    await expect(foundSectionsA).toEqual(expectedSectionsA);
+    await expect(indexPage.pd2SectionLocator).not.toBeVisible({ timeout: 10_000 });
+    await indexPage.caseNavigation.navigateTo("ROCA")
+    await rocaPage.waitForRocaTablesToLoad();
+    await expect(rocaPage.splitAction).toBeVisible({ timeout: 30_000 })
+    await expect(rocaPage.unrestrDocRoca).toBeVisible()
+    await expect(rocaPage.defARestrDocRoca).toBeVisible()
+    await expect(rocaPage.defBRestrDocRoca).not.toBeVisible()
+    await rocaPage.navigation.navigateTo("LogOff"); 
 
 
-  // Validate Memo, new Section & Documents for Defence B
+// Split Case Validation - Memo, new Section, Index Documents & ROCA for Defence B
   await loginAndOpenCase(
       homePage,
       loginPage,
@@ -209,19 +231,27 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
       config.users.defenceAdvocateB,
       `${newCaseName}two`
     );
+    await caseDetailsPage.caseNavigation.navigateTo('Memos')
+    await expect (memoPage.memoTableRow1).toHaveText('Defence B memo test textbox directly available')
     await caseDetailsPage.caseNavigation.navigateTo('Index')
     const documentList2 = await indexPage.getIndexDocuments();
     await expect(documentList2.length).toBeGreaterThan(0); 
     await sectionDocumentsPage.validateUnrestrictedSectionDocument("unrestrictedSectionUpload", section);
     await sectionDocumentsPage.validateSingleRestrictedSectionDocument("restrictedSectionUploadDefendantTwo", sectionB);
-    const privateDefBSection = await sectionsPage.validateSectionName('PD2');
-    await expect(privateDefBSection).toEqual('PD2');
-    console.log('Unrestricted Section for Defence B:',section)
-    console.log('Restricted Section for Defence B:',sectionB)
-    await sectionDocumentsPage.navigation.navigateTo("LogOff"); 
+    const expectedSectionsB = ['PD2']; 
+    const foundSectionsB = await indexPage.validateSections(expectedSectionsB);
+    await expect(foundSectionsB).toEqual(expectedSectionsB);
+    await expect(indexPage.pd1SectionLocator).not.toBeVisible({ timeout: 10_000 });
+    await indexPage.caseNavigation.navigateTo("ROCA")
+    await rocaPage.waitForRocaTablesToLoad();
+    await expect(rocaPage.splitAction).toBeVisible({ timeout: 30_000 })
+    await expect(rocaPage.unrestrDocRoca).toBeVisible()
+    await expect(rocaPage.defBRestrDocRoca).toBeVisible()
+    await expect(rocaPage.defARestrDocRoca).not.toBeVisible()
+    await rocaPage.navigation.navigateTo("LogOff"); 
 
 
-  // Merge two cases by HMCTS Admin
+// Merge two cases by HMCTS Admin
   await loginAndOpenCase(
       homePage,
       loginPage,
@@ -229,33 +259,39 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
       config.users.hmctsAdmin,
       `${newCaseName}one`
     );
-  await sectionsPage.caseNavigation.navigateTo("Merge");
-  await mergeCasePage.mergeCases(`${newCaseName}one`,`${newCaseName}two`)
-  await expect(mergeCasePage.progressBar).toContainText('Preparing',{timeout: 90_000 })
-  await mergeCasePage.waitForMergeCasesCompletion();
-  await caseDetailsPage.navigation.navigateTo("LogOff"); 
+    await sectionsPage.caseNavigation.navigateTo("Merge");
+    await mergeCasePage.mergeCases(`${newCaseName}one`,`${newCaseName}two`)
+    await expect(mergeCasePage.progressBar).toContainText('Preparing',{ timeout: 20_000 })
+    await mergeCasePage.waitForMergeCasesCompletion();
+    await mergeCasePage.navigation.navigateTo("LogOff"); 
 
-// Validate Memo, new Section & Documents for Defence A
-await loginAndOpenCase(
+
+// Merged Case Validation - Memo, new Section, Index Documents & ROCA for Defence A
+  await loginAndOpenCase(
       homePage,
       loginPage,
       caseSearchPage,
       config.users.defenceAdvocateA,
-      `${newCaseName}one`
+      `${newCaseName}one(M)`
     );
+    await caseDetailsPage.caseNavigation.navigateTo('Memos')
+    await expect (memoPage.memoTableRow1).toHaveText('Defence A memo test textbox directly available')
     await caseDetailsPage.caseNavigation.navigateTo('Index')
     const mergedDocumentList1 = await indexPage.getIndexDocuments();
     await expect(mergedDocumentList1.length).toBeGreaterThan(0); 
     await sectionDocumentsPage.validateUnrestrictedSectionDocument("unrestrictedSectionUpload", section);
     await sectionDocumentsPage.validateSingleRestrictedSectionDocument("restrictedSectionUploadDefendantone", sectionA);
-    const privateDefSections = await sectionsPage.validateSections(['PD1','PD2'])
-    await expect(privateDefSections).toContain('PD1');
-    await expect(indexPage.pd2SectionLocator).not.toBeVisible({ timeout: 10000 });
-    console.log('Unrestricted Section for Defence A:',section)
-    console.log('Restricted Section for Defence A:',sectionA)
-    await sectionDocumentsPage.navigation.navigateTo("LogOff")
-
-
+    const expectedSections = ['PD1']; 
+    const foundSections = await indexPage.validateSections(expectedSections);
+    await expect(foundSections).toEqual(expectedSections);
+    await expect(indexPage.pd2SectionLocator).not.toBeVisible({ timeout: 10_000 });
+    await indexPage.caseNavigation.navigateTo("ROCA")
+    await rocaPage.waitForRocaTablesToLoad();
+    await expect(rocaPage.mergeAction).toBeVisible({ timeout:30_000 })
+    await expect(rocaPage.unrestrDocRoca).toBeVisible()
+    await expect(rocaPage.defARestrDocRoca).toBeVisible()
+    await expect(rocaPage.defBRestrDocRoca).not.toBeVisible()
+    await rocaPage.navigation.navigateTo("LogOff")
 }}}
 });
 });

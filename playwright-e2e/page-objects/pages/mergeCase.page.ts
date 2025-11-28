@@ -36,18 +36,10 @@ async mergeCases(caseName1: string, caseName2: string){
     });
     await expect(this.mergeCasesButton).toBeVisible({ timeout: 20000 });
     await this.mergeCasesButton.click();
-    // const progressBarFill = this.progressBar.locator("div.progress-bar");
-    // await expect(progressBarFill).toHaveAttribute("aria-valuenow", /[1-9]/, {
-    //   timeout: 20000,
-    // });
-    // await expect(progressBarFill).toHaveAttribute("aria-valuenow", "100", {
-    //   timeout: 20000,
-    // }); 
-
 }
 
 async waitForMergeCasesCompletion(){
-  await this.page.waitForLoadState('networkidle');
+  await this.page.waitForTimeout(60_000);
   console.log('Merge Cases completion')
 }
 }

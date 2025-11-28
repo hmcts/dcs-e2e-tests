@@ -100,7 +100,6 @@ constructor(page) {
         return "No Num";
     }
 
-
 async getIndexDocuments(): Promise<DocumentModel[]>{ 
     let sectionTitle: string | null = null;
     let sectionKey: string | null = null;
@@ -156,7 +155,6 @@ async getIndexDocuments(): Promise<DocumentModel[]>{
     return indexArrayList;
 }
 
-
 async getIndexDocumentArray(
     title: string,
     guid: string,
@@ -177,7 +175,6 @@ async goToUploadDocumentsFromIndex(sectionKey: string) {
     const uploadButton = this.page.getByRole("link", { name: "Upload Document(s)" });
     await uploadButton.click();
 }
-
   
 async uploadDocumentFromIndex(
     key: string,
@@ -213,5 +210,22 @@ async goToIndexSectionLink(sectionKey: string, section: string): Promise<void> {
     if (!matchFound) {
         throw new Error(`Target section link not found for Key: ${sectionKey} and Section: ${section} within the index table.`);
     }
-}}
+}
+
+
+async validateSections(sections: string[]): Promise<string[]> {
+    const foundSections: string[] = []; 
+    await this.page.waitForLoadState('networkidle', {timeout:50000});
+
+    for (const section of sections) {
+        const cellLocator = this.page.getByRole("cell", { name: `${section}:`, exact: true });
+        const isVisible = await cellLocator.isVisible({ timeout: 5000 }); 
+        
+        if (isVisible) {
+            foundSections.push(section);
+        }
+    }
+    return foundSections; 
+}
+}
 export default IndexPage;

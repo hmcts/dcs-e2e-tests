@@ -32,7 +32,7 @@ test.beforeEach(
       caseDetailsPage,
       createCasePage,
       addDefendantPage,
-      peoplePage,
+      peoplePage
     }) => {
   
       await homePage.open();
@@ -75,7 +75,9 @@ test(`Merging two Cases by HMCTS Admin`, async ({
     homePage,
     memoPage,
     uploadDocumentPage,
-    mergeCasePage
+    mergeCasePage,
+    indexPage,
+    rocaPage
   }) => {
 
 // Add Memo, documents to unrestricted section for MergeCase1 as HMCTS Admin
@@ -167,6 +169,7 @@ await loginAndOpenCase(
     }
   await sectionsPage.navigation.navigateTo("LogOff");
 
+
 // Add memo, new Private section & documents to restricted section as Defence Advocate B
     await loginAndOpenCase(
       homePage,
@@ -210,7 +213,36 @@ await loginAndOpenCase(
   await sectionsPage.caseNavigation.navigateTo("Merge");
   await mergeCasePage.mergeCases(newCaseName1, newCaseName2)
   await expect(mergeCasePage.progressBar).toContainText('Preparing',{timeout: 90_000 })
-  await caseDetailsPage.navigation.navigateTo("LogOff"); 
+  await mergeCasePage.waitForMergeCasesCompletion();
+  await mergeCasePage.navigation.navigateTo("LogOff"); 
+
+
+// Merged Case Validation - Memo, new Section, Index Documents & ROCA for Defence A
+  await loginAndOpenCase(
+      homePage,
+      loginPage,
+      caseSearchPage,
+      config.users.defenceAdvocateA,
+      `${newCaseName1}(M)`
+    );
+    await caseDetailsPage.caseNavigation.navigateTo('Memos')
+    await expect (memoPage.memoTableRow1).toHaveText('Defence A memo test textbox directly available')
+    await caseDetailsPage.caseNavigation.navigateTo('Index')
+    const mergedDocumentList1 = await indexPage.getIndexDocuments();
+    await expect(mergedDocumentList1.length).toBeGreaterThan(0); 
+    await sectionDocumentsPage.validateUnrestrictedSectionDocument("unrestrictedSectionUpload", section);
+    await sectionDocumentsPage.validateSingleRestrictedSectionDocument("restrictedSectionUploadDefendantone", section);
+    const expectedSections = ['PD1']; 
+    const foundSections = await indexPage.validateSections(expectedSections);
+    await expect(foundSections).toEqual(expectedSections);
+    await expect(indexPage.pd2SectionLocator).not.toBeVisible({ timeout: 10_000 });
+    await indexPage.caseNavigation.navigateTo("ROCA")
+    await rocaPage.waitForRocaTablesToLoad();
+    await expect(rocaPage.mergeAction).toBeVisible({ timeout:30_000 })
+    await expect(rocaPage.unrestrDocRoca).toBeVisible()
+    await expect(rocaPage.defARestrDocRoca).toBeVisible()
+    await expect(rocaPage.defBRestrDocRoca).not.toBeVisible()
+    await rocaPage.navigation.navigateTo("LogOff")
 
 }}
 })

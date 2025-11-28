@@ -7,11 +7,21 @@ import { sections } from "../../utils";
 class ROCAPage extends Base {
   unrestrictedTable: Locator;
   restrictedTable: Locator;
+  splitAction: Locator;
+  mergeAction: Locator;
+  unrestrDocRoca: Locator;
+  defARestrDocRoca: Locator;
+  defBRestrDocRoca: Locator;
 
   constructor(page) {
     super(page);
     this.unrestrictedTable = page.locator("#rodaDiv table").nth(0);
     this.restrictedTable = page.locator("#rodaDiv table").nth(1);
+    this.splitAction = page.getByText('Index: Split', { exact: true })
+    this.mergeAction = page.getByText('Index: Merge', { exact: true })    
+    this.unrestrDocRoca = page.getByText('Name: unrestrictedSectionUpload', { exact: true })
+    this.defARestrDocRoca = page.getByText('Name: restrictedSectionUploadDefendantOne', { exact: true })
+    this.defBRestrDocRoca = page.getByText('Name: restrictedSectionUploadDefendantTwo', { exact: true })
   }
 
   async createROCAModelRecord(
@@ -281,6 +291,9 @@ class ROCAPage extends Base {
 
     return [...missingDocuments, ...unexpectedDocuments];
   }
+  
+  async waitForRocaTablesToLoad(){
+    await this.page.waitForLoadState('networkidle');
+  }
 }
-
 export default ROCAPage;
