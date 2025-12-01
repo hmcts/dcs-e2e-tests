@@ -2,6 +2,7 @@ import { test, expect } from "../fixtures";
 import { sections, config } from "../utils";
 import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
 import { loginAndOpenCase } from "../helpers/login.helper";
+import { deleteCaseByName } from "../helpers/deleteCase.helper";
 
 // ============================================================
 // Test 1: Split & Merge Case Functionality 
@@ -294,4 +295,19 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
     await rocaPage.navigation.navigateTo("LogOff")
 }}}
 });
+
+test.afterEach(
+    async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
+      if (`${newCaseName}one(M)`) {
+        await deleteCaseByName(
+          `${newCaseName}one(M)`,
+          caseSearchPage,
+          caseDetailsPage,
+          homePage,
+          loginPage,
+          page
+        );
+      }
+    }
+  );
 });
