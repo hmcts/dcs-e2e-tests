@@ -193,7 +193,7 @@ class SectionsPage extends Base {
     section: string
   ) {
     await this.goToUploadDocuments(key);
-    await this.uploadDocumentPage.uploadUnrestrictedDocument(filename, section);
+    await this.uploadDocumentPage.uploadUnrestrictedDocument(filename);
 
     const unrestrictedDocument = this.sectionDocumentsPage.page.locator(
       "td.documentInContentsIndex span",
@@ -214,7 +214,7 @@ class SectionsPage extends Base {
     section: string
   ) {
     await this.goToUploadDocuments(key);
-    await this.uploadDocumentPage.uploadUnrestrictedDocument(filename, section);
+    await this.uploadDocumentPage.uploadUnrestrictedDocument(filename);
   }
 
 

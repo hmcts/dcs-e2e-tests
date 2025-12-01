@@ -177,9 +177,7 @@ async goToUploadDocumentsFromIndex() {
 }
   
 async uploadDocumentFromIndex(
-    // key: string,
     filename: string,
-    // section: string
 ){
     await this.goToUploadDocumentsFromIndex();
     await this.uploadDocumentPage.uploadUnrestrictedDocument(filename);
