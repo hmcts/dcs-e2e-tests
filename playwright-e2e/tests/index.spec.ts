@@ -1,9 +1,10 @@
 import { test, expect } from "../fixtures";
 import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
 import { sections } from "../utils";
+import { deleteCaseByName } from "../helpers/deleteCase.helper";
 
 test.describe("Index Page Functionality", () => {
-  let newCaseName: string;
+  let newCaseName:string;
 
 test.beforeEach(
     async ({
@@ -60,7 +61,22 @@ test(`Retrieve & Validate Sections & Documents from Index Page`, async ({
     await expect(documentList.length).toBeGreaterThan(0); 
     const validationResult = await sectionDocumentsPage.validateUnrestrictedSectionDocument("unrestrictedSectionUpload", section);
     await expect(validationResult).toBeUndefined();
+  } 
+})
+
+test.afterEach(
+    async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
+      if (newCaseName) {
+        await deleteCaseByName(
+          newCaseName,
+          caseSearchPage,
+          caseDetailsPage,
+          homePage,
+          loginPage,
+          page
+        );
+      }
     }
-  
-})
-})
+  );
+});
+

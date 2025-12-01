@@ -45,7 +45,7 @@ async splitACase(caseName: string){
 
     await this.newCaseName1.fill(caseName+ "one")
     await this.newCaseName2.fill(caseName+ "two")
-    const defendantLocator = await this.firstDefendant.getByText('Defendant Two');
+    const defendantLocator =  this.firstDefendant.getByText('Defendant Two');
     const defendantTwoIsVisible = await defendantLocator.isVisible();
 
     if (defendantTwoIsVisible) {
@@ -64,7 +64,6 @@ async splitACase(caseName: string){
 
 
 async waitForSplitCaseCompletion(){
-    await this.page.waitForLoadState('networkidle');
     await this.page.waitForTimeout(60_000);
     console.log('Split case completion')
 }

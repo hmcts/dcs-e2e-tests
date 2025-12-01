@@ -15,7 +15,7 @@ class UploadDocumentPage extends Base {
     this.fileInput = page.locator('input[type="file"]');
   }
 
-  async uploadUnrestrictedDocument(filename: string, section: string) {
+  async uploadUnrestrictedDocument(filename: string, _: string) {
     await this.fileInput.setInputFiles(`playwright-e2e/data/${filename}.pdf`);
     await this.startUploadBtn.click();
     await this.viewSectionDocsBtn.click();

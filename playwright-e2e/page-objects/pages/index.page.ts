@@ -108,7 +108,7 @@ async getIndexDocuments(): Promise<DocumentModel[]>{
     let colCountNext: number = 0;
     let indexArrayList: DocumentModel[] = []; 
 
-    await this.page.waitForLoadState('networkidle', {timeout:50000});
+    await this.page.waitForTimeout(90_000);
     const indexRowCount = await this.rowCount(); 
 
     for (let row = 1; row <= indexRowCount; row++) {
@@ -171,7 +171,7 @@ async getIndexDocumentArray(
     return [documentModel];
 }
 
-async goToUploadDocumentsFromIndex(sectionKey: string) {
+async goToUploadDocumentsFromIndex(_: string) {
     const uploadButton = this.page.getByRole("link", { name: "Upload Document(s)" });
     await uploadButton.click();
 }
@@ -188,7 +188,7 @@ async uploadDocumentFromIndex(
 
 async goToIndexSectionLink(sectionKey: string, section: string): Promise<void> {
     let matchFound = false;
-    await this.page.waitForLoadState('networkidle', { timeout: 50000 });
+    await this.page.waitForTimeout(90_000);
     const sectionCount = await this.sectionsCount(); 
 
     for (let row = 1; row <= sectionCount; row++) {
@@ -215,7 +215,7 @@ async goToIndexSectionLink(sectionKey: string, section: string): Promise<void> {
 
 async validateSections(sections: string[]): Promise<string[]> {
     const foundSections: string[] = []; 
-    await this.page.waitForLoadState('networkidle', {timeout:50000});
+    await this.page.waitForTimeout(90_000);
 
     for (const section of sections) {
         const cellLocator = this.page.getByRole("cell", { name: `${section}:`, exact: true });

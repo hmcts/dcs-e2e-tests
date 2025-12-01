@@ -293,7 +293,8 @@ class ROCAPage extends Base {
   }
   
   async waitForRocaTablesToLoad(){
-    await this.page.waitForLoadState('networkidle');
+    await this.unrestrictedTable.waitFor({ state: 'visible', timeout: 40000 });
+    await this.restrictedTable.waitFor({ state: 'visible', timeout: 40000 });
   }
 }
 export default ROCAPage;
