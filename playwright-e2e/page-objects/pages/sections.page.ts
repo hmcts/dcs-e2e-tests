@@ -210,8 +210,7 @@ class SectionsPage extends Base {
 
   async uploadUnrestrictedSectionDocument(
     key: string,
-    filename: string,
-    section: string
+    filename: string
   ) {
     await this.goToUploadDocuments(key);
     await this.uploadDocumentPage.uploadUnrestrictedDocument(filename);
