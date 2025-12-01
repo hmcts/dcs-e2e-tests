@@ -50,18 +50,14 @@ test(`Retrieve & Validate Sections & Documents from Index Page`, async ({
 
     await caseDetailsPage.caseNavigation.navigateTo('Index')
     for (const [section, key] of sampleEntries) {
-       await indexPage.goToIndexSectionLink(key, section)
-            await indexPage.uploadDocumentFromIndex(
-              key,
-              "unrestrictedSectionUpload",
-              section
-    );
-    await caseDetailsPage.caseNavigation.navigateTo('Index')
-    const documentList = await indexPage.getIndexDocuments();
-    await expect(documentList.length).toBeGreaterThan(0); 
-    const validationResult = await sectionDocumentsPage.validateUnrestrictedSectionDocument("unrestrictedSectionUpload", section);
-    await expect(validationResult).toBeUndefined();
-  } 
+      await indexPage.goToIndexSectionLink(key, section)
+      await indexPage.uploadDocumentFromIndex("unrestrictedSectionUpload");
+      await caseDetailsPage.caseNavigation.navigateTo('Index')
+      const documentList = await indexPage.getIndexDocuments();
+      await expect(documentList.length).toBeGreaterThan(0); 
+      const validationResult = await sectionDocumentsPage.validateUnrestrictedSectionDocument("unrestrictedSectionUpload", section);
+      await expect(validationResult).toBeUndefined();
+    } 
 })
 
 test.afterEach(

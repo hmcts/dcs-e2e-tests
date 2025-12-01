@@ -171,18 +171,18 @@ async getIndexDocumentArray(
     return [documentModel];
 }
 
-async goToUploadDocumentsFromIndex(_: string) {
+async goToUploadDocumentsFromIndex() {
     const uploadButton = this.page.getByRole("link", { name: "Upload Document(s)" });
     await uploadButton.click();
 }
   
 async uploadDocumentFromIndex(
-    key: string,
+    // key: string,
     filename: string,
-    section: string
+    // section: string
 ){
-    await this.goToUploadDocumentsFromIndex(key);
-    await this.uploadDocumentPage.uploadUnrestrictedDocument(filename, section);
+    await this.goToUploadDocumentsFromIndex();
+    await this.uploadDocumentPage.uploadUnrestrictedDocument(filename);
 }
 
 
