@@ -54,7 +54,8 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
     for (const [sectionIndex, sectionKey] of sampleEntries) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadUnrestrictedDocument(
-        "unrestrictedSectionUpload"
+        "unrestrictedSectionUpload",
+        sectionIndex
       );
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
       await rocaPage.createROCAModelRecord(
