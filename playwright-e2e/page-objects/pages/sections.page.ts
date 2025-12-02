@@ -25,7 +25,7 @@ class SectionsPage extends Base {
     const sectionRows = this.page.locator(
       "table.formTable-zebra tbody > tr:not(:first-child)"
     );
-    return sectionRows.count();
+    return await sectionRows.count();
   }
 
   async getSectionTitle(rowIndex: number): Promise<string> {
@@ -162,6 +162,10 @@ class SectionsPage extends Base {
 
   async getSectionKeys(sections: string[]) {
     const sectionKeys: Record<string, string> = {};
+    await expect(async () => {
+      const count = await this.rowCount();
+      expect(count).toBeGreaterThan(0);
+    }).toPass({ timeout: 20_000 });
     for (const section of sections) {
       const cell = this.page
         .getByRole("cell", { name: `${section}`, exact: true })

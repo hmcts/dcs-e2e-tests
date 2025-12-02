@@ -77,12 +77,15 @@ test.describe("Sections and Documents availability", () => {
           issues: currentUserIssues,
         });
         // Fail the test if any issues were found
-        expect(
-          currentUserIssues.length,
-          `User ${
-            user.group
-          } has missing/unexpected documents:\n${currentUserIssues.join("\n")}`
-        ).toBe(0);
+        if (currentUserIssues.length > 0) {
+          throw new Error(
+            `User ${
+              user.group
+            } has missing/unexpected documents:\n${currentUserIssues.join(
+              "\n"
+            )}`
+          );
+        }
       }
     });
   }
@@ -202,12 +205,13 @@ test.describe("Document rendering / photosnaps", () => {
           issues: currentUserIssues,
         });
         // Fail the test if any issues were found
-        expect(
-          currentUserIssues.length,
-          `User ${
-            user.group
-          } has document mismatches:\n${currentUserIssues.join("\n")}`
-        ).toBe(0);
+        if (currentUserIssues.length > 0) {
+          throw new Error(
+            `User ${
+              user.group
+            } has document mismatches:\n${currentUserIssues.join("\n")}`
+          );
+        }
       }
     });
   }

@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures";
+import { test } from "../fixtures";
 import { config, pushTestResult } from "../utils";
 import {
   createNewCaseWithUnrestrictedDocument,
@@ -82,14 +82,15 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
       issues: unrestrictedRemoveResults,
     });
     // Fail the test if any issues were found
-    expect(
-      unrestrictedRemoveResults.length,
-      `User ${
-        config.users.hmctsAdmin.group
-      } experienced issues deleting an unrestricted document:\n${unrestrictedRemoveResults.join(
-        "\n"
-      )}`
-    ).toBe(0);
+    if (unrestrictedRemoveResults.length > 0) {
+      throw new Error(
+        `User ${
+          config.users.hmctsAdmin.group
+        } experienced issues deleting an unrestricted document:\n${unrestrictedRemoveResults.join(
+          "\n"
+        )}`
+      );
+    }
   });
 
   test(`Validate document move in unrestricted sections for user: HMCTS Admin`, async ({
@@ -128,14 +129,15 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
       issues: unrestrictedMoveResults,
     });
     // Fail the test if any issues were found
-    expect(
-      unrestrictedMoveResults.length,
-      `User ${
-        config.users.hmctsAdmin.group
-      } experiened issues moving an unrestricted document:\n${unrestrictedMoveResults.join(
-        "\n"
-      )}`
-    ).toBe(0);
+    if (unrestrictedMoveResults.length > 0) {
+      throw new Error(
+        `User ${
+          config.users.hmctsAdmin.group
+        } experienced issues moving unrestricted document:\n${unrestrictedMoveResults.join(
+          "\n"
+        )}`
+      );
+    }
   });
 
   test(`Validate document edit in unrestricted sections for user: HMCTS Admin`, async ({
@@ -162,17 +164,18 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
       user: config.users.hmctsAdmin.group,
       heading: `Section Validation: Edit Unrestricted Document`,
       category: "Sections",
-      issues: unrestrictedRemoveResults,
+      issues: unrestrictedEditResults,
     });
     // Fail the test if any issues were found
-    expect(
-      unrestrictedRemoveResults.length,
-      `User ${
-        config.users.hmctsAdmin.group
-      } experienced issues editing an unrestricted document:\n${unrestrictedRemoveResults.join(
-        "\n"
-      )}`
-    ).toBe(0);
+    if (unrestrictedEditResults.length > 0) {
+      throw new Error(
+        `User ${
+          config.users.hmctsAdmin.group
+        } experienced issues editing unrestricted document:\n${unrestrictedEditResults.join(
+          "\n"
+        )}`
+      );
+    }
   });
 
   test.afterEach(
@@ -280,14 +283,15 @@ test.describe("Restricted Document Update and Removal Tests", () => {
       issues: restrictedRemoveResults,
     });
     // Fail the test if any issues were found
-    expect(
-      restrictedRemoveResults.length,
-      `User ${
-        config.users.defenceAdvocateA.group
-      } experienced issues deleting a restricted document:\n${restrictedRemoveResults.join(
-        "\n"
-      )}`
-    ).toBe(0);
+    if (restrictedRemoveResults.length > 0) {
+      throw new Error(
+        `User ${
+          config.users.defenceAdvocateA.group
+        } experienced issues deleting restricted document:\n${restrictedRemoveResults.join(
+          "\n"
+        )}`
+      );
+    }
   });
 
   test(`Validate document move from restricted sections`, async ({
@@ -341,14 +345,15 @@ test.describe("Restricted Document Update and Removal Tests", () => {
       issues: restrictedMoveResults,
     });
     // Fail the test if any issues were found
-    expect(
-      restrictedMoveResults.length,
-      `User ${
-        config.users.defenceAdvocateA.group
-      } experienced issues moving a restricted document:\n${restrictedMoveResults.join(
-        "\n"
-      )}`
-    ).toBe(0);
+    if (restrictedMoveResults.length > 0) {
+      throw new Error(
+        `User ${
+          config.users.defenceAdvocateA.group
+        } experienced issues moving restricted document:\n${restrictedMoveResults.join(
+          "\n"
+        )}`
+      );
+    }
   });
 
   test(`Validate document edit in restricted sections`, async ({
@@ -393,14 +398,15 @@ test.describe("Restricted Document Update and Removal Tests", () => {
       issues: restrictedEditResults,
     });
     // Fail the test if any issues were found
-    expect(
-      restrictedEditResults.length,
-      `User ${
-        config.users.defenceAdvocateC.group
-      } experienced issues editing a restricted document:\n${restrictedEditResults.join(
-        "\n"
-      )}`
-    ).toBe(0);
+    if (restrictedEditResults.length > 0) {
+      throw new Error(
+        `User ${
+          config.users.defenceAdvocateC.group
+        } experienced issues editing restricted document:\n${restrictedEditResults.join(
+          "\n"
+        )}`
+      );
+    }
   });
 
   test.afterEach(
