@@ -27,55 +27,55 @@ export default defineConfig({
         ...ProjectsConfig.chrome.use,
         //Use below line when running docker
         // channel: undefined,
-        storageState: "./playwright-e2e/.sessions/trainer02.json",
-      },
-      dependencies: ["setup"],
-    },
-    {
-      name: "chromium",
-      use: {
-        ...ProjectsConfig.chromium.use,
-        //Use below line when running docker
-        // channel: undefined,
-        storageState: "./playwright-e2e/.sessions/trainer02.json",
-      },
-      dependencies: ["setup"],
-    },
-    {
-      name: "edge",
-      use: {
-        ...ProjectsConfig.edge.use,
-        //Use below line when running docker
-        // channel: undefined,
-        storageState: "./playwright-e2e/.sessions/trainer02.json",
-      },
-      dependencies: ["setup"],
-    },
-    {
-      name: "firefox",
-      use: {
-        ...ProjectsConfig.firefox.use,
-        //Use below line when running docker
-        // channel: undefined,
-        storageState: "./playwright-e2e/.sessions/trainer02.json",
-      },
-      dependencies: ["setup"],
-    },
-    {
-      name: "webkit",
-      use: {
-        ...ProjectsConfig.webkit.use,
-        //Use below line when running docker
-        // channel: undefined,git add
-        storageState: "./playwright-e2e/.sessions/trainer02.json",
+        storageState: "./playwright-e2e/.sessions/trainer01.json",
       },
       dependencies: ["setup"],
     },
     // {
+    //   name: "chromium",
+    //   use: {
+    //     ...ProjectsConfig.chromium.use,
+    //     //Use below line when running docker
+    //     // channel: undefined,
+    //     storageState: "./playwright-e2e/.sessions/trainer01.json",
+    //   },
+    //   dependencies: ["setup"],
+    // },
+    // {
+    //   name: "edge",
+    //   use: {
+    //     ...ProjectsConfig.edge.use,
+    //     //Use below line when running docker
+    //     // channel: undefined,
+    //     storageState: "./playwright-e2e/.sessions/trainer01.json",
+    //   },
+    //   dependencies: ["setup"],
+    // },
+    // {
+    //   name: "firefox",
+    //   use: {
+    //     ...ProjectsConfig.firefox.use,
+    //     //Use below line when running docker
+    //     // channel: undefined,
+    //     storageState: "./playwright-e2e/.sessions/trainer01.json",
+    //   },
+    //   dependencies: ["setup"],
+    // },
+    // {
+    //   name: "webkit",
+    //   use: {
+    //     ...ProjectsConfig.webkit.use,
+    //     //Use below line when running docker
+    //     // channel: undefined,git add
+    //     storageState: "./playwright-e2e/.sessions/trainer01.json",
+    //   },
+    //   dependencies: ["setup"],
+    // },
+    // {
     //   name: "tabletChrome",
     //   use: {
     //     ...ProjectsConfig.tabletChrome.use,
-    //     storageState: "./playwright-e2e/.sessions/trainer02.json",
+    //     storageState: "./playwright-e2e/.sessions/trainer01.json",
     //   },
     //   dependencies: ["setup"],
     // },
@@ -83,7 +83,7 @@ export default defineConfig({
     //   name: "tabletWebKit",
     //   use: {
     //     ...ProjectsConfig.tabletWebkit.use,
-    //     storageState: "./playwright-e2e/.sessions/trainer02.json",
+    //     storageState: "./playwright-e2e/.sessions/trainer01.json",
     //   },
     //   dependencies: ["setup"],
     // },
