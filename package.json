@@ -44,7 +44,7 @@
     "start-visual-container": "docker compose run --rm playwright",
     "build-docker": "docker compose build playwright"
   },
-  "packageManager": "yarn@4.11.0",
+  "packageManager": "yarn@4.12.0",
   "dependencies": {
     "uuid": "^11.1.0"
   }
