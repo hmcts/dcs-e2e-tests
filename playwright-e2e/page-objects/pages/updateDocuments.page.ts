@@ -32,12 +32,15 @@ class UpdateDocumentsPage extends Base {
   }
 
   async removeDocument() {
+    console.log("Waiting for document deletion dialog...");
     const dialog = await Promise.all([
       this.page.waitForEvent("dialog"),
       this.removeBtn.click(),
     ]).then(([dialog]) => dialog);
+    console.log("Dialog appeared, accepting...");
 
     await dialog.accept();
+    console.log("Dialog accepted");
   }
 
   async moveDocument(sectionKeys: [string, string][], newSections: string[]) {

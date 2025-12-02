@@ -10,7 +10,8 @@ export async function createNewCaseWithDefendantsAndUsers(
   addDefendantPage,
   peoplePage,
   caseName: string,
-  caseUrn: string
+  caseUrn: string,
+  users: string
 ) {
   const { newCaseName, newCaseUrn } =
     await createCasePage.generateCaseNameAndUrn(caseName, caseUrn);
@@ -45,24 +46,50 @@ export async function createNewCaseWithDefendantsAndUsers(
       newCaseUrn
     );
   }
-  // Add Defence Lawyers for Defendants
+  // Add Relevant Users
   await caseDetailsPage.caseNavigation.navigateTo("People");
-  const defenceUserDetails = [
-    {
-      username: config.users.defenceAdvocateA.username,
-      defendants: ["Defendant One"],
-    },
-    {
-      username: config.users.defenceAdvocateB.username,
-      defendants: ["Defendant Two"],
-    },
-    {
-      username: config.users.defenceAdvocateC.username,
-      defendants: ["Defendant One", "Defendant Two"],
-    },
-    { username: config.users.admin.username },
-  ];
-  for (const defenceDetail of defenceUserDetails) {
+
+  let userDetails: { username: string; defendants?: string[] }[] = [];
+
+  if (users === "Defence") {
+    userDetails = [
+      {
+        username: config.users.defenceAdvocateA.username,
+        defendants: ["Defendant One"],
+      },
+      {
+        username: config.users.defenceAdvocateB.username,
+        defendants: ["Defendant Two"],
+      },
+      {
+        username: config.users.defenceAdvocateC.username,
+        defendants: ["Defendant One", "Defendant Two"],
+      },
+      { username: config.users.admin.username },
+    ];
+  } else if (users === "Complete") {
+    userDetails = [
+      {
+        username: config.users.defenceAdvocateA.username,
+        defendants: ["Defendant One"],
+      },
+      {
+        username: config.users.defenceAdvocateB.username,
+        defendants: ["Defendant Two"],
+      },
+      {
+        username: config.users.defenceAdvocateC.username,
+        defendants: ["Defendant One", "Defendant Two"],
+      },
+      { username: config.users.admin.username },
+      { username: config.users.probationStaff.username },
+      { username: config.users.fullTimeJudge.username },
+      { username: config.users.cpsAdmin.username },
+      { username: config.users.cpsProsecutor.username },
+    ];
+  }
+
+  for (const defenceDetail of userDetails) {
     await peoplePage.addUser(defenceDetail.username, defenceDetail?.defendants);
   }
   await expect(peoplePage.pageTitle).toBeVisible({ timeout: 20_000 });
@@ -78,7 +105,8 @@ export async function createNewCaseWithUnrestrictedDocument(
   sectionDocumentsPage,
   rocaPage,
   caseName: string,
-  caseUrn: string
+  caseUrn: string,
+  users
 ) {
   const { newCaseName, newCaseUrn } = await createNewCaseWithDefendantsAndUsers(
     createCasePage,
@@ -86,7 +114,8 @@ export async function createNewCaseWithUnrestrictedDocument(
     addDefendantPage,
     peoplePage,
     caseName,
-    caseUrn
+    caseUrn,
+    users
   );
   const uploadedDocuments: ROCAModel[] = [];
   await peoplePage.caseNavigation.navigateTo("Sections");
@@ -122,7 +151,8 @@ export async function createNewCaseWithRestrictedDocument(
   sectionDocumentsPage,
   rocaPage,
   caseName: string,
-  caseUrn: string
+  caseUrn: string,
+  users
 ) {
   const { newCaseName, newCaseUrn } = await createNewCaseWithDefendantsAndUsers(
     createCasePage,
@@ -130,7 +160,8 @@ export async function createNewCaseWithRestrictedDocument(
     addDefendantPage,
     peoplePage,
     caseName,
-    caseUrn
+    caseUrn,
+    users
   );
   const uploadedDocuments: ROCAModel[] = [];
   await peoplePage.caseNavigation.navigateTo("Sections");

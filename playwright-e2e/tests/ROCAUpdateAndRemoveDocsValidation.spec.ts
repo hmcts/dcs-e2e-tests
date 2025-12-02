@@ -46,7 +46,8 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
         sectionDocumentsPage,
         rocaPage,
         "TestCase",
-        "TestURN"
+        "TestURN",
+        "Defence"
       );
       sampleKey = newCase.sampleKey as [string, string][];
       newCaseName = newCase.newCaseName;
@@ -251,7 +252,8 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
         sectionDocumentsPage,
         rocaPage,
         "TestCase",
-        "TestURN"
+        "TestURN",
+        "Defence"
       );
       sampleKey = newCase.sampleKey as [string, string][];
       newCaseName = newCase.newCaseName;
@@ -381,6 +383,8 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
       issues: [...unrestrictedResult, ...restrictedResult],
     });
     // Fail the test if any issues were found
+    const allIssues = [...unrestrictedResult, ...restrictedResult];
+    console.log("All issues array:", allIssues, "length:", allIssues.length);
     expect(
       [...unrestrictedResult, ...restrictedResult].length,
       `User ${
@@ -443,6 +447,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
       issues: editIssues,
     });
     // Fail the test if any issues were found
+    console.log("EDIT ISSUES LENGTH", editIssues.length);
     expect(
       editIssues.length,
       `User ${

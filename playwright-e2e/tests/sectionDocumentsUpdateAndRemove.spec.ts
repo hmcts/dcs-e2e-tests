@@ -48,7 +48,8 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
         sectionDocumentsPage,
         rocaPage,
         "TestCase",
-        "TestURN"
+        "TestURN",
+        "Defence"
       );
       sampleKey = newCase.sampleKey as [string, string][];
       newCaseName = newCase.newCaseName;
@@ -230,7 +231,8 @@ test.describe("Restricted Document Update and Removal Tests", () => {
         sectionDocumentsPage,
         rocaPage,
         "TestCase",
-        "TestURN"
+        "TestURN",
+        "Defence"
       );
       sampleKey = newCase.sampleKey as [string, string][];
       newCaseName = newCase.newCaseName;
