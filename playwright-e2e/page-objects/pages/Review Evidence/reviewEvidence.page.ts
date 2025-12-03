@@ -2,15 +2,18 @@ import { expect } from "../../../fixtures";
 import { Locator } from "@playwright/test";
 import { Base } from "../../base";
 import { DocumentModel, documents } from "../../../data/documentModel";
+import NotesComponent from "./notesComponent";
 
 class ReviewEvidencePage extends Base {
   readonly sectionPanel: Locator;
   documentTextName: Locator;
   sections: Locator;
   caseName: Locator;
+  notes: NotesComponent;
 
   constructor(page) {
     super(page);
+    this.notes = new NotesComponent(page);
     this.sectionPanel = page.locator("#bundleIndexDiv");
     this.documentTextName = page.locator(".docTextName");
     this.sections = page.locator("li.sectionLi");
