@@ -1,5 +1,7 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../base";
+import { expect } from "../../fixtures";
+import { Page } from "@playwright/test";
 
 class CaseDetailsPage extends Base {
   caseNameHeading: Locator;
@@ -60,6 +62,68 @@ class CaseDetailsPage extends Base {
     } catch (err) {
       console.warn("⚠️ Failed to accept second dialog:", err);
     }
+  }
+
+  async tryOpenReviewPopup(): Promise<Page | null> {
+    let popupPage: Page | null = null;
+
+    try {
+      const popupPromise = this.page.waitForEvent("popup", { timeout: 5000 });
+      await this.caseNavigation.navigateTo("Review");
+      popupPage = await popupPromise;
+
+      const bodyText =
+        (await popupPage
+          .locator("body")
+          .innerText()
+          .catch(() => "")) ?? "";
+
+      const isPaginationPopup =
+        bodyText.includes("There are no documents in the paginated bundle") ||
+        bodyText.includes(
+          "The initial pagination for this bundle is underway"
+        ) ||
+        bodyText.trim().length === 0;
+
+      if (isPaginationPopup) {
+        await popupPage.close().catch(() => {});
+        return null;
+      }
+
+      const reviewSectionPanel = await popupPage
+        .locator("#bundleIndexDiv")
+        .isVisible()
+        .catch(() => false);
+
+      if (!reviewSectionPanel) {
+        await popupPage.close().catch(() => {});
+        return null;
+      }
+
+      return popupPage;
+    } catch {
+      if (popupPage) await popupPage.close().catch(() => {});
+      return null;
+    }
+  }
+
+  async openReviewPopupAwaitPagination(maxWaitMs = 90000): Promise<Page> {
+    let popup: Page | null = null;
+
+    await expect
+      .poll(
+        async () => {
+          popup = await this.tryOpenReviewPopup();
+          return popup;
+        },
+        {
+          timeout: maxWaitMs,
+          intervals: [5000],
+        }
+      )
+      .not.toBeNull();
+
+    return popup!;
   }
 }
 

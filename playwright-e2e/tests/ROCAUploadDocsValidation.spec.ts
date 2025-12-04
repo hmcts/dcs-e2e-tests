@@ -29,7 +29,8 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
         addDefendantPage,
         peoplePage,
         "TestCase",
-        "TestURN"
+        "TestURN",
+        "Defence"
       );
       newCaseName = newCase.newCaseName;
     }

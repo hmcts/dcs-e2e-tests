@@ -1,5 +1,5 @@
 import { test, expect } from "../fixtures";
-import ReviewEvidencePage from "../page-objects/pages/reviewEvidence.page";
+import ReviewEvidencePage from "../page-objects/pages/Review Evidence/reviewEvidence.page";
 import { config, pushTestResult } from "../utils";
 
 // ============================================================

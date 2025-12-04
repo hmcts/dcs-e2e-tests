@@ -30,13 +30,13 @@ export interface Config {
     hmctsAdmin: UserCredentials;
     accessCoordinator: UserCredentials;
     admin: UserCredentials;
-    // cpsAdmin: UserCredentials;
-    // cpsProsecutor: UserCredentials;
+    cpsAdmin: UserCredentials;
+    cpsProsecutor: UserCredentials;
     defenceAdvocateA: UserCredentials;
     defenceAdvocateB: UserCredentials;
     defenceAdvocateC: UserCredentials;
-    // fullTimeJudge: UserCredentials;
-    // probationStaff: UserCredentials;
+    fullTimeJudge: UserCredentials;
+    probationStaff: UserCredentials;
   };
   urls: {
     preprod: string;
@@ -46,13 +46,6 @@ export interface Config {
 }
 
 // -------------------- Helpers --------------------
-// function getEnvVar(name: string): string {
-//   const value = process.env[name];
-//   if (!value) {
-//     throw new Error(`Missing environment variable: ${name}`);
-//   }
-//   return value;
-// }
 
 function sessionPath(username: string): string {
   return path.join(
@@ -91,18 +84,18 @@ export const config: Config = {
       sessionFile: sessionPath("Admin"),
       cookieName: ".ASPXAUTH",
     },
-    // cpsAdmin: {
-    //   group: "CPSAdmin",
-    //   username: "trainer11",
-    //   password: process.env.CPS_ADMIN_PASSWORD as string,
-    //   sessionFile: sessionPath("trainer11"),
-    // },
-    // cpsProsecutor: {
-    //   group: "CPSProsecutor",
-    //   username: "trainer16",
-    //   password: process.env.CPS_PROSECUTOR_PASSWORD as string,
-    //   sessionFile: sessionPath("trainer16"),
-    // },
+    cpsAdmin: {
+      group: "CPSAdmin",
+      username: "Trainer11",
+      password: process.env.CPS_ADMIN_PASSWORD as string,
+      sessionFile: sessionPath("trainer11"),
+    },
+    cpsProsecutor: {
+      group: "CPSProsecutor",
+      username: "Trainer16",
+      password: process.env.CPS_PROSECUTOR_PASSWORD as string,
+      sessionFile: sessionPath("trainer16"),
+    },
     defenceAdvocateA: {
       group: "DefenceAdvocateA",
       username: "Trainer21",
@@ -121,18 +114,18 @@ export const config: Config = {
       password: process.env.DEFENCE_ADVOCATE_C_PASSWORD as string,
       sessionFile: sessionPath("trainer23"),
     },
-    // fullTimeJudge: {
-    //   group: "FullTimeJudge",
-    //   username: "trainer27",
-    //   password: process.env.FULL_TIME_JUDGE_PASSWORD as string,
-    //   sessionFile: sessionPath("trainer27"),
-    // },
-    // probationStaff: {
-    //   group: "ProbationStaff",
-    //   username: "trainer38",
-    //   password: process.env.PROBATION_STAFF_PASSWORD as string,
-    //   sessionFile: sessionPath("trainer38"),
-    // },
+    fullTimeJudge: {
+      group: "FullTimeJudge",
+      username: "Trainer27",
+      password: process.env.FULL_TIME_JUDGE_PASSWORD as string,
+      sessionFile: sessionPath("trainer27"),
+    },
+    probationStaff: {
+      group: "ProbationStaff",
+      username: "Trainer38",
+      password: process.env.PROBATION_STAFF_PASSWORD as string,
+      sessionFile: sessionPath("trainer38"),
+    },
   },
 };
 
