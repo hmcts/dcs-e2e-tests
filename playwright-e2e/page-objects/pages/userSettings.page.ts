@@ -9,6 +9,7 @@ class UserSettingsPage extends Base {
   verifiedUserFlag: Locator;
   approvedUserFlag: Locator;
   deniedUserFlag: Locator;
+  userResultsTitle: Locator;
       
 constructor(page) {
     super(page);
@@ -19,7 +20,7 @@ constructor(page) {
     this.verifiedUserFlag = page.locator("xpath=//*[@id=\"personListDiv\"]/table/tbody/tr[2]/td[12]")
     this.approvedUserFlag = page.locator("xpath=//*[@id=\"personListDiv\"]/table/tbody/tr[2]/td[7]")
     this.deniedUserFlag = page.locator("xpath=//*[@id=\"personListDiv\"]/table/tbody/tr[2]/td[14]")
-
+    this.userResultsTitle = page.locator('td').filter({ hasText: 'Results:' }).first()
 }
 
 async searchUser(userName: string){
