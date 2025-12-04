@@ -5,7 +5,6 @@ import UploadDocumentPage from "./uploadDocument.page";
 
 class IndexPage extends Base {
  uploadDocumentPage: UploadDocumentPage;
- indexLink: Locator;
  indexSectionTable: Locator;   
  baseTableRows: Locator; 
  sectionLinks: Locator;
@@ -16,7 +15,6 @@ class IndexPage extends Base {
 constructor(page) {
     super(page);
     this.uploadDocumentPage = new UploadDocumentPage(page);
-    this.indexLink = page.getByRole('link', { name: 'Index' }); 
     this.indexSectionTable = page.locator('.contentsIndex');
     this.baseTableRows = page.locator('xpath=//*[@id="aspnetForm"]/table[2]/tbody/tr');
     this.sectionLinks = page.locator('a.contentsAnchor');
@@ -75,7 +73,7 @@ constructor(page) {
             let docName = await docNameLocator.textContent();
 
             if (docName) {
-            docName = docName.slice(0, -14);             // Remove Audit Trail from docName 
+            docName = docName.slice(0, -14);             // To remove Audit Trail from docName 
             return docName ? docName.trim() : "No Name";
             }
         }
@@ -91,7 +89,7 @@ constructor(page) {
             
             if (docNum) {
                 docNum = docNum.trim();
-                docNum = docNum.slice(0, -12);          // Remove Audit Trail from docNum 
+                docNum = docNum.slice(0, -12);          // To remove Audit Trail from docNum 
                 
                 // This removes leading zeros unless the whole string is "0".
                 return docNum.replace(/^0+(?!$)/, "");
