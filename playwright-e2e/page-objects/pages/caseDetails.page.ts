@@ -1,5 +1,7 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../base";
+import { expect } from "../../fixtures";
+import { Page } from "@playwright/test";
 
 class CaseDetailsPage extends Base {
   caseNameHeading: Locator;
@@ -62,74 +64,66 @@ class CaseDetailsPage extends Base {
     }
   }
 
-  async openReviewPopupAwaitPagination(maxWaitSeconds = 90) {
-    const startTime = Date.now();
+  async tryOpenReviewPopup(): Promise<Page | null> {
+    let popupPage: Page | null = null;
 
-    while ((Date.now() - startTime) / 1000 < maxWaitSeconds) {
-      let popupPage: import("@playwright/test").Page | null = null;
+    try {
+      const popupPromise = this.page.waitForEvent("popup", { timeout: 5000 });
+      await this.caseNavigation.navigateTo("Review");
+      popupPage = await popupPromise;
 
-      try {
-        const popupPromise = this.page.waitForEvent("popup", { timeout: 5000 });
-        await this.caseNavigation.navigateTo("Review");
-        popupPage = await popupPromise;
+      const bodyText =
+        (await popupPage
+          .locator("body")
+          .innerText()
+          .catch(() => "")) ?? "";
 
-        let bodyText = "";
-        try {
-          bodyText = await popupPage
-            .locator("body")
-            .innerText({ timeout: 2000 });
-        } catch {
-          bodyText = "";
-        }
+      const isPaginationPopup =
+        bodyText.includes("There are no documents in the paginated bundle") ||
+        bodyText.includes(
+          "The initial pagination for this bundle is underway"
+        ) ||
+        bodyText.trim().length === 0;
 
-        // WRONG POPUP: pagination still happening
-        const isPaginationPopup =
-          bodyText.includes("There are no documents in the paginated bundle") ||
-          bodyText.includes(
-            "The initial pagination for this bundle is underway"
-          ) ||
-          bodyText.trim().length === 0;
-
-        if (isPaginationPopup) {
-          console.log(
-            "Wrong popup (awaiting pagination). Closing and retrying..."
-          );
-          await popupPage.close().catch(() => {});
-          await this.page.waitForTimeout(5000);
-          continue;
-        }
-
-        // REQUIRED SELECTOR: Only present on correct popup
-        const bundleIndex = popupPage.locator("#bundleIndexDiv");
-
-        const isVisible = await bundleIndex.isVisible().catch(() => false);
-
-        if (!isVisible) {
-          console.log("Popup missing #bundleIndexDiv (not ready). Closing...");
-          await popupPage.close().catch(() => {});
-          await this.page.waitForTimeout(5000);
-          continue;
-        }
-
-        // CORRECT POPUP — Return it
-        console.log("Correct Review popup loaded");
-        return popupPage;
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          console.log("No popup within 5 seconds, retrying...", err.message);
-        } else {
-          console.log("No popup within 5 seconds, retrying...");
-        }
-
-        if (popupPage) {
-          await popupPage.close().catch(() => {});
-        }
-
-        await this.page.waitForTimeout(5000);
+      if (isPaginationPopup) {
+        await popupPage.close().catch(() => {});
+        return null;
       }
-    }
 
-    throw new Error("Failed to open the review popup within timeout");
+      const reviewSectionPanel = await popupPage
+        .locator("#bundleIndexDiv")
+        .isVisible()
+        .catch(() => false);
+
+      if (!reviewSectionPanel) {
+        await popupPage.close().catch(() => {});
+        return null;
+      }
+
+      return popupPage;
+    } catch {
+      if (popupPage) await popupPage.close().catch(() => {});
+      return null;
+    }
+  }
+
+  async openReviewPopupAwaitPagination(maxWaitMs = 90000): Promise<Page> {
+    let popup: Page | null = null;
+
+    await expect
+      .poll(
+        async () => {
+          popup = await this.tryOpenReviewPopup();
+          return popup;
+        },
+        {
+          timeout: maxWaitMs,
+          intervals: [5000],
+        }
+      )
+      .not.toBeNull();
+
+    return popup!;
   }
 }
 
