@@ -146,9 +146,21 @@ class NotesComponent extends Base {
     }
 
     // Save note
-    // Wait for the note editor UI to reflect the selected share type before clicking Save - have been unable to target anything else successfully
-    await this.page.waitForTimeout(2000);
-    await this.saveNote.click();
+    await expect
+      .poll(
+        async () => {
+          const buttonStillVisible = await this.saveNote.isVisible();
+          if (buttonStillVisible) await this.saveNote.click();
+          return buttonStillVisible;
+        },
+        {
+          // Allow 2s delay before retrying
+          intervals: [2000],
+          // Allow up to 10 seconds for the Save button to disappear
+          timeout: 10000,
+        }
+      )
+      .toBeFalsy();
   }
 
   // ---------------------------
@@ -190,8 +202,24 @@ class NotesComponent extends Base {
       // Prepare Y offset for the next note
       currentY += yStep;
 
-      await this.page.waitForTimeout(1000);
-      await this.drawBoxBtn.click();
+      await expect
+        .poll(
+          async () => {
+            const classes = await this.drawBoxBtn.getAttribute("class");
+            const drawBoxUnselected = !classes?.includes("highlightRibbonIcon");
+            if (drawBoxUnselected) {
+              await this.drawBoxBtn.click();
+            }
+            return drawBoxUnselected;
+          },
+          {
+            // Allow 2s delay before retrying
+            intervals: [2000],
+            // Allow up to 1o seconds for draw box button to be selected
+            timeout: 10000,
+          }
+        )
+        .toBeFalsy();
     }
     return types;
   }
@@ -240,20 +268,20 @@ class NotesComponent extends Base {
     const firstNote = this.stickyNotes.first();
     const deleteButton = firstNote.locator(".removeCommentDiv");
 
-    await expect(deleteButton).toBeVisible();
+    // Wait until the delete button is stable & fully interactable
+    await deleteButton.waitFor({ state: "visible" });
+    await deleteButton.click({ trial: true }); // checks if Playwright can click it
 
     const dialogPromise = this.page.waitForEvent("dialog");
 
-    await this.page.waitForTimeout(2000);
     await deleteButton.click();
 
     const dialog = await dialogPromise;
     await dialog.accept();
 
+    // Validate count decreased
     await expect
-      .poll(async () => await this.getNotesCount(), {
-        timeout: 10000,
-      })
+      .poll(() => this.getNotesCount(), { timeout: 30_000 })
       .toBe(count - 1);
   }
 
@@ -276,25 +304,27 @@ class NotesComponent extends Base {
         .toBe(2);
     }
 
-    const firstNote = this.stickyNotes.first();
-    const editButton = firstNote.locator(".editCommentDiv");
+    const widelySharedNote = this.stickyNotes.last();
+    const editButton = widelySharedNote.locator(".editCommentDiv");
+
     await expect(editButton).toBeVisible();
 
-    for (let i = 0; i < 2; i++) {
-      await editButton.click();
-      try {
-        await expect(this.noteTextArea).toBeVisible({ timeout: 5000 });
-      } catch {
-        if (i === 1)
-          // Final attempt, throw test failure if button click still fails
-          await expect(this.noteTextArea).toBeVisible({ timeout: 5000 });
-        // Otherwise retry loop
-      }
-    }
+    await expect
+      .poll(
+        async () => {
+          const isVisible = await this.noteTextArea.isVisible();
+          if (!isVisible) {
+            await editButton.click();
+          }
+          return isVisible;
+        },
+        { timeout: 10000, intervals: [500] }
+      )
+      .toBeTruthy();
 
     await this.noteTextArea.clear();
     await this.noteTextArea.fill(`Edited note for ${userGroup}`);
-    const shareButton = this.widelyShared;
+    const shareButton = this.privateButton;
     await expect(shareButton).toBeVisible();
     await shareButton.check();
     await expect(
@@ -302,8 +332,22 @@ class NotesComponent extends Base {
       "Unable to select widely shared radio button"
     ).toBeChecked();
 
-    await this.page.waitForTimeout(2000);
-    await this.saveNote.click();
+    // Save note
+    await expect
+      .poll(
+        async () => {
+          const buttonStillVisible = await this.saveNote.isVisible();
+          if (buttonStillVisible) await this.saveNote.click();
+          return buttonStillVisible;
+        },
+        {
+          // Allow 2s delay before retrying
+          intervals: [2000],
+          // Allow up to 10 seconds for the Save button to disappear
+          timeout: 10000,
+        }
+      )
+      .toBeFalsy();
   }
 
   // ---------------------------

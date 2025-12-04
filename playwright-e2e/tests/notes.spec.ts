@@ -124,7 +124,10 @@ test.describe("Notes Functionality", () => {
         await expect
           .poll(
             async () => {
-              return await reviewEvidencePage.notes.getNoteText(0);
+              return await reviewEvidencePage.notes.stickyNotes
+                .last()
+                .locator(".commentText")
+                .innerText();
             },
             { timeout: 10000 }
           )
