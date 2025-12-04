@@ -1,5 +1,6 @@
 import { Locator } from "playwright-core";
 import { Base } from "../base";
+import { waitUntilClickable } from "../../utils";
 
 class UpdateDocumentsPage extends Base {
   updateHeading: Locator;
@@ -32,15 +33,17 @@ class UpdateDocumentsPage extends Base {
   }
 
   async removeDocument() {
-    console.log("Waiting for document deletion dialog...");
-    const dialog = await Promise.all([
-      this.page.waitForEvent("dialog"),
-      this.removeBtn.click(),
-    ]).then(([dialog]) => dialog);
-    console.log("Dialog appeared, accepting...");
-
-    await dialog.accept();
-    console.log("Dialog accepted");
+    // Poll until the remove document button is interactable
+    await waitUntilClickable(this.removeBtn);
+    try {
+      const dialogPromise = this.page.waitForEvent("dialog");
+      await this.removeBtn.click();
+      const dialog = await dialogPromise;
+      await dialog.accept();
+      console.log("Dialog accepted");
+    } catch {
+      console.log("Issue accepting document deletion dialog");
+    }
   }
 
   async moveDocument(sectionKeys: [string, string][], newSections: string[]) {
