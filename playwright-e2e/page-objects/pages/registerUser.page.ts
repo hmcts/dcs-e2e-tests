@@ -68,7 +68,7 @@ async submitUserRegDetails() {
     const userLocation = await this.selectRandomLocationFromSpecificList(permittedLocations);
     await this.location.selectOption(userLocation)
     if(await this.otherEmail1.isVisible()){
-        await this.otherEmail1.fill('inviteonly@cjsm.com')
+       await this.otherEmail1.fill(`${userName}@cjsm.com`); 
     }
     await this.password.fill(process.env.USER_REG_PASSWORD!)
     await this.confirmPassword.fill(process.env.USER_REG_PASSWORD!)
