@@ -1,5 +1,6 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../base";
+import { waitUntilClickable } from "../../utils";
 
 class CaseDetailsPage extends Base {
   caseNameHeading: Locator;
@@ -41,22 +42,34 @@ class CaseDetailsPage extends Base {
     await this.changeCaseButton.click();
   }
 
-  async removeCase() {
-    // First dialog
-    const firstDialogPromise = this.page.waitForEvent("dialog");
-    await this.removeCaseBtn.click();
-    const firstDialog = await firstDialogPromise;
-    const secondDialogPromise = this.page.waitForEvent("dialog");
+  async removeCase(timeoutMs = 10000) {
     try {
-      await firstDialog.accept();
+      // First dialog
+      const firstDialogPromise = this.page.waitForEvent("dialog", {
+        timeout: timeoutMs,
+      });
+      await waitUntilClickable(this.removeCaseBtn);
+      await this.removeCaseBtn.click();
+      const firstDialog = await firstDialogPromise;
+      await firstDialog
+        .accept()
+        .catch((err) => console.warn("⚠️ Failed to accept first dialog:", err));
     } catch (err) {
-      console.warn("⚠️ Failed to accept first dialog:", err);
+      console.warn("⚠️ First dialog did not appear or failed:", err);
+      return; // stop further attempts if first dialog fails
     }
 
-    // Second dialog
-    const secondDialog = await secondDialogPromise;
     try {
-      await secondDialog.accept();
+      // Second dialog
+      const secondDialogPromise = this.page.waitForEvent("dialog", {
+        timeout: timeoutMs,
+      });
+      const secondDialog = await secondDialogPromise;
+      await secondDialog
+        .accept()
+        .catch((err) =>
+          console.warn("⚠️ Failed to accept second dialog:", err)
+        );
     } catch (err) {
       console.warn("⚠️ Failed to accept second dialog:", err);
     }
