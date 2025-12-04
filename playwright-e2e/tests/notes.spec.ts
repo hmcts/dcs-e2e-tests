@@ -178,8 +178,8 @@ test.describe("Notes Functionality", () => {
 // // ============================================================
 
 // // As a user
-// // I want to be able to access the Review Evidence Page
-// // And I should be able to see a list of the correct available Notes for an existing case as per my user permissions
+// // I want be able to see a list of the correct available Notes for an existing case as per my user permissions
+// // So I don't get exposed to information outside of my remit that could impact the case integrity
 
 test.describe("Notes Permissions & Access", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
