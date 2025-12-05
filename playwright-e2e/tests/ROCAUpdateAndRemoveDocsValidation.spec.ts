@@ -46,7 +46,8 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
         sectionDocumentsPage,
         rocaPage,
         "TestCase",
-        "TestURN"
+        "TestURN",
+        "Defence"
       );
       sampleKey = newCase.sampleKey as [string, string][];
       newCaseName = newCase.newCaseName;
@@ -252,7 +253,8 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
         sectionDocumentsPage,
         rocaPage,
         "TestCase",
-        "TestURN"
+        "TestURN",
+        "Defence"
       );
       sampleKey = newCase.sampleKey as [string, string][];
       newCaseName = newCase.newCaseName;

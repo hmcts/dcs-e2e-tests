@@ -10,59 +10,91 @@ export async function createNewCaseWithDefendantsAndUsers(
   addDefendantPage,
   peoplePage,
   caseName: string,
-  caseUrn: string
+  caseUrn: string,
+  users: string,
+  numberDefendants: string = "Two",
+  prosecutedBy?: string
 ) {
-  const { newCaseName, newCaseUrn } =
-    await createCasePage.generateCaseNameAndUrn(caseName, caseUrn);
-  await createCasePage.caseName.fill(newCaseName.toString());
-  await createCasePage.caseUrn.fill(newCaseUrn.toString());
-  const prosecutorLabel = await createCasePage.selectRandomOptionFromDropdown(
-    createCasePage.dropdownCaseProsecutedBy
-  );
-  await createCasePage.dropdownCaseProsecutedBy.selectOption(prosecutorLabel);
-  await createCasePage.dropdownCourtHouse.selectOption({ label: "Southwark" });
-  const today = new Date();
-  const date = today.getDate();
-  const monthName = today.toLocaleString("default", { month: "long" });
-  const year = today.getFullYear();
-  await createCasePage.hearingDateDay.selectOption({ label: date.toString() });
-  await createCasePage.hearingDateMonth.selectOption({
-    label: monthName.toString(),
-  });
-  await createCasePage.hearingDateYear.selectOption({ label: year.toString() });
-  await createCasePage.submitCreateBtn.click();
+  let newCaseName: string;
+  let newCaseUrn: string;
+  if (prosecutedBy) {
+    ({ newCaseName, newCaseUrn } = await createCasePage.createNewCase(
+      caseName,
+      caseUrn,
+      prosecutedBy
+    ));
+  } else {
+    ({ newCaseName, newCaseUrn } = await createCasePage.createNewCase(
+      caseName,
+      caseUrn
+    ));
+  }
+  let defDetails: { surName: string; dobMonth: string }[] = [];
 
-  // Add Defendants
-  const defendantDetails = [
-    { surName: "One", dobMonth: "January" },
-    { surName: "Two", dobMonth: "February" },
-  ];
-  for (const defDetail of defendantDetails) {
+  if (numberDefendants === "One") {
+    defDetails = [{ surName: "One", dobMonth: "January" }];
+  } else {
+    defDetails = [
+      { surName: "One", dobMonth: "January" },
+      { surName: "Two", dobMonth: "February" },
+    ];
+  }
+  for (const defDetail of defDetails) {
     await caseDetailsPage.goToAddDefendant();
+    await expect(addDefendantPage.addDefHeading).toHaveText("Add Defendant");
     await addDefendantPage.addDefendant(
       defDetail.surName,
       defDetail.dobMonth,
       newCaseUrn
     );
   }
-  // Add Defence Lawyers for Defendants
+
+  // Add Relevant Users
   await caseDetailsPage.caseNavigation.navigateTo("People");
-  const defenceUserDetails = [
-    {
-      username: config.users.defenceAdvocateA.username,
-      defendants: ["Defendant One"],
-    },
-    {
-      username: config.users.defenceAdvocateB.username,
-      defendants: ["Defendant Two"],
-    },
-    {
-      username: config.users.defenceAdvocateC.username,
-      defendants: ["Defendant One", "Defendant Two"],
-    },
-    { username: config.users.admin.username },
-  ];
-  for (const defenceDetail of defenceUserDetails) {
+
+  let userDetails: { username: string; defendants?: string[] }[] = [];
+
+  if (users === "Defence") {
+    userDetails = [
+      {
+        username: config.users.defenceAdvocateA.username,
+        defendants: ["Defendant One"],
+      },
+      {
+        username: config.users.defenceAdvocateB.username,
+        defendants: ["Defendant Two"],
+      },
+      {
+        username: config.users.defenceAdvocateC.username,
+        defendants: ["Defendant One", "Defendant Two"],
+      },
+      { username: config.users.admin.username },
+    ];
+  } else if (users === "Complete") {
+    userDetails = [
+      {
+        username: config.users.defenceAdvocateA.username,
+        defendants: ["Defendant One"],
+      },
+      {
+        username: config.users.defenceAdvocateB.username,
+        defendants: ["Defendant Two"],
+      },
+      {
+        username: config.users.defenceAdvocateC.username,
+        defendants: ["Defendant One", "Defendant Two"],
+      },
+      { username: config.users.admin.username },
+      { username: config.users.probationStaff.username },
+      { username: config.users.fullTimeJudge.username },
+      { username: config.users.cpsAdmin.username },
+      { username: config.users.cpsProsecutor.username },
+    ];
+  } else {
+    userDetails = [{ username: config.users.admin.username }];
+  }
+
+  for (const defenceDetail of userDetails) {
     await peoplePage.addUser(defenceDetail.username, defenceDetail?.defendants);
   }
   await expect(peoplePage.pageTitle).toBeVisible({ timeout: 20_000 });
@@ -78,7 +110,8 @@ export async function createNewCaseWithUnrestrictedDocument(
   sectionDocumentsPage,
   rocaPage,
   caseName: string,
-  caseUrn: string
+  caseUrn: string,
+  users
 ) {
   const { newCaseName, newCaseUrn } = await createNewCaseWithDefendantsAndUsers(
     createCasePage,
@@ -86,7 +119,8 @@ export async function createNewCaseWithUnrestrictedDocument(
     addDefendantPage,
     peoplePage,
     caseName,
-    caseUrn
+    caseUrn,
+    users
   );
   const uploadedDocuments: ROCAModel[] = [];
   await peoplePage.caseNavigation.navigateTo("Sections");
@@ -122,7 +156,8 @@ export async function createNewCaseWithRestrictedDocument(
   sectionDocumentsPage,
   rocaPage,
   caseName: string,
-  caseUrn: string
+  caseUrn: string,
+  users
 ) {
   const { newCaseName, newCaseUrn } = await createNewCaseWithDefendantsAndUsers(
     createCasePage,
@@ -130,7 +165,8 @@ export async function createNewCaseWithRestrictedDocument(
     addDefendantPage,
     peoplePage,
     caseName,
-    caseUrn
+    caseUrn,
+    users
   );
   const uploadedDocuments: ROCAModel[] = [];
   await peoplePage.caseNavigation.navigateTo("Sections");
