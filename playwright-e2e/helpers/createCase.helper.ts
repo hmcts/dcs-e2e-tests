@@ -48,7 +48,6 @@ export async function createNewCaseWithDefendantsAndUsers(
       newCaseUrn
     );
   }
-
   // Add Relevant Users
   await caseDetailsPage.caseNavigation.navigateTo("People");
 
