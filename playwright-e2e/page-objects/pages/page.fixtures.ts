@@ -22,6 +22,7 @@ import ApprovalRequestsPage from "./approvalRequests.page";
 import ApproveAccessRequestPage from "./approveAccessRequest.page";
 import RejectAccessRequestPage from "./rejectAccessRequest.page";
 import UpdateDocumentsPage from "./updateDocuments.page";
+import PTPHPage from "./ptph.page";
 
 export interface PageFixtures {
   homePage: HomePage;
@@ -48,6 +49,7 @@ export interface PageFixtures {
   approveAccessRequestPage: ApproveAccessRequestPage;
   rejectAccessRequestPage: RejectAccessRequestPage;
   updateDocumentsPage: UpdateDocumentsPage;
+  ptphPage: PTPHPage;
 }
 
 export const pageFixtures = {
@@ -72,14 +74,12 @@ export const pageFixtures = {
   createCasePage: async ({ page }, use) => {
     await use(new CreateCasePage(page));
   },
-
   addDefendantPage: async ({ page }, use) => {
     await use(new AddDefendantPage(page));
   },
   changeCaseDetailsPage: async ({ page }, use) => {
     await use(new ChangeCaseDetailsPage(page));
   },
-
   memoPage: async ({ page }, use) => {
     await use(new MemoPage(page));
   },
@@ -124,5 +124,8 @@ export const pageFixtures = {
   },
   updateDocumentsPage: async ({ page }, use) => {
     await use(new UpdateDocumentsPage(page));
+  },
+  ptphPage: async ({ page }, use) => {
+    await use(new PTPHPage(page));
   },
 };
