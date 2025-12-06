@@ -10,8 +10,8 @@ class SectionsPage extends Base {
   readonly page: Page;
   readonly sectionDocumentsPage: SectionDocumentsPage;
   uploadDocumentPage: UploadDocumentPage;
-
   viewDocumentsLink: Locator;
+  createSectionLink : Locator;
 
   constructor(page) {
     super(page);
@@ -19,6 +19,7 @@ class SectionsPage extends Base {
     this.sectionDocumentsPage = new SectionDocumentsPage(page);
     this.uploadDocumentPage = new UploadDocumentPage(page);
     this.viewDocumentsLink = page.getByRole("link", { name: "View Documents" });
+    this.createSectionLink = page.getByRole("link", { name: "Create New Section" }).first();
   }
 
   async rowCount(): Promise<number> {
@@ -207,6 +208,15 @@ class SectionsPage extends Base {
     }
   }
 
+  async uploadUnrestrictedSectionDocument(
+    key: string,
+    filename: string
+  ) {
+    await this.goToUploadDocuments(key);
+    await this.uploadDocumentPage.uploadUnrestrictedDocument(filename);
+  }
+
+
   async uploadRestrictedSectionDocument(
     key: string,
     filename: string,
@@ -218,6 +228,10 @@ class SectionsPage extends Base {
       filename
     );
   }
-}
 
+  async gotoCreateNewSection(){
+    await this.createSectionLink.click({timeout:15000});
+  }
+
+}
 export default SectionsPage;
