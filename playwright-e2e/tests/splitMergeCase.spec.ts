@@ -56,6 +56,8 @@ import { deleteCaseByName } from "../helpers/deleteCase.helper";
 
 test.describe("Split & Merge Case Functionality", () => {
   let newCaseName: string;
+  const hmctsAdminUser = config.users.hmctsAdmin;
+
 
 test.beforeEach(
     async ({
@@ -77,7 +79,8 @@ test.beforeEach(
         addDefendantPage,
         peoplePage,
         "TestCase",
-        "TestURN"
+        "TestURN", 
+        "Defence"
       );
       newCaseName = newCase.newCaseName;
     }
@@ -101,7 +104,6 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
  
 // Add Memo, documents to unrestricted section as HMCTS Admin
     await caseDetailsPage.caseNavigation.navigateTo('Memos')
-    const hmctsAdminUser = config.users.hmctsAdmin;
     await memoPage.addMemo(hmctsAdminUser.group);
     await caseDetailsPage.caseNavigation.navigateTo("Sections"); 
     const unrestrictedSections = sections.unrestricted;
