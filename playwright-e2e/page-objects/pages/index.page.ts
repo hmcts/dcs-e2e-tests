@@ -1,102 +1,125 @@
-import { Locator } from '@playwright/test'; 
+import { Locator} from '@playwright/test'; 
 import { Base } from "../base";
 import { DocumentModel } from "../../data/documentModel";
 import UploadDocumentPage from "./uploadDocument.page";
+import { expect } from "../../fixtures";
 
 class IndexPage extends Base {
- uploadDocumentPage: UploadDocumentPage;
- indexSectionTable: Locator;   
- baseTableRows: Locator; 
- sectionLinks: Locator;
- pd1SectionLocator: Locator;
- pd2SectionLocator: Locator;
+    uploadDocumentPage: UploadDocumentPage;
+    indexTable: Locator
+    baseTableRows: Locator; 
+    sectionLinks: Locator;
+    pd1SectionLocator: Locator;
+    pd2SectionLocator: Locator;
  
 
 constructor(page) {
     super(page);
     this.uploadDocumentPage = new UploadDocumentPage(page);
-    this.indexSectionTable = page.locator('.contentsIndex');
+    this.indexTable = page.locator('table.fullContents:visible')
     this.baseTableRows = page.locator('xpath=//*[@id="aspnetForm"]/table[2]/tbody/tr');
     this.sectionLinks = page.locator('a.contentsAnchor');
     this.pd1SectionLocator = page.getByText('PD1:', { exact: true })
     this.pd2SectionLocator = page.getByText('PD2:', { exact: true })
 }
   
-    async rowCount(): Promise<number> {
-        return await this.baseTableRows.count();
-    }
+async rowCount(): Promise<number> {
+    return await this.baseTableRows.count();
+}
 
-    async sectionsCount(): Promise<number> {
-        return await this.sectionLinks.count();
-    }
+async sectionsCount(): Promise<number> {
+    return await this.sectionLinks.count();
+}
 
-    async colCount(row: number): Promise<number> {
-        const rowLocator = this.baseTableRows.nth(row - 1);
-        return await rowLocator.locator('td').count();
-    }
+async colCount(row: number): Promise<number> {
+    const rowLocator = this.baseTableRows.nth(row - 1);
+    return await rowLocator.locator('td').count();
+}
 
-    async indexSectionKey(row: number){
-        const rowLocator = this.baseTableRows.nth(row - 1);
-        const sectionLinkLocator = rowLocator.locator('xpath=./td/table/tbody/tr/td[2]//a');
-        const sectionHref = await sectionLinkLocator.getAttribute('href', { timeout: 5000 });
+async indexSectionKey(row: number){
+    const rowLocator = this.baseTableRows.nth(row - 1);
+    const sectionLinkLocator = rowLocator.locator('xpath=./td/table/tbody/tr/td[2]//a');
+    const sectionHref = await sectionLinkLocator.getAttribute('href', { timeout: 5000 });
         
-    if (sectionHref && sectionHref.length >= 32) {
-            return sectionHref.slice(-32); 
-        }
-        return null; 
+    if (!sectionHref || sectionHref.length < 32) {
+        throw new Error(`Section key retrieval failed for row ${row}`);
     }
+    return sectionHref.slice(-32);
+}
 
-    async indexSectionTitle(row: number): Promise<string | null> {
-        const rowLocator = this.baseTableRows.nth(row - 1);
-        const sectionTitleLocator = rowLocator.locator('xpath=./td/table/tbody/tr/td[2]/a/div');
-        const sectionTitle = await sectionTitleLocator.textContent({ timeout: 5000 }).catch(() => null);
-        if (!sectionTitle) {
-            return null;
+async indexSectionTitle(row: number): Promise<string> { 
+    const rowLocator = this.baseTableRows.nth(row - 1);
+    const sectionTitleLocator = rowLocator.locator('xpath=./td/table/tbody/tr/td[2]/a/div');
+    
+    try {
+        const sectionTitle = await sectionTitleLocator.textContent({ timeout: 5000 });
+
+        if (!sectionTitle || sectionTitle.trim() === '') {
+            throw new Error(`Element found for row ${row}, but contained no visible section title.`);
         }
+
         const trimmedTitle = sectionTitle.trim();
         const doubleSpaceIndex = trimmedTitle.indexOf("  "); 
 
-        // Check if the delimiter was found AFTER the start of the string 
         if (doubleSpaceIndex > 0) {
-            // Return the substring before the delimiter
             return trimmedTitle.substring(0, doubleSpaceIndex); 
         }
+        
         return trimmedTitle;
+
+    } catch (error) {
+        throw new Error(`Failed to retrieve section title for row ${row}`);
     }
+}
 
-
-    async indexDocName(row: number): Promise<string> {
-        // Target the 3rd column (td[3]) within the specific row
-        const docNameLocator = this.baseTableRows.nth(row - 1).locator('td').nth(2); 
+async indexDocName(row: number): Promise<string> {
+    // Target the 3rd column (td[3]) within the specific row
+    const docNameLocator = this.baseTableRows.nth(row - 1).locator('td').nth(2); 
         
-        if (await docNameLocator.isVisible()) { 
-            let docName = await docNameLocator.textContent();
+    if (await docNameLocator.isVisible()) { 
+        let docName = await docNameLocator.textContent();
 
-            if (docName) {
-            docName = docName.slice(0, -14);             // To remove Audit Trail from docName 
-            return docName ? docName.trim() : "No Name";
-            }
+        if (docName) {
+        docName = docName.slice(0, -14);             // To remove Audit Trail from docName 
+        return docName ? docName.trim() : "No Name";
         }
-        return "No Name";
     }
+    return "No Name";
+}
 
-    async indexDocNum(row: number): Promise<string> {
-        // Target the 2nd column (td[2]) within the specific row
-        const docNumLocator = this.baseTableRows.nth(row - 1).locator('td').nth(1);
+async indexDocNum(row: number): Promise<string> {
+    // Target the 2nd column (td[2]) within the specific row
+    const docNumLocator = this.baseTableRows.nth(row - 1).locator('td').nth(1);
         
-        if (await docNumLocator.isVisible()) {
-            let docNum = await docNumLocator.textContent();
+    if (await docNumLocator.isVisible()) {
+        let docNum = await docNumLocator.textContent();
             
-            if (docNum) {
-                docNum = docNum.trim();
-                docNum = docNum.slice(0, -12);          // To remove Audit Trail from docNum 
+        if (docNum) {
+            docNum = docNum.trim();
+            docNum = docNum.slice(0, -12);        // To remove Audit Trail from docNum 
                 
-                // This removes leading zeros unless the whole string is "0".
-                return docNum.replace(/^0+(?!$)/, "");
-            }
+        // This removes leading zeros unless the whole string is "0".
+        return docNum.replace(/^0+(?!$)/, "");
         }
-        return "No Num";
     }
+    return "No Num";
+}
+
+async indexPagination(){
+try {
+   // Locator for the last section name on the page (assuming this is the last element to stabilize)
+const lastSectionNameLocator = this.page.locator('table.sectionHeadTable .contentsName').last();
+await expect
+    .poll(
+        async () => {
+            return await lastSectionNameLocator.isVisible();
+        },
+        { timeout: 15000 }
+    )
+    .toBe(true);
+}catch (error) {
+    throw new Error(`Failed to retrieve the Index table contents`);
+}}
 
 async getIndexDocuments(): Promise<DocumentModel[]>{ 
     let sectionTitle: string | null = null;
@@ -105,8 +128,8 @@ async getIndexDocuments(): Promise<DocumentModel[]>{
     const docNoNum: string = "No Num";
     let colCountNext: number = 0;
     let indexArrayList: DocumentModel[] = []; 
-
-    await this.page.waitForTimeout(90_000);
+    
+    await this.indexPagination();
     const indexRowCount = await this.rowCount(); 
 
     for (let row = 1; row <= indexRowCount; row++) {
@@ -128,8 +151,7 @@ async getIndexDocuments(): Promise<DocumentModel[]>{
                     docNoName, 
                     docNoNum,
                 );
-                
-                indexArrayList = [...indexArrayList, ...newDocs];
+                indexArrayList.push(...newDocs);
             }
         } 
         // Document details 
@@ -146,7 +168,7 @@ async getIndexDocuments(): Promise<DocumentModel[]>{
                 docName, 
                 docNum,
             );
-            indexArrayList = [...indexArrayList, ...newDocs];
+            indexArrayList.push(...newDocs);
         }
         colCountNext = 0;
     }
@@ -211,7 +233,7 @@ async goToIndexSectionLink(sectionKey: string, section: string): Promise<void> {
 
 async validateSections(sections: string[]): Promise<string[]> {
     const foundSections: string[] = []; 
-    await this.page.waitForTimeout(90_000);
+    await this.indexPagination();
 
     for (const section of sections) {
         const cellLocator = this.page.getByRole("cell", { name: `${section}:`, exact: true });

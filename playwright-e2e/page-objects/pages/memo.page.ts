@@ -26,13 +26,13 @@ constructor(page) {
     this.memoTableRow2 = page.locator("xpath= //table[@class='formTable-zebra']/tbody[1]/tr[3]/td[2]")
 }
 
-async addMemo(){
+async addMemo(user: string){
 if (await this.memoTextBox.isVisible()){
-    await this.memoTextBox.fill('Add memo test textbox directly available')
+    await this.memoTextBox.fill(`${user} memo test textbox directly available`);
     await this.addMemoButton.click();
 } else {
     await this.addMemoLink.click();
-    await this.memoTextBox.fill('Add memo test via Add A Memorandum button')
+    await this.memoTextBox.fill(`${user} memo test via Add a Memorandum button`)
     await this.addMemoButton.click();
 }}
 
@@ -49,25 +49,5 @@ async removeMemo(){
 ]);
     await dialog.accept();
 }
-
-async addDefAMemo(){
-if (await this.memoTextBox.isVisible()){
-    await this.memoTextBox.fill('Defence A memo test textbox directly available')
-    await this.addMemoButton.click();
-} else {
-    await this.addMemoLink.click();
-    await this.memoTextBox.fill('Defence A memo test via Add A Memorandum button')
-    await this.addMemoButton.click();
-}}
-
-async addDefBMemo(){
-if (await this.memoTextBox.isVisible()){
-    await this.memoTextBox.fill('Defence B memo test textbox directly available')
-    await this.addMemoButton.click();
-} else {
-    await this.addMemoLink.click();
-    await this.memoTextBox.fill('Defence B memo test via Add A Memorandum button')
-    await this.addMemoButton.click();
-}}
 }
 export default MemoPage;

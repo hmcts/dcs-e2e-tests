@@ -101,7 +101,8 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
  
 // Add Memo, documents to unrestricted section as HMCTS Admin
     await caseDetailsPage.caseNavigation.navigateTo('Memos')
-    await memoPage.addMemo();
+    const hmctsAdminUser = config.users.hmctsAdmin;
+    await memoPage.addMemo(hmctsAdminUser.group);
     await caseDetailsPage.caseNavigation.navigateTo("Sections"); 
     const unrestrictedSections = sections.unrestricted;
     const unrestrictedSectionKeys = await sectionsPage.getSectionKeys(
@@ -120,15 +121,16 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
     await sectionsPage.navigation.navigateTo("LogOff");
 
 // Add memo, new section & documents to restricted section as Defence Advocate A
+    const defenceAdvocateAUser = config.users.defenceAdvocateA;
     await loginAndOpenCase(
       homePage,
       loginPage,
       caseSearchPage,
-      config.users.defenceAdvocateA,
+      defenceAdvocateAUser,
       newCaseName
     );
     await caseDetailsPage.caseNavigation.navigateTo('Memos')
-    await memoPage.addDefAMemo();
+    await memoPage.addMemo(defenceAdvocateAUser.group);
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     await sectionsPage.gotoCreateNewSection();
     await createNewSectionPage.createPrivateSection("Defence A", 'PD1')
@@ -151,15 +153,16 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
 
 
 // Add memo, new section & documents to restricted section as Defence Advocate B
+    const defenceAdvocateBUser = config.users.defenceAdvocateB;
     await loginAndOpenCase(
       homePage,
       loginPage,
       caseSearchPage,
-      config.users.defenceAdvocateB,
+      defenceAdvocateBUser,
       newCaseName
     );
     await caseDetailsPage.caseNavigation.navigateTo('Memos')
-    await memoPage.addDefBMemo();
+    await memoPage.addMemo(defenceAdvocateBUser.group);
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     await sectionsPage.gotoCreateNewSection();
     await createNewSectionPage.createPrivateSection("Defence B", 'PD2')
@@ -185,7 +188,7 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
       homePage,
       loginPage,
       caseSearchPage,
-      config.users.hmctsAdmin,
+      hmctsAdminUser,
       newCaseName
     );
     await sectionsPage.caseNavigation.navigateTo("Split");
@@ -200,11 +203,11 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
       homePage,
       loginPage,
       caseSearchPage,
-      config.users.defenceAdvocateA,
+      defenceAdvocateAUser,
       `${newCaseName}one`
     );
     await caseDetailsPage.caseNavigation.navigateTo('Memos')
-    await expect (memoPage.memoTableRow1).toHaveText('Defence A memo test textbox directly available')
+    await expect (memoPage.memoTableRow1).toHaveText('DefenceAdvocateA memo test textbox directly available')
     await caseDetailsPage.caseNavigation.navigateTo('Index')
     const documentList = await indexPage.getIndexDocuments();
     await expect(documentList.length).toBeGreaterThan(0); 
@@ -228,11 +231,11 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
       homePage,
       loginPage,
       caseSearchPage,
-      config.users.defenceAdvocateB,
+      defenceAdvocateBUser,
       `${newCaseName}two`
     );
     await caseDetailsPage.caseNavigation.navigateTo('Memos')
-    await expect (memoPage.memoTableRow1).toHaveText('Defence B memo test textbox directly available')
+    await expect (memoPage.memoTableRow1).toHaveText('DefenceAdvocateB memo test textbox directly available')
     await caseDetailsPage.caseNavigation.navigateTo('Index')
     const documentList2 = await indexPage.getIndexDocuments();
     await expect(documentList2.length).toBeGreaterThan(0); 
@@ -256,14 +259,14 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
       homePage,
       loginPage,
       caseSearchPage,
-      config.users.hmctsAdmin,
+      hmctsAdminUser,
       `${newCaseName}one`
     );
-    await sectionsPage.caseNavigation.navigateTo("Merge");
-    await mergeCasePage.mergeCases(`${newCaseName}one`,`${newCaseName}two`)
-    await expect(mergeCasePage.progressBar).toContainText('Preparing',{ timeout: 20_000 })
-    await mergeCasePage.waitForMergeCasesCompletion();
-    await mergeCasePage.navigation.navigateTo("LogOff"); 
+  await sectionsPage.caseNavigation.navigateTo("Merge");
+  await mergeCasePage.mergeCases(`${newCaseName}one`,`${newCaseName}two`)
+  await expect(mergeCasePage.progressBar).toContainText('Preparing',{ timeout: 20_000 })
+  await mergeCasePage.waitForMergeCasesCompletion();
+  await mergeCasePage.navigation.navigateTo("LogOff"); 
 
 
 // Merged Case Validation - Memo, new Section, Index Documents & ROCA for Defence A
@@ -271,11 +274,11 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
       homePage,
       loginPage,
       caseSearchPage,
-      config.users.defenceAdvocateA,
+      defenceAdvocateAUser,
       `${newCaseName}one(M)`
     );
     await caseDetailsPage.caseNavigation.navigateTo('Memos')
-    await expect (memoPage.memoTableRow1).toHaveText('Defence A memo test textbox directly available')
+    await expect (memoPage.memoTableRow1).toHaveText('DefenceAdvocateA memo test textbox directly available')
     await caseDetailsPage.caseNavigation.navigateTo('Index')
     const mergedDocumentList1 = await indexPage.getIndexDocuments();
     await expect(mergedDocumentList1.length).toBeGreaterThan(0); 

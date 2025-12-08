@@ -5,7 +5,7 @@ class MergeCasePage extends Base {
   mergeHeading: Locator;
   newCaseName: Locator;
   newCaseUrn: Locator;
-  findMergeCase: Locator;
+  findCaseToMerge: Locator;
   mergeCasesButton: Locator;
   progressBar : Locator;
   mergeCaseSelect: Locator;
@@ -16,7 +16,7 @@ constructor(page) {
     this.mergeHeading = page.getByText('Merge Cases', { exact: true })
     this.newCaseName = page.locator('#newName')
     this.newCaseUrn = page.locator('#newUrn')
-    this.findMergeCase = this.page.locator('#Search')
+    this.findCaseToMerge = this.page.locator('#Search')
     this.mergeCaseSelect = page.locator('.typeahead')
     this.mergeCasesButton = page.getByRole('link', { name: 'Merge cases' });
     this.progressBar = page.locator('div.progress')
@@ -28,7 +28,7 @@ async mergeCases(caseName1: string, caseName2: string){
     await this.newCaseUrn.clear();
     await this.newCaseUrn.fill(caseName1+'(M)')
     await expect (this.mergeCaseSelect).toBeEnabled();
-    await this.findMergeCase.fill(caseName2)
+    await this.findCaseToMerge.fill(caseName2)
     await this.page.getByRole("option", { name: caseName2 }).click();
     const caseRow = this.caseListTable.locator("tr").nth(1);
     await expect(caseRow.locator("td:nth-child(3)")).not.toBeEmpty({

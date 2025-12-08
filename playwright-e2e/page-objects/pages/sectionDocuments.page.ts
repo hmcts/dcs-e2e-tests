@@ -155,7 +155,7 @@ class SectionDocumentsPage extends Base {
     const isVisible = count > 0;
 
     if (!isVisible) {
-      return `Edit: Unable to locate edited filename for unrestricted document in Section ${section}`;
+      return `Unable to locate the unrestricted document in Section ${section}`;
     }
   }
 

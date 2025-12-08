@@ -1,4 +1,5 @@
 import { test, expect } from "../fixtures";
+import { config } from "../utils";
 
 test.describe("Memo Functionality", () => {
 
@@ -6,7 +7,6 @@ test.beforeEach(async ({ homePage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");
 });
-
 
 test("Add, Change and Remove Memos", async ({
     createCasePage,
@@ -20,14 +20,15 @@ test("Add, Change and Remove Memos", async ({
     await expect (caseDetailsPage.caseNameHeading).toBeVisible();   
     await caseDetailsPage.caseNavigation.navigateTo('Memos')
     await expect (memoPage.memoHeading).toContainText('Add a Memorandum');
-    await memoPage.addMemo();
-    await expect (memoPage.memoTableRow1).toHaveText("Add memo test textbox directly available")
-    await memoPage.addMemo();
-    await expect (memoPage.memoTableRow2).toHaveText("Add memo test via Add A Memorandum button")
+    const user = config.users.hmctsAdmin;
+    await memoPage.addMemo(user.group);
+    await expect (memoPage.memoTableRow1).toHaveText(`${user.group} memo test textbox directly available`)
+    await memoPage.addMemo(user.group);
+    await expect (memoPage.memoTableRow2).toHaveText(`${user.group} memo test via Add a Memorandum button`)
     await memoPage.changeMemo();
     await expect (memoPage.memoTableRow1).toContainText('Change memo test');
     await memoPage.removeMemo();
-    await expect (memoPage.memoTableRow1).toHaveText("Add memo test via Add A Memorandum button")
+    await expect (memoPage.memoTableRow1).toHaveText("${user} memo test via Add a Memorandum button")
 
     });
 });
