@@ -1,5 +1,9 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../base";
+import { expect } from "../../fixtures";
+import { Page } from "@playwright/test";
+import { waitUntilClickable } from "../../utils";
+
 
 class CaseDetailsPage extends Base {
   caseNameHeading: Locator;
@@ -41,25 +45,99 @@ class CaseDetailsPage extends Base {
     await this.changeCaseButton.click();
   }
 
-  async removeCase() {
-    // First dialog
-    const firstDialogPromise = this.page.waitForEvent("dialog");
-    await this.removeCaseBtn.click();
-    const firstDialog = await firstDialogPromise;
-    const secondDialogPromise = this.page.waitForEvent("dialog");
+  async removeCase(timeoutMs = 10000) {
     try {
-      await firstDialog.accept();
+      // First dialog
+      const firstDialogPromise = this.page.waitForEvent("dialog", {
+        timeout: timeoutMs,
+      });
+      await waitUntilClickable(this.removeCaseBtn);
+      await this.removeCaseBtn.click();
+      const firstDialog = await firstDialogPromise;
+      await firstDialog
+        .accept()
+        .catch((err) => console.warn("⚠️ Failed to accept first dialog:", err));
     } catch (err) {
-      console.warn("⚠️ Failed to accept first dialog:", err);
+      console.warn("⚠️ First dialog did not appear or failed:", err);
+      return; // stop further attempts if first dialog fails
     }
 
-    // Second dialog
-    const secondDialog = await secondDialogPromise;
     try {
-      await secondDialog.accept();
+      // Second dialog
+      const secondDialogPromise = this.page.waitForEvent("dialog", {
+        timeout: timeoutMs,
+      });
+      const secondDialog = await secondDialogPromise;
+      await secondDialog
+        .accept()
+        .catch((err) =>
+          console.warn("⚠️ Failed to accept second dialog:", err)
+        );
     } catch (err) {
       console.warn("⚠️ Failed to accept second dialog:", err);
     }
+  }
+
+  async tryOpenReviewPopup(): Promise<Page | null> {
+    let popupPage: Page | null = null;
+
+    try {
+      const popupPromise = this.page.waitForEvent("popup", { timeout: 5000 });
+      await this.caseNavigation.navigateTo("Review");
+      popupPage = await popupPromise;
+
+      const bodyText =
+        (await popupPage
+          .locator("body")
+          .innerText()
+          .catch(() => "")) ?? "";
+
+      const isPaginationPopup =
+        bodyText.includes("There are no documents in the paginated bundle") ||
+        bodyText.includes(
+          "The initial pagination for this bundle is underway"
+        ) ||
+        bodyText.trim().length === 0;
+
+      if (isPaginationPopup) {
+        await popupPage.close().catch(() => {});
+        return null;
+      }
+
+      const reviewSectionPanel = await popupPage
+        .locator("#bundleIndexDiv")
+        .isVisible()
+        .catch(() => false);
+
+      if (!reviewSectionPanel) {
+        await popupPage.close().catch(() => {});
+        return null;
+      }
+
+      return popupPage;
+    } catch {
+      if (popupPage) await popupPage.close().catch(() => {});
+      return null;
+    }
+  }
+
+  async openReviewPopupAwaitPagination(maxWaitMs = 90000): Promise<Page> {
+    let popup: Page | null = null;
+
+    await expect
+      .poll(
+        async () => {
+          popup = await this.tryOpenReviewPopup();
+          return popup;
+        },
+        {
+          timeout: maxWaitMs,
+          intervals: [5000],
+        }
+      )
+      .not.toBeNull();
+
+    return popup!;
   }
 }
 

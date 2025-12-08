@@ -59,6 +59,7 @@ test("Approve/Reject New user registration", async ({
     await adminPage.usersLink.click();
     await expect(userSettingsPage.userSettingsHeading).toContainText('People List');   
     await userSettingsPage.searchUser(userName);
+    await expect(userSettingsPage.userResultsTitle).toBeVisible();
     await userSettingsPage.updateVerifyUserFlag();  
     await expect(userSettingsPage.verifiedUserFlag).toHaveText('Y');
     await homePage.navigation.navigateTo("LogOff");

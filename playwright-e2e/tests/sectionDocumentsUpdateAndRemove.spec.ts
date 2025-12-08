@@ -48,7 +48,8 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
         sectionDocumentsPage,
         rocaPage,
         "TestCase",
-        "TestURN"
+        "TestURN",
+        "Defence"
       );
       sampleKey = newCase.sampleKey as [string, string][];
       newCaseName = newCase.newCaseName;
@@ -179,15 +180,19 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
 
   test.afterEach(
     async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      if (newCaseName) {
-        await deleteCaseByName(
-          newCaseName,
-          caseSearchPage,
-          caseDetailsPage,
-          homePage,
-          loginPage,
-          page
-        );
+      try {
+        if (newCaseName) {
+          await deleteCaseByName(
+            newCaseName,
+            caseSearchPage,
+            caseDetailsPage,
+            homePage,
+            loginPage,
+            page
+          );
+        }
+      } catch (error) {
+        console.error("⚠️ afterEach cleanup failed:", error);
       }
     }
   );
@@ -233,7 +238,8 @@ test.describe("Restricted Document Update and Removal Tests", () => {
         sectionDocumentsPage,
         rocaPage,
         "TestCase",
-        "TestURN"
+        "TestURN",
+        "Defence"
       );
       sampleKey = newCase.sampleKey as [string, string][];
       newCaseName = newCase.newCaseName;
@@ -409,15 +415,19 @@ test.describe("Restricted Document Update and Removal Tests", () => {
 
   test.afterEach(
     async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      if (newCaseName) {
-        await deleteCaseByName(
-          newCaseName,
-          caseSearchPage,
-          caseDetailsPage,
-          homePage,
-          loginPage,
-          page
-        );
+      try {
+        if (newCaseName) {
+          await deleteCaseByName(
+            newCaseName,
+            caseSearchPage,
+            caseDetailsPage,
+            homePage,
+            loginPage,
+            page
+          );
+        }
+      } catch (error) {
+        console.error("⚠️ afterEach cleanup failed:", error);
       }
     }
   );

@@ -2,7 +2,7 @@ import HomePage from "./home.page";
 import CaseSearchPage from "./caseSearch.page";
 import CaseDetailsPage from "./caseDetails.page";
 import LoginPage from "./login.page";
-import ReviewEvidencePage from "./reviewEvidence.page";
+import ReviewEvidencePage from "./Review Evidence/reviewEvidence.page";
 import UpdateFrontPage from "./updateFront.page";
 import CreateCasePage from "./createCase.page";
 import AddDefendantPage from "./addDefendant.page";

@@ -1,15 +1,19 @@
+import { expect } from "../../../fixtures";
 import { Locator } from "@playwright/test";
-import { Base } from "../base";
-import { DocumentModel, documents } from "../../data/documentModel";
+import { Base } from "../../base";
+import { DocumentModel, documents } from "../../../data/documentModel";
+import NotesComponent from "./notesComponent";
 
 class ReviewEvidencePage extends Base {
   readonly sectionPanel: Locator;
   documentTextName: Locator;
   sections: Locator;
   caseName: Locator;
+  notes: NotesComponent;
 
   constructor(page) {
     super(page);
+    this.notes = new NotesComponent(page);
     this.sectionPanel = page.locator("#bundleIndexDiv");
     this.documentTextName = page.locator(".docTextName");
     this.sections = page.locator("li.sectionLi");
@@ -17,6 +21,24 @@ class ReviewEvidencePage extends Base {
   }
 
   // Review Evidence Index: Section Methods
+
+  async sectionPanelLoad(timeout = 30000) {
+    const sectionPanel = this.page.locator("#bundleIndexDiv");
+    await expect(sectionPanel).toBeVisible();
+    // Wait until there are no visible loaders
+    await this.page.waitForFunction(
+      (panelSelector) => {
+        const panel = document.querySelector(panelSelector);
+        if (!panel) return false;
+
+        return Array.from(
+          panel.querySelectorAll('img[alt="Please wait ..."]')
+        ).every((img) => (img as HTMLElement).offsetParent === null); // cast to HTMLElement
+      },
+      "#bundleIndexDiv",
+      { timeout }
+    );
+  }
 
   async getSectionsCount(): Promise<number> {
     await this.sections.first().waitFor({ state: "visible" });

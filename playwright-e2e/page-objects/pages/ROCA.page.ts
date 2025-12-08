@@ -284,7 +284,6 @@ class ROCAPage extends Base {
     await expect(tableLocator).toBeVisible();
 
     const availableROCA = await this.getDocumentsFromROCATable(tableLocator);
-    console.log("AVAILABLE", availableROCA);
 
     const { missingDocuments, unexpectedDocuments } =
       await this.compareExpectedVsAvailableROCA(expectedROCA, availableROCA);
