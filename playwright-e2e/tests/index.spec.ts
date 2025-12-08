@@ -26,7 +26,8 @@ test.beforeEach(
         addDefendantPage,
         peoplePage,
         "TestCase",
-        "TestURN"
+        "TestURN",
+        "Defence"
       );
       newCaseName = newCase.newCaseName;
     }
