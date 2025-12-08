@@ -67,7 +67,7 @@ async indexSectionTitle(row: number): Promise<string> {
         
         return trimmedTitle;
 
-    } catch (_) {
+    } catch {
         throw new Error(`Failed to retrieve section title for row ${row}`);
     }
 }
@@ -117,7 +117,7 @@ await expect
         { timeout: 15000 }
     )
     .toBe(true);
-}catch (_) {
+}catch {
     throw new Error(`Failed to retrieve the Index table contents`);
 }}
 
