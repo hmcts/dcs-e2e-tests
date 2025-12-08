@@ -67,7 +67,7 @@ async indexSectionTitle(row: number): Promise<string> {
         
         return trimmedTitle;
 
-    } catch (error) {
+    } catch (_error) {
         throw new Error(`Failed to retrieve section title for row ${row}`);
     }
 }
@@ -117,7 +117,7 @@ await expect
         { timeout: 15000 }
     )
     .toBe(true);
-}catch (error) {
+}catch (_error) {
     throw new Error(`Failed to retrieve the Index table contents`);
 }}
 
@@ -127,7 +127,7 @@ async getIndexDocuments(): Promise<DocumentModel[]>{
     const docNoName: string = "No Name";
     const docNoNum: string = "No Num";
     let colCountNext: number = 0;
-    let indexArrayList: DocumentModel[] = []; 
+    const indexArrayList: DocumentModel[] = []; 
     
     await this.indexPagination();
     const indexRowCount = await this.rowCount(); 
