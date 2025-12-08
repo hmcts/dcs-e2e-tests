@@ -270,15 +270,19 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
   });
   test.afterEach(
     async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      if (newCaseName) {
-        await deleteCaseByName(
-          newCaseName,
-          caseSearchPage,
-          caseDetailsPage,
-          homePage,
-          loginPage,
-          page
-        );
+      try {
+        if (newCaseName) {
+          await deleteCaseByName(
+            newCaseName,
+            caseSearchPage,
+            caseDetailsPage,
+            homePage,
+            loginPage,
+            page
+          );
+        }
+      } catch (error) {
+        console.error("⚠️ afterEach cleanup failed:", error);
       }
     }
   );
