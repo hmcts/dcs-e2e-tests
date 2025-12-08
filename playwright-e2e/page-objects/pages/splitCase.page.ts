@@ -14,7 +14,7 @@ class SplitCasePage extends Base {
   newCaseUrn1: Locator;
   newCaseUrn2: Locator;
   caseListTable: Locator;
-  firstDefendant: Locator;
+  firstDefendantInTable: Locator;
   progressBar : Locator;
    
 constructor(page) {
@@ -31,7 +31,7 @@ constructor(page) {
     this.newCaseUrn1 = page.locator("(//*[@id=\"newUrn\"])[1]")
     this.newCaseUrn2 = page.locator("(//*[@id=\"newUrn\"])[2]")
     this.caseListTable = page.locator('#caseListTable')
-    this.firstDefendant = page.locator('//*[@id=\"caseListTable\"]/tbody/tr[1]/td[1]')
+    this.firstDefendantInTable = page.locator('//*[@id=\"caseListTable\"]/tbody/tr[1]/td[1]')
     this.progressBar = page.locator('.progress-bar')
 }
 
@@ -45,7 +45,7 @@ async splitACase(caseName: string){
 
     await this.newCaseName1.fill(caseName+ "one")
     await this.newCaseName2.fill(caseName+ "two")
-    const defendantLocator =  this.firstDefendant.getByText('Defendant Two');
+    const defendantLocator =  this.firstDefendantInTable.getByText('Defendant Two');
     const defendantTwoIsVisible = await defendantLocator.isVisible();
 
     if (defendantTwoIsVisible) {

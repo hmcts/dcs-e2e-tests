@@ -1,6 +1,6 @@
 import { Locator} from '@playwright/test'; 
 import { Base } from "../base";
-import { DocumentModel } from "../../data/documentModel";
+import { DocumentModel, documents } from "../../data/documentModel";
 import UploadDocumentPage from "./uploadDocument.page";
 import { expect } from "../../fixtures";
 
@@ -105,9 +105,9 @@ async indexDocNum(row: number): Promise<string> {
     return "No Num";
 }
 
+
 async indexPagination(){
 try {
-   // Locator for the last section name on the page (assuming this is the last element to stabilize)
 const lastSectionNameLocator = this.page.locator('table.sectionHeadTable .contentsName').last();
 await expect
     .poll(
@@ -121,40 +121,39 @@ await expect
     throw new Error(`Failed to retrieve the Index table contents`);
 }}
 
-async getIndexDocuments(): Promise<DocumentModel[]>{ 
+
+async getIndexDocuments(): Promise<DocumentModel[]> {
     let sectionTitle: string | null = null;
     let sectionKey: string | null = null;
-    const docNoName: string = "No Name";
-    const docNoNum: string = "No Num";
-    let colCountNext: number = 0;
-    const indexArrayList: DocumentModel[] = []; 
-    
+
     await this.indexPagination();
-    const indexRowCount = await this.rowCount(); 
+    const indexRowCount = await this.rowCount();
 
     for (let row = 1; row <= indexRowCount; row++) {
         const colCount = await this.colCount(row);
+        let colCountNext = 0;
         
-        if (row + 1 < indexRowCount) { 
+        if (row < indexRowCount) { 
             colCountNext = await this.colCount(row + 1);
         }
 
-        // Section Header 
+        // SECTION HEADER
         if (colCount < 4) {
             sectionTitle = await this.indexSectionTitle(row);
             sectionKey = await this.indexSectionKey(row);
 
-            if (colCountNext < 4) {
-                const newDocs = await this.getIndexDocumentArray(
-                    sectionTitle!, 
-                    sectionKey!, 
-                    docNoName, 
-                    docNoNum,
-                );
-                indexArrayList.push(...newDocs);
+            // Check if this section header is immediately followed by another section header (i.e., no documents inside)
+            if (colCountNext < 4 || row === indexRowCount) {
+                documents.push({
+                    sectionTitle: sectionTitle,
+                    sectionId: sectionKey,
+                    documentName: "No available document: name",
+                    documentNumber: "No available document: number",
+                });
             }
-        } 
-        // Document details 
+        }
+        
+        // DOCUMENT DETAILS 
         else if (colCount > 4) {
             const currentTitle = sectionTitle ?? "UNKNOWN SECTION TITLE";
             const currentKey = sectionKey ?? "UNKNOWN_KEY";
@@ -162,34 +161,17 @@ async getIndexDocuments(): Promise<DocumentModel[]>{
             const docName = await this.indexDocName(row);
             const docNum = await this.indexDocNum(row);
 
-            const newDocs = await this.getIndexDocumentArray(
-                currentTitle, 
-                currentKey, 
-                docName, 
-                docNum,
-            );
-            indexArrayList.push(...newDocs);
+            documents.push({
+                sectionTitle: currentTitle,
+                sectionId: currentKey,
+                documentName: docName,
+                documentNumber: docNum,
+            });
         }
-        colCountNext = 0;
     }
-    return indexArrayList;
+    return documents;
 }
 
-async getIndexDocumentArray(
-    title: string,
-    guid: string,
-    docNum: string,
-    docName: string,
-): Promise<DocumentModel[]> {
-    
-    const documentModel: DocumentModel = {
-        sectionTitle: title,
-        sectionId: guid,
-        documentName: docNum, 
-        documentNumber: docName,
-    };
-    return [documentModel];
-}
 
 async goToUploadDocumentsFromIndex() {
     const uploadButton = this.page.getByRole("link", { name: "Upload Document(s)" });
