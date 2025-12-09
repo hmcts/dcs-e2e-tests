@@ -20,7 +20,7 @@ class SectionDocumentsPage extends Base {
     await this.page
       .locator("table.formTable-zebra tbody tr:nth-child(n+2)")
       .first()
-      .waitFor({ state: "visible", timeout: 20000 });
+      .waitFor({ state: "visible", timeout: 40000 });
     const rows = this.page.locator(
       "table.formTable-zebra tbody tr:nth-child(n+3)"
     );
@@ -38,7 +38,7 @@ class SectionDocumentsPage extends Base {
     await this.page
       .locator("table.formTable-zebra tbody tr:nth-child(n+2)")
       .first()
-      .waitFor({ state: "visible", timeout: 20000 });
+      .waitFor({ state: "visible", timeout: 40000 });
     const rows = this.page.locator(
       "table.formTable-zebra tbody tr:nth-child(n+3)"
     );

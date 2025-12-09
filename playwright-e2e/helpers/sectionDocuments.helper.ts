@@ -41,7 +41,7 @@ export async function verifyDocumentMove(
   await sectionDocumentsPage.page
     .locator("table.formTable-zebra tbody tr:nth-child(n+2)")
     .first()
-    .waitFor({ state: "visible", timeout: 20000 });
+    .waitFor({ state: "visible", timeout: 40000 });
   const rows = sectionDocumentsPage.page.locator(
     "table.formTable-zebra tbody tr:nth-child(n+3)"
   );

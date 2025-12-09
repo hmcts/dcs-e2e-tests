@@ -4,7 +4,6 @@ import { expect } from "../../fixtures";
 import { Page } from "@playwright/test";
 import { waitUntilClickable } from "../../utils";
 
-
 class CaseDetailsPage extends Base {
   caseNameHeading: Locator;
   caseDetailsHeading: Locator;
@@ -45,37 +44,51 @@ class CaseDetailsPage extends Base {
     await this.changeCaseButton.click();
   }
 
-  async removeCase(timeoutMs = 10000) {
-    try {
-      // First dialog
-      const firstDialogPromise = this.page.waitForEvent("dialog", {
-        timeout: timeoutMs,
-      });
-      await waitUntilClickable(this.removeCaseBtn);
-      await this.removeCaseBtn.click();
-      const firstDialog = await firstDialogPromise;
-      await firstDialog
-        .accept()
-        .catch((err) => console.warn("⚠️ Failed to accept first dialog:", err));
-    } catch (err) {
-      console.warn("⚠️ First dialog did not appear or failed:", err);
-      return; // stop further attempts if first dialog fails
-    }
+  async removeCase(timeoutMs = 20000) {
+    await expect
+      .poll(
+        async () => {
+          try {
+            // ---- Attempt to trigger first dialog ----
+            const firstDialogPromise = this.page.waitForEvent("dialog", {
+              timeout: 5000,
+            });
 
-    try {
-      // Second dialog
-      const secondDialogPromise = this.page.waitForEvent("dialog", {
-        timeout: timeoutMs,
-      });
-      const secondDialog = await secondDialogPromise;
-      await secondDialog
-        .accept()
-        .catch((err) =>
-          console.warn("⚠️ Failed to accept second dialog:", err)
-        );
-    } catch (err) {
-      console.warn("⚠️ Failed to accept second dialog:", err);
-    }
+            await waitUntilClickable(this.removeCaseBtn);
+            await this.removeCaseBtn.click();
+
+            const firstDialog = await firstDialogPromise;
+
+            // ---- Trigger second dialog ----
+            const secondDialogPromise = this.page.waitForEvent("dialog", {
+              timeout: 5000,
+            });
+
+            await firstDialog
+              .accept()
+              .catch((err) =>
+                console.warn("⚠️ Failed to accept first dialog:", err)
+              );
+
+            const secondDialog = await secondDialogPromise;
+            await secondDialog
+              .accept()
+              .catch((err) =>
+                console.warn("⚠️ Failed to accept second dialog:", err)
+              );
+
+            return true;
+          } catch {
+            // Something failed → retry
+            return false;
+          }
+        },
+        {
+          timeout: timeoutMs,
+          intervals: [500, 1000, 1500],
+        }
+      )
+      .toBe(true);
   }
 
   async tryOpenReviewPopup(): Promise<Page | null> {

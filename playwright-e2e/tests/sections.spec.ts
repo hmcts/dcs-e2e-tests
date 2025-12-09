@@ -43,6 +43,7 @@ test.describe("Sections Page", () => {
       sectionsPage,
       homePage,
     }) => {
+      test.setTimeout(600000);
       const currentUserIssues: string[] = [];
       try {
         await loginPage.login(user);

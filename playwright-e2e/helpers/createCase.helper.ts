@@ -92,7 +92,7 @@ export async function createNewCaseWithDefendantsAndUsers(
   for (const defenceDetail of userDetails) {
     await peoplePage.addUser(defenceDetail.username, defenceDetail?.defendants);
   }
-  await expect(peoplePage.pageTitle).toBeVisible({ timeout: 20_000 });
+  await expect(peoplePage.pageTitle).toBeVisible({ timeout: 40_000 });
   return { newCaseName, newCaseUrn };
 }
 

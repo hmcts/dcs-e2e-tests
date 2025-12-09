@@ -201,15 +201,32 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
 
   test.afterEach(
     async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      if (newCaseName) {
-        await deleteCaseByName(
-          newCaseName,
-          caseSearchPage,
-          caseDetailsPage,
-          homePage,
-          loginPage,
-          page
-        );
+      if (!newCaseName) return;
+
+      try {
+        console.log(`🧹 Attempting to delete test case: ${newCaseName}`);
+
+        // Run cleanup with timeout (race against 60s)
+        await Promise.race([
+          deleteCaseByName(
+            newCaseName,
+            caseSearchPage,
+            caseDetailsPage,
+            homePage,
+            loginPage,
+            page
+          ),
+          new Promise<void>((resolve) =>
+            setTimeout(() => {
+              console.warn(`⚠️ Cleanup for ${newCaseName} timed out after 90s`);
+              resolve();
+            }, 90000)
+          ),
+        ]);
+
+        console.log(`✅ Cleanup completed for: ${newCaseName}`);
+      } catch (err) {
+        console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
       }
     }
   );
@@ -459,15 +476,32 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
 
   test.afterEach(
     async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      if (newCaseName) {
-        await deleteCaseByName(
-          newCaseName,
-          caseSearchPage,
-          caseDetailsPage,
-          homePage,
-          loginPage,
-          page
-        );
+      if (!newCaseName) return;
+
+      try {
+        console.log(`🧹 Attempting to delete test case: ${newCaseName}`);
+
+        // Run cleanup with timeout (race against 60s)
+        await Promise.race([
+          deleteCaseByName(
+            newCaseName,
+            caseSearchPage,
+            caseDetailsPage,
+            homePage,
+            loginPage,
+            page
+          ),
+          new Promise<void>((resolve) =>
+            setTimeout(() => {
+              console.warn(`⚠️ Cleanup for ${newCaseName} timed out after 90s`);
+              resolve();
+            }, 90000)
+          ),
+        ]);
+
+        console.log(`✅ Cleanup completed for: ${newCaseName}`);
+      } catch (err) {
+        console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
       }
     }
   );
