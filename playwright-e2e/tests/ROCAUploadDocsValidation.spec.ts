@@ -6,7 +6,7 @@ import { sections, pushTestResult } from "../utils";
 import { loginAndOpenCase } from "../helpers/login.helper";
 import { deleteCaseByName } from "../helpers/deleteCase.helper";
 
-test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", () => {
+test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cleanup", () => {
   let newCaseName: string;
 
   test.beforeEach(
@@ -268,35 +268,24 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted)", (
       );
     }
   });
-  test.afterEach(
-    async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      if (!newCaseName) return;
+  test.afterEach(async () => {
+    if (!newCaseName) return;
 
-      try {
-        console.log(`🧹 Attempting to delete test case: ${newCaseName}`);
+    try {
+      console.log(`Attempting to delete test case: ${newCaseName}`);
 
-        // Run cleanup with timeout (race against 60s)
-        await Promise.race([
-          deleteCaseByName(
-            newCaseName,
-            caseSearchPage,
-            caseDetailsPage,
-            homePage,
-            loginPage,
-            page
-          ),
-          new Promise<void>((resolve) =>
-            setTimeout(() => {
-              console.warn(`⚠️ Cleanup for ${newCaseName} timed out after 90s`);
-              resolve();
-            }, 90000)
-          ),
-        ]);
-
-        console.log(`✅ Cleanup completed for: ${newCaseName}`);
-      } catch (err) {
-        console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
-      }
+      // Run cleanup with timeout (race against 90s)
+      await Promise.race([
+        deleteCaseByName(newCaseName, 90000),
+        new Promise<void>((resolve) =>
+          setTimeout(() => {
+            console.warn(`⚠️ Cleanup for ${newCaseName} timed out after 90s`);
+            resolve();
+          }, 90000)
+        ),
+      ]);
+    } catch (err) {
+      console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
     }
-  );
+  });
 });

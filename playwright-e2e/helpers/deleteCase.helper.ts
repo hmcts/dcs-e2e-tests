@@ -1,58 +1,84 @@
-import { Page } from "playwright-core";
 import { config } from "../utils";
-import { loginAndOpenCase } from "./login.helper";
+import { chromium, Page, BrowserContext } from "playwright";
+import { expect } from "../fixtures";
+import { todaysDate } from "../utils";
+import CaseSearchPage from "../page-objects/pages/caseSearch.page";
+import CaseDetailsPage from "../page-objects/pages/caseDetails.page";
 
-export async function deleteCaseByName(
-  caseName: string,
-  caseSearchPage,
-  caseDetailsPage,
-  homePage,
-  loginPage,
-  page: Page
+export async function runAsAdmin(
+  callback: (page: Page) => Promise<void>,
+  headed = false
 ) {
+  let context: BrowserContext | null = null;
+
   try {
-    // Log off if needed
-    const logOffLink = page.getByRole("link", { name: "Log Off" });
-    if (await logOffLink.isVisible({ timeout: 2000 })) {
-      await logOffLink.click();
-    }
+    const browser = await chromium.launch({ headless: headed });
 
-    // Navigate to LogOn
-    try {
-      await homePage.navigation.navigateTo("LogOn");
-    } catch (err) {
-      console.warn("⚠️ Failed to navigate to LogOn:", err);
-    }
+    context = await browser.newContext({
+      storageState: config.users.admin.sessionFile,
+    });
 
-    // Login and open the case
-    try {
-      await loginAndOpenCase(
-        homePage,
-        loginPage,
-        caseSearchPage,
-        config.users.admin,
-        caseName
-      );
-    } catch (err) {
-      console.warn(`⚠️ Failed to login/open case ${caseName}:`, err);
-      return;
-    }
+    const page = await context.newPage();
+    await callback(page);
 
-    // Remove the case 
-    try {
-      await caseDetailsPage.removeCase(20000);
-    } catch (err) {
-      console.warn(`⚠️ Failed to remove case ${caseName}:`, err);
-    }
-
-    // Confirm deletion
-    try {
-      await caseSearchPage.confirmCaseDeletion();
-      console.log(` ✅ ${caseName} successfully deleted`);
-    } catch (err) {
-      console.warn(`⚠️ Failed to confirm deletion for ${caseName}:`, err);
-    }
+    await context.close();
+    await browser.close();
   } catch (err) {
-    console.warn(`⚠️ deleteCaseByName overall failure for ${caseName}:`, err);
+    if (context) await context.close();
+    console.error("❌ runAsAdmin failed:", err);
+    throw err;
   }
+}
+
+export async function deleteCaseByName(caseName: string, timeoutMs = 20000) {
+  if (!caseName) return;
+
+  await runAsAdmin(async (page) => {
+    const caseSearchPage = new CaseSearchPage(page);
+    const caseDetailsPage = new CaseDetailsPage(page);
+
+    await expect
+      .poll(
+        async () => {
+          try {
+            // Navigate to case list page
+            await page.goto(
+              `${config.urls.base}Case/CaseIndex?currentFirst=1&displaySize=10`
+            );
+
+            // Search and open case
+            await caseSearchPage.searchCaseFile(
+              caseName,
+              "Southwark",
+              todaysDate()
+            );
+            await caseSearchPage.goToUpdateCase(caseName, todaysDate());
+
+            // Remove the case
+            try {
+              await caseDetailsPage.removeCase(timeoutMs);
+            } catch (err) {
+              console.warn(`⚠️ Failed to remove case ${caseName}:`, err);
+            }
+
+            // Confirm deletion
+            try {
+              await caseSearchPage.confirmCaseDeletion();
+              console.log(`✅ ${caseName} successfully deleted`);
+            } catch (err) {
+              console.warn(
+                `⚠️ Failed to confirm deletion for ${caseName}:`,
+                err
+              );
+            }
+
+            return true;
+          } catch {
+            return false; // retry poll
+          }
+        },
+        { timeout: timeoutMs, intervals: [500, 1000, 1500] }
+      )
+      .toBe(true);
+  });
 }
