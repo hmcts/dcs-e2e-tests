@@ -42,6 +42,8 @@ export interface Config {
     preprod: string;
     uat: string;
     base: string;
+    ptphUpload: string;
+    ptphStatus: string;
   };
 }
 
@@ -61,6 +63,15 @@ export const config: Config = {
     preprod: urls.preprod,
     uat: urls.uat,
     base: ENV === "uat" ? urls.uat : urls.preprod,
+    ptphUpload:
+      ENV === "uat"
+        ? process.env.UAT_UPLOAD_PTPH_FORM_URL ?? ""
+        : process.env.PREPROD_UPLOAD_PTPH_FORM_URL ?? "",
+
+    ptphStatus:
+      ENV === "uat"
+        ? process.env.UAT_CONFIRM_PTPH_UPLOAD_STATUS_URL ?? ""
+        : process.env.PREPROD_CONFIRM_PTPH_UPLOAD_STATUS_URL ?? "",
   },
   users: {
     hmctsAdmin: {
