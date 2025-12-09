@@ -7,7 +7,7 @@ import CaseDetailsPage from "../page-objects/pages/caseDetails.page";
 
 export async function runAsAdmin(
   callback: (page: Page) => Promise<void>,
-  headed = false
+  headed = true
 ) {
   let context: BrowserContext | null = null;
 
