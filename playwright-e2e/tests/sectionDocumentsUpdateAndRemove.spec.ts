@@ -16,7 +16,7 @@ import { verifyDocumentMove } from "../helpers/sectionDocuments.helper";
 // I want to be able to update or remove a document in an unrestricted section
 // So that only relevant documents are available in the correct sections for further review for relevant parties
 
-test.describe("Unrestricted Document Update and Removal Tests", () => {
+test.describe("Unrestricted Document Update and Removal Tests @cleanup", () => {
   let sampleKey: [string, string][];
   let newCaseName: string;
   const unrestrictedRemoveResults: string[] = [];
@@ -178,37 +178,26 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
     }
   });
 
-  test.afterEach(
-    async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      if (!newCaseName) return;
+  test.afterEach(async () => {
+    if (!newCaseName) return;
 
-      try {
-        console.log(`🧹 Attempting to delete test case: ${newCaseName}`);
+    try {
+      console.log(`Attempting to delete test case: ${newCaseName}`);
 
-        // Run cleanup with timeout (race against 60s)
-        await Promise.race([
-          deleteCaseByName(
-            newCaseName,
-            caseSearchPage,
-            caseDetailsPage,
-            homePage,
-            loginPage,
-            page
-          ),
-          new Promise<void>((resolve) =>
-            setTimeout(() => {
-              console.warn(`⚠️ Cleanup for ${newCaseName} timed out after 90s`);
-              resolve();
-            }, 90000)
-          ),
-        ]);
-
-        console.log(`✅ Cleanup completed for: ${newCaseName}`);
-      } catch (err) {
-        console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
-      }
+      // Run cleanup with timeout (race against 90s)
+      await Promise.race([
+        deleteCaseByName(newCaseName, 90000),
+        new Promise<void>((resolve) =>
+          setTimeout(() => {
+            console.warn(`⚠️ Cleanup for ${newCaseName} timed out after 90s`);
+            resolve();
+          }, 90000)
+        ),
+      ]);
+    } catch (err) {
+      console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
     }
-  );
+  });
 });
 
 // ============================================================
@@ -219,7 +208,7 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
 // I want to be able to update or remove a document in an restricted section
 // So that only relevant documents are available in the correct sections for further review for relevant parties
 
-test.describe("Restricted Document Update and Removal Tests", () => {
+test.describe("Restricted Document Update and Removal Tests @cleanup", () => {
   let sampleKey: [string, string][];
   let newCaseName: string;
   const restrictedRemoveResults: string[] = [];
@@ -426,35 +415,24 @@ test.describe("Restricted Document Update and Removal Tests", () => {
     }
   });
 
-  test.afterEach(
-    async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      if (!newCaseName) return;
+  test.afterEach(async () => {
+    if (!newCaseName) return;
 
-      try {
-        console.log(`🧹 Attempting to delete test case: ${newCaseName}`);
+    try {
+      console.log(`Attempting to delete test case: ${newCaseName}`);
 
-        // Run cleanup with timeout (race against 60s)
-        await Promise.race([
-          deleteCaseByName(
-            newCaseName,
-            caseSearchPage,
-            caseDetailsPage,
-            homePage,
-            loginPage,
-            page
-          ),
-          new Promise<void>((resolve) =>
-            setTimeout(() => {
-              console.warn(`⚠️ Cleanup for ${newCaseName} timed out after 90s`);
-              resolve();
-            }, 90000)
-          ),
-        ]);
-
-        console.log(`✅ Cleanup completed for: ${newCaseName}`);
-      } catch (err) {
-        console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
-      }
+      // Run cleanup with timeout (race against 90s)
+      await Promise.race([
+        deleteCaseByName(newCaseName, 90000),
+        new Promise<void>((resolve) =>
+          setTimeout(() => {
+            console.warn(`⚠️ Cleanup for ${newCaseName} timed out after 90s`);
+            resolve();
+          }, 90000)
+        ),
+      ]);
+    } catch (err) {
+      console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
     }
-  );
+  });
 });

@@ -23,6 +23,7 @@ function isSessionValid(sessionFile: string, cookieName: string): boolean {
   }
 }
 setup.describe("Set up user session", () => {
+  fs.mkdirSync("./playwright-e2e/.sessions", { recursive: true });
   clearResultsFile();
   console.log("Cleared previous test results.");
   /**
@@ -31,6 +32,18 @@ setup.describe("Set up user session", () => {
    */
   setup("Set up HMCTS Admin user", async ({ config, loginPage, homePage }) => {
     const user = config.users.hmctsAdmin;
+    if (isSessionValid(user.sessionFile!, user.cookieName!)) {
+      console.log("Existing session valid, skipping login.");
+      return;
+    }
+    await homePage.open();
+    await homePage.navigation.navigateTo("LogOn");
+    await loginPage.login(user);
+    await loginPage.page.context().storageState({ path: user.sessionFile });
+    await cookieUtils.addUserAnalyticsCookie(user.sessionFile!);
+  });
+  setup("Admin user", async ({ config, loginPage, homePage }) => {
+    const user = config.users.admin;
     if (isSessionValid(user.sessionFile!, user.cookieName!)) {
       console.log("Existing session valid, skipping login.");
       return;

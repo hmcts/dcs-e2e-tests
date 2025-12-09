@@ -16,7 +16,7 @@ import { ROCAModel } from "../data/ROCAModel";
 // I want any updates or removal of unrestricted documents to be reflected in the ROCA unrestricted table
 // So that I can accurately track document activity
 
-test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
+test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", () => {
   let sampleKey: [string, string][];
   let newCaseName: string;
   let rocaExpected: ROCAModel[] = [];
@@ -199,37 +199,26 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
     }
   });
 
-  test.afterEach(
-    async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      if (!newCaseName) return;
+  test.afterEach(async () => {
+    if (!newCaseName) return;
 
-      try {
-        console.log(`🧹 Attempting to delete test case: ${newCaseName}`);
+    try {
+      console.log(`Attempting to delete test case: ${newCaseName}`);
 
-        // Run cleanup with timeout (race against 60s)
-        await Promise.race([
-          deleteCaseByName(
-            newCaseName,
-            caseSearchPage,
-            caseDetailsPage,
-            homePage,
-            loginPage,
-            page
-          ),
-          new Promise<void>((resolve) =>
-            setTimeout(() => {
-              console.warn(`⚠️ Cleanup for ${newCaseName} timed out after 90s`);
-              resolve();
-            }, 90000)
-          ),
-        ]);
-
-        console.log(`✅ Cleanup completed for: ${newCaseName}`);
-      } catch (err) {
-        console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
-      }
+      // Run cleanup with timeout (race against 90s)
+      await Promise.race([
+        deleteCaseByName(newCaseName, 90000),
+        new Promise<void>((resolve) =>
+          setTimeout(() => {
+            console.warn(`⚠️ Cleanup for ${newCaseName} timed out after 90s`);
+            resolve();
+          }, 90000)
+        ),
+      ]);
+    } catch (err) {
+      console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
     }
-  );
+  });
 });
 
 // ============================================================
@@ -240,7 +229,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
 // I want any updates or removal of restricted documents to be reflected in the ROCA restricted table
 // So that I can accurately track document activity
 
-test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
+test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", () => {
   let sampleKey: [string, string][];
   let newCaseName: string;
   let rocaExpected: ROCAModel[] = [];
@@ -474,35 +463,24 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
     }
   });
 
-  test.afterEach(
-    async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      if (!newCaseName) return;
+  test.afterEach(async () => {
+    if (!newCaseName) return;
 
-      try {
-        console.log(`🧹 Attempting to delete test case: ${newCaseName}`);
+    try {
+      console.log(`Attempting to delete test case: ${newCaseName}`);
 
-        // Run cleanup with timeout (race against 60s)
-        await Promise.race([
-          deleteCaseByName(
-            newCaseName,
-            caseSearchPage,
-            caseDetailsPage,
-            homePage,
-            loginPage,
-            page
-          ),
-          new Promise<void>((resolve) =>
-            setTimeout(() => {
-              console.warn(`⚠️ Cleanup for ${newCaseName} timed out after 90s`);
-              resolve();
-            }, 90000)
-          ),
-        ]);
-
-        console.log(`✅ Cleanup completed for: ${newCaseName}`);
-      } catch (err) {
-        console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
-      }
+      // Run cleanup with timeout (race against 90s)
+      await Promise.race([
+        deleteCaseByName(newCaseName, 90000),
+        new Promise<void>((resolve) =>
+          setTimeout(() => {
+            console.warn(`⚠️ Cleanup for ${newCaseName} timed out after 90s`);
+            resolve();
+          }, 90000)
+        ),
+      ]);
+    } catch (err) {
+      console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
     }
-  );
+  });
 });
