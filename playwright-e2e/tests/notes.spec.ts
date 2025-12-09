@@ -17,49 +17,51 @@ import ReviewEvidencePage from "../page-objects/pages/Review Evidence/reviewEvid
 // I want to be able to edit or remove my notes of any share type (Widely Shared, Tightly Shared, Private) on a document I have access to
 // So that I can ensure up to date information is shared, to the right parties on a document.
 
-test.describe("Notes Functionality", () => {
-  let sampleKey: [string, string][];
-  let newCaseName: string;
+const excludedGroups = ["AccessCoordinator", "Admin"];
 
-  test.beforeEach(
-    async ({
-      homePage,
-      caseSearchPage,
-      caseDetailsPage,
-      createCasePage,
-      addDefendantPage,
-      peoplePage,
-      sectionsPage,
-      sectionDocumentsPage,
-      rocaPage,
-    }) => {
-      await homePage.open();
-      await homePage.navigation.navigateTo("ViewCaseListLink");
-      await caseSearchPage.goToCreateCase();
+for (const user of Object.values(config.users).filter(
+  (u) => !excludedGroups.includes(u.group)
+)) {
+  test.describe(`Notes Functionality for ${user.group}`, () => {
+    let sampleKey: [string, string][];
+    let newCaseName: string;
 
-      const newCase = await createNewCaseWithUnrestrictedDocument(
-        createCasePage,
+    test.beforeEach(
+      async ({
+        homePage,
+        caseSearchPage,
         caseDetailsPage,
+        createCasePage,
         addDefendantPage,
         peoplePage,
         sectionsPage,
         sectionDocumentsPage,
         rocaPage,
-        "TestCase",
-        "TestURN",
-        "Complete"
-      );
-      sampleKey = newCase.sampleKey as [string, string][];
-      newCaseName = newCase.newCaseName;
-      await sectionsPage.navigation.navigateTo("LogOff");
-    }
-  );
+      }) => {
+        await homePage.open();
+        await homePage.navigation.navigateTo("ViewCaseListLink");
+        await caseSearchPage.goToCreateCase();
 
-  const excludedGroups = ["AccessCoordinator", "Admin"];
+        const newCase = await createNewCaseWithUnrestrictedDocument(
+          createCasePage,
+          caseDetailsPage,
+          addDefendantPage,
+          peoplePage,
+          sectionsPage,
+          sectionDocumentsPage,
+          rocaPage,
+          "TestCase",
+          "TestURN",
+          user.group
+        );
 
-  for (const user of Object.values(config.users).filter(
-    (user) => !excludedGroups.includes(user.group)
-  )) {
+        sampleKey = newCase.sampleKey as [string, string][];
+        newCaseName = newCase.newCaseName;
+
+        await sectionsPage.navigation.navigateTo("LogOff");
+      }
+    );
+
     test(`Create, Delete and Edit Notes on Document for ${user.group}`, async ({
       homePage,
       loginPage,
@@ -78,29 +80,31 @@ test.describe("Notes Functionality", () => {
 
       const popup = await caseDetailsPage.openReviewPopupAwaitPagination();
       const reviewEvidencePage = new ReviewEvidencePage(popup);
+
       const sectionKey = sampleKey[0][0];
       await reviewEvidencePage.sectionPanelLoad();
       await reviewEvidencePage.notes.waitForHighResImageLoad(sectionKey);
       await reviewEvidencePage.notes.openNotes();
 
-      // Add Notes of each Share Type for the user
       const types = await reviewEvidencePage.notes.addNotesForUserGroup(
         user.group,
         user.username
       );
+
       if (user.group === "DefenceAdvocateA") {
         await expect
-          .poll(async () => await reviewEvidencePage.notes.getNotesCount(), {
+          .poll(() => reviewEvidencePage.notes.getNotesCount(), {
             timeout: 10000,
           })
           .toBe(4);
       } else {
         await expect
-          .poll(async () => await reviewEvidencePage.notes.getNotesCount(), {
+          .poll(() => reviewEvidencePage.notes.getNotesCount(), {
             timeout: 10000,
           })
           .toBe(3);
       }
+
       const notes = await reviewEvidencePage.notes.getAllNotes();
       await reviewEvidencePage.notes.validateNotes(
         currentUserIssues,
@@ -123,12 +127,11 @@ test.describe("Notes Functionality", () => {
       try {
         await expect
           .poll(
-            async () => {
-              return await reviewEvidencePage.notes.stickyNotes
+            async () =>
+              await reviewEvidencePage.notes.stickyNotes
                 .last()
                 .locator(".commentText")
-                .innerText();
-            },
+                .innerText(),
             { timeout: 10000 }
           )
           .toBe(`Edited note for ${user.group}`);
@@ -136,7 +139,6 @@ test.describe("Notes Functionality", () => {
         currentUserIssues.push(`Edit of note failed for ${user.group}`);
       }
 
-      //Aggregate results across users
       pushTestResult({
         user: user.group,
         heading: `Verify Notes Functionality for ${user.group}`,
@@ -144,34 +146,41 @@ test.describe("Notes Functionality", () => {
         issues: currentUserIssues,
       });
 
-      // Fail the test if any issues were found
       if (currentUserIssues.length > 0) {
         throw new Error(
-          `User ${
-            user.group
-          } experienced issues adding/editing/deleting Notes:\n${currentUserIssues.join(
+          `User ${user.group} experienced issues:\n${currentUserIssues.join(
             "\n"
           )}`
         );
       }
     });
-  }
 
-  test.afterEach(
-    async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      if (newCaseName) {
-        await deleteCaseByName(
-          newCaseName,
-          caseSearchPage,
-          caseDetailsPage,
-          homePage,
-          loginPage,
-          page
-        );
+    test.afterEach(
+      async ({
+        page,
+        caseSearchPage,
+        caseDetailsPage,
+        homePage,
+        loginPage,
+      }) => {
+        try {
+          if (newCaseName) {
+            await deleteCaseByName(
+              newCaseName,
+              caseSearchPage,
+              caseDetailsPage,
+              homePage,
+              loginPage,
+              page
+            );
+          }
+        } catch (error) {
+          console.error("⚠️ afterEach cleanup failed:", error);
+        }
       }
-    }
-  );
-});
+    );
+  });
+}
 
 // // ============================================================
 // // Test 2: Notes Access Permissions

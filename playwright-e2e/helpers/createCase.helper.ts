@@ -4,6 +4,68 @@ import { sections } from "../utils";
 import { ROCAModel } from "../data/ROCAModel";
 import { getRandomSectionKey } from "../utils";
 
+const userRoleConfig = {
+  DefenceAdvocateA: { defendants: ["Defendant One"] },
+  DefenceAdvocateB: { defendants: ["Defendant Two"] },
+  DefenceAdvocateC: { defendants: ["Defendant One", "Defendant Two"] },
+  Admin: {},
+  ProbationStaff: {},
+  FullTimeJudge: {},
+  CPSAdmin: {},
+  CPSProsecutor: {},
+};
+
+const groupPreset = {
+  Defence: [
+    "DefenceAdvocateA",
+    "DefenceAdvocateB",
+    "DefenceAdvocateC",
+    "Admin",
+  ],
+};
+
+export function getUserDetails(input: string) {
+  // Find key in config.users ignoring case
+  const userKey = Object.keys(config.users).find(
+    (key) => key.toLowerCase() === input.toLowerCase()
+  );
+
+  let userGroups: string[];
+
+  if (groupPreset[input]) {
+    userGroups = groupPreset[input];
+  } else if (userKey) {
+    userGroups = [userKey];
+  } else {
+    userGroups = ["Admin"];
+  }
+
+  const userDetails = userGroups
+    .map((group) => {
+      if (group.toLowerCase() === "hmctsadmin") return null; // skip case creator
+      const user = config.users[group];
+      if (!user) return null;
+
+      const roleKey = Object.keys(userRoleConfig).find(
+        (key) => key.toLowerCase() === group.toLowerCase()
+      );
+      const role = roleKey ? userRoleConfig[roleKey] : {};
+
+      return {
+        username: user.username,
+        defendants: role.defendants ?? [],
+      };
+    })
+    .filter(Boolean) as { username: string; defendants: string[] }[];
+
+  // Always include Admin for case deletion
+  if (!userDetails.some((u) => u.username === config.users.admin.username)) {
+    userDetails.push({ username: config.users.admin.username, defendants: [] });
+  }
+
+  return userDetails;
+}
+
 export async function createNewCaseWithDefendantsAndUsers(
   createCasePage,
   caseDetailsPage,
@@ -29,6 +91,9 @@ export async function createNewCaseWithDefendantsAndUsers(
       caseUrn
     ));
   }
+
+  // Add Defendants
+
   let defDetails: { surName: string; dobMonth: string }[] = [];
 
   if (numberDefendants === "One") {
@@ -48,53 +113,15 @@ export async function createNewCaseWithDefendantsAndUsers(
       newCaseUrn
     );
   }
-  // Add Relevant Users
+
+  // Add Relevant User Access
+
   await caseDetailsPage.caseNavigation.navigateTo("People");
 
-  let userDetails: { username: string; defendants?: string[] }[] = [];
+  const userDetails = getUserDetails(users);
 
-  if (users === "Defence") {
-    userDetails = [
-      {
-        username: config.users.defenceAdvocateA.username,
-        defendants: ["Defendant One"],
-      },
-      {
-        username: config.users.defenceAdvocateB.username,
-        defendants: ["Defendant Two"],
-      },
-      {
-        username: config.users.defenceAdvocateC.username,
-        defendants: ["Defendant One", "Defendant Two"],
-      },
-      { username: config.users.admin.username },
-    ];
-  } else if (users === "Complete") {
-    userDetails = [
-      {
-        username: config.users.defenceAdvocateA.username,
-        defendants: ["Defendant One"],
-      },
-      {
-        username: config.users.defenceAdvocateB.username,
-        defendants: ["Defendant Two"],
-      },
-      {
-        username: config.users.defenceAdvocateC.username,
-        defendants: ["Defendant One", "Defendant Two"],
-      },
-      { username: config.users.admin.username },
-      { username: config.users.probationStaff.username },
-      { username: config.users.fullTimeJudge.username },
-      { username: config.users.cpsAdmin.username },
-      { username: config.users.cpsProsecutor.username },
-    ];
-  } else {
-    userDetails = [{ username: config.users.admin.username }];
-  }
-
-  for (const defenceDetail of userDetails) {
-    await peoplePage.addUser(defenceDetail.username, defenceDetail?.defendants);
+  for (const userDetail of userDetails) {
+    await peoplePage.addUser(userDetail.username, userDetail?.defendants);
   }
   await expect(peoplePage.pageTitle).toBeVisible({ timeout: 20_000 });
   return { newCaseName, newCaseUrn };
