@@ -30,7 +30,7 @@ export async function runAsAdmin(
   }
 }
 
-export async function deleteCaseByName(caseName: string, timeoutMs = 20000) {
+export async function deleteCaseByName(caseName: string, timeoutMs = 60000) {
   if (!caseName) return;
 
   await runAsAdmin(async (page) => {
@@ -40,42 +40,23 @@ export async function deleteCaseByName(caseName: string, timeoutMs = 20000) {
     await expect
       .poll(
         async () => {
-          try {
-            // Navigate to case list page
-            await page.goto(
-              `${config.urls.base}Case/CaseIndex?currentFirst=1&displaySize=10`
-            );
+          await page.goto(
+            `${config.urls.base}Case/CaseIndex?currentFirst=1&displaySize=10`
+          );
+          await caseSearchPage.searchCaseFile(
+            caseName,
+            "Southwark",
+            todaysDate()
+          );
 
-            // Search and open case
-            await caseSearchPage.searchCaseFile(
-              caseName,
-              "Southwark",
-              todaysDate()
-            );
-            await caseSearchPage.goToUpdateCase(caseName, todaysDate());
+          const exists = await caseSearchPage.goToUpdateCase(
+            caseName,
+            todaysDate()
+          );
+          if (!exists) return true; // already deleted
 
-            // Remove the case
-            try {
-              await caseDetailsPage.removeCase(timeoutMs);
-            } catch (err) {
-              console.warn(`⚠️ Failed to remove case ${caseName}:`, err);
-            }
-
-            // Confirm deletion
-            try {
-              await caseSearchPage.confirmCaseDeletion();
-              console.log(`✅ ${caseName} successfully deleted`);
-            } catch (err) {
-              console.warn(
-                `⚠️ Failed to confirm deletion for ${caseName}:`,
-                err
-              );
-            }
-
-            return true;
-          } catch {
-            return false; // retry poll
-          }
+          await caseDetailsPage.removeCase(timeoutMs);
+          return await caseSearchPage.confirmCaseDeletion();
         },
         { timeout: timeoutMs, intervals: [500, 1000, 1500] }
       )

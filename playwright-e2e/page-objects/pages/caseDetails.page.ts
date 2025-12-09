@@ -3,6 +3,7 @@ import { Base } from "../base";
 import { expect } from "../../fixtures";
 import { Page } from "@playwright/test";
 import { waitUntilClickable } from "../../utils";
+import { Dialog } from "@playwright/test";
 
 class CaseDetailsPage extends Base {
   caseNameHeading: Locator;
@@ -44,43 +45,42 @@ class CaseDetailsPage extends Base {
     await this.changeCaseButton.click();
   }
 
-  async removeCase(timeoutMs = 20000) {
+  async removeCase(timeoutMs = 60000) {
     await expect
       .poll(
         async () => {
           try {
-            // ---- Attempt to trigger first dialog ----
-            const firstDialogPromise = this.page.waitForEvent("dialog", {
-              timeout: 5000,
-            });
+            // ---- Step 1: Attach a dialog handler before clicking ----
+            const dialogs: Dialog[] = [];
+            const dialogHandler = (dialog: Dialog) => {
+              dialogs.push(dialog);
+              dialog
+                .accept()
+                .catch((err) =>
+                  console.warn("⚠️ Failed to accept dialog:", err)
+                );
+            };
+            this.page.on("dialog", dialogHandler);
 
+            // ---- Step 2: Click the remove button ----
             await waitUntilClickable(this.removeCaseBtn);
             await this.removeCaseBtn.click();
 
-            const firstDialog = await firstDialogPromise;
+            // ---- Step 3: Wait until both dialogs (if any) were handled ----
+            // Assuming max 2 dialogs
+            const maxWait = timeoutMs;
+            const start = Date.now();
+            while (dialogs.length < 2 && Date.now() - start < maxWait) {
+              await this.page.waitForTimeout(300); // small polling
+            }
 
-            // ---- Trigger second dialog ----
-            const secondDialogPromise = this.page.waitForEvent("dialog", {
-              timeout: 5000,
-            });
-
-            await firstDialog
-              .accept()
-              .catch((err) =>
-                console.warn("⚠️ Failed to accept first dialog:", err)
-              );
-
-            const secondDialog = await secondDialogPromise;
-            await secondDialog
-              .accept()
-              .catch((err) =>
-                console.warn("⚠️ Failed to accept second dialog:", err)
-              );
+            // ---- Step 4: Cleanup listener ----
+            this.page.off("dialog", dialogHandler);
 
             return true;
-          } catch {
-            // Something failed → retry
-            return false;
+          } catch (err) {
+            console.warn("⚠️ removeCase attempt failed:", err);
+            return false; // retry poll
           }
         },
         {

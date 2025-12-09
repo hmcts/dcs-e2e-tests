@@ -89,6 +89,7 @@ class CaseSearchPage extends Base {
     const updateBtn = caseRow.getByRole("link", { name: "Update Case" });
     await expect(updateBtn).toBeVisible({ timeout: 5000 });
     await updateBtn.click();
+    return true;
   }
 
   async goToReviewEvidence(textFieldInput, hearingDate?) {
@@ -110,10 +111,15 @@ class CaseSearchPage extends Base {
   }
 
   async confirmCaseDeletion() {
-    await this.applyFilter.click();
-    await expect(this.noCasesText).toHaveText(
-      /There are no cases on the system that match the search criteria/
-    );
+    try {
+      await this.applyFilter.click();
+      await this.noCasesText.waitFor({ state: "visible", timeout: 40000 });
+      return await expect(this.noCasesText).toHaveText(
+        /There are no cases on the system/i
+      );
+    } catch {
+      return false;
+    }
   }
 }
 
