@@ -184,14 +184,16 @@ test.describe("Unrestricted Document Update and Removal Tests @cleanup", () => {
     try {
       console.log(`Attempting to delete test case: ${newCaseName}`);
 
-      // Run cleanup with timeout (race against 90s)
+      // Run cleanup with timeout
       await Promise.race([
-        deleteCaseByName(newCaseName, 90000),
+        deleteCaseByName(newCaseName, 180000),
         new Promise<void>((resolve) =>
           setTimeout(() => {
-            console.warn(`⚠️ Cleanup for ${newCaseName} timed out after 90s`);
+            console.warn(
+              `⚠️ Cleanup for ${newCaseName} timed out after 3 minutes`
+            );
             resolve();
-          }, 90000)
+          }, 180000)
         ),
       ]);
     } catch (err) {
@@ -421,14 +423,16 @@ test.describe("Restricted Document Update and Removal Tests @cleanup", () => {
     try {
       console.log(`Attempting to delete test case: ${newCaseName}`);
 
-      // Run cleanup with timeout (race against 90s)
+      // Run cleanup with timeout
       await Promise.race([
-        deleteCaseByName(newCaseName, 90000),
+        deleteCaseByName(newCaseName, 180000),
         new Promise<void>((resolve) =>
           setTimeout(() => {
-            console.warn(`⚠️ Cleanup for ${newCaseName} timed out after 90s`);
+            console.warn(
+              `⚠️ Cleanup for ${newCaseName} timed out after 3 minutes`
+            );
             resolve();
-          }, 90000)
+          }, 180000)
         ),
       ]);
     } catch (err) {
