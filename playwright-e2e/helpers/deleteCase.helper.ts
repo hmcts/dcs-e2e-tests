@@ -75,4 +75,5 @@ export async function deleteCaseByName(caseName: string, timeoutMs = 60000) {
       )
       .toBe(true);
   });
+  console.log(`Successfully deleted ${caseName}`);
 }

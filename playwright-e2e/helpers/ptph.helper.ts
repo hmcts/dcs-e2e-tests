@@ -56,9 +56,17 @@ export async function uploadPTPHForm(context: BrowserContext, caseUrn: string) {
 
   // Step 1: Upload form
   const uploadPage = await context.newPage();
-  await editPayloadForm(uploadPage, caseUrn);
+  try {
+    await editPayloadForm(uploadPage, caseUrn);
+  } finally {
+    await uploadPage.close();
+  }
 
   // Step 2: Check status
   const statusPage = await context.newPage();
-  await getPayloadStatus(statusPage, caseUrn);
+  try {
+    await getPayloadStatus(statusPage, caseUrn);
+  } finally {
+    await statusPage.close();
+  }
 }
