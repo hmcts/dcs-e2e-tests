@@ -23,7 +23,10 @@ function isSessionValid(sessionFile: string, cookieName: string): boolean {
   }
 }
 setup.describe("Set up user session", () => {
-  fs.mkdirSync("./playwright-e2e/.sessions", { recursive: true });
+  const sessionsPath = "./playwright-e2e/.sessions";
+  fs.mkdirSync(sessionsPath, { recursive: true });
+  console.log(`Sessions folder ensured at ${sessionsPath}`);
+
   clearResultsFile();
   console.log("Cleared previous test results.");
   /**
@@ -53,5 +56,9 @@ setup.describe("Set up user session", () => {
     await loginPage.login(user);
     await loginPage.page.context().storageState({ path: user.sessionFile });
     await cookieUtils.addUserAnalyticsCookie(user.sessionFile!);
+    console.log(
+      "Current sessions folder contents:",
+      fs.readdirSync(sessionsPath)
+    );
   });
 });

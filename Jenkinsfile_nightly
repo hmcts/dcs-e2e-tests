@@ -94,6 +94,20 @@ withNightlyPipeline(type, product, component, 600) {
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
   enableSlackNotifications(channel)
 
+  stage('Clean Sessions') {
+    steps {
+      script {
+        def sessionsDir = "${WORKSPACE}/playwright-e2e/.sessions"
+        if (fileExists(sessionsDir)) {
+          echo "Deleting old sessions folder..."
+          deleteDir(sessionsDir) // deleteDir can take a path relative to workspace
+        } else {
+          echo "No sessions folder to delete"
+        }
+      }
+    }
+  }
+
   afterAlways('DependencyCheckNightly') {
     // stage('Delete nightly dev branch') {
     //   try {
