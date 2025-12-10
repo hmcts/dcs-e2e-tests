@@ -43,7 +43,6 @@ test.describe("Sections Page", () => {
       sectionsPage,
       homePage,
     }) => {
-      test.setTimeout(600000);
       const currentUserIssues: string[] = [];
       await loginPage.login(user);
       await homePage.navigation.navigateTo("ViewCaseListLink");
