@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { test, expect } from "../fixtures";
+import { test } from "../fixtures";
 import { UserCredentials, config, pushTestResult } from "../utils";
-import { sections } from "../utils";
 
 // ============================================================
 // Test 1: Sections & Documents Availability
