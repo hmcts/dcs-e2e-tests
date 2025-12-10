@@ -27,14 +27,14 @@ export const notes: NotesModel[] = [
     noteKey: "",
     noteText: "This is Reply tightly shared HMCTS comment",
     noteUser: "Mr Andrew Trainer01",
-    noteShare: "Tightly Shared Comment (HMCTS Admin)",
+    noteShare: "Tightly Shared Note (HMCTS Admin)",
     roles: ["HMCTSAdmin"],
   },
   {
     noteKey: "",
     noteText: "This is Private HMCTS comment",
     noteUser: "Mr Andrew Trainer01",
-    noteShare: "Private Comment (HMCTS Admin)",
+    noteShare: "Private Note (HMCTS Admin)",
     roles: ["HMCTSAdmin"],
   },
   {
