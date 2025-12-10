@@ -117,7 +117,7 @@ export const config: Config = {
     fullTimeJudge: {
       group: "FullTimeJudge",
       username: "Trainer27",
-      password: process.env.FULL_TIME_JUDGE_PASSWORD as string,
+      password: process.env.FT_JUDGE_PASSWORD as string,
       sessionFile: sessionPath("trainer27"),
     },
     probationStaff: {
