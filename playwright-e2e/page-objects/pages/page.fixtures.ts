@@ -26,6 +26,7 @@ import SplitCasePage from "./splitCase.page";
 import MergeCasePage from "./mergeCase.page";
 import UpdateDocumentsPage from "./updateDocuments.page";
 import IndexPage from "./index.page";
+import PTPHPage from "./ptph.page";
 
 export interface PageFixtures {
   homePage: HomePage;
@@ -56,6 +57,7 @@ export interface PageFixtures {
   mergeCasePage: MergeCasePage;
   updateDocumentsPage: UpdateDocumentsPage;
   indexPage: IndexPage;
+  ptphPage: PTPHPage;
 }
 
 export const pageFixtures = {
@@ -142,5 +144,8 @@ export const pageFixtures = {
   },
   indexPage: async ({ page }, use) => {
     await use(new IndexPage(page));
+  },
+  ptphPage: async ({ page }, use) => {
+    await use(new PTPHPage(page));
   },
 };

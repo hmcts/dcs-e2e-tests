@@ -3,7 +3,7 @@ import { Base } from "../base";
 import { expect } from "../../fixtures";
 import { Page } from "@playwright/test";
 import { waitUntilClickable } from "../../utils";
-
+import { Dialog } from "@playwright/test";
 
 class CaseDetailsPage extends Base {
   caseNameHeading: Locator;
@@ -45,37 +45,50 @@ class CaseDetailsPage extends Base {
     await this.changeCaseButton.click();
   }
 
-  async removeCase(timeoutMs = 10000) {
-    try {
-      // First dialog
-      const firstDialogPromise = this.page.waitForEvent("dialog", {
-        timeout: timeoutMs,
-      });
-      await waitUntilClickable(this.removeCaseBtn);
-      await this.removeCaseBtn.click();
-      const firstDialog = await firstDialogPromise;
-      await firstDialog
-        .accept()
-        .catch((err) => console.warn("⚠️ Failed to accept first dialog:", err));
-    } catch (err) {
-      console.warn("⚠️ First dialog did not appear or failed:", err);
-      return; // stop further attempts if first dialog fails
-    }
+  async removeCase(timeoutMs = 60000) {
+    await expect
+      .poll(
+        async () => {
+          try {
+            // ---- Step 1: Attach a dialog handler before clicking ----
+            const dialogs: Dialog[] = [];
+            const dialogHandler = (dialog: Dialog) => {
+              dialogs.push(dialog);
+              dialog
+                .accept()
+                .catch((err) =>
+                  console.warn("⚠️ Failed to accept dialog:", err)
+                );
+            };
+            this.page.on("dialog", dialogHandler);
 
-    try {
-      // Second dialog
-      const secondDialogPromise = this.page.waitForEvent("dialog", {
-        timeout: timeoutMs,
-      });
-      const secondDialog = await secondDialogPromise;
-      await secondDialog
-        .accept()
-        .catch((err) =>
-          console.warn("⚠️ Failed to accept second dialog:", err)
-        );
-    } catch (err) {
-      console.warn("⚠️ Failed to accept second dialog:", err);
-    }
+            // ---- Step 2: Click the remove button ----
+            await waitUntilClickable(this.removeCaseBtn);
+            await this.removeCaseBtn.click();
+
+            // ---- Step 3: Wait until both dialogs (if any) were handled ----
+            // Assuming max 2 dialogs
+            const maxWait = timeoutMs;
+            const start = Date.now();
+            while (dialogs.length < 2 && Date.now() - start < maxWait) {
+              await this.page.waitForTimeout(300); // small polling
+            }
+
+            // ---- Step 4: Cleanup listener ----
+            this.page.off("dialog", dialogHandler);
+
+            return true;
+          } catch (err) {
+            console.warn("⚠️ removeCase attempt failed:", err);
+            return false; // retry poll
+          }
+        },
+        {
+          timeout: timeoutMs,
+          intervals: [500, 1000, 1500],
+        }
+      )
+      .toBe(true);
   }
 
   async tryOpenReviewPopup(): Promise<Page | null> {

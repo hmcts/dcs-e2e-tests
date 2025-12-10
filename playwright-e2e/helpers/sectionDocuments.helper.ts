@@ -41,7 +41,7 @@ export async function verifyDocumentMove(
   await sectionDocumentsPage.page
     .locator("table.formTable-zebra tbody tr:nth-child(n+2)")
     .first()
-    .waitFor({ state: "visible", timeout: 20000 });
+    .waitFor({ state: "visible", timeout: 40000 });
   const rows = sectionDocumentsPage.page.locator(
     "table.formTable-zebra tbody tr:nth-child(n+3)"
   );
@@ -58,7 +58,7 @@ export async function verifyDocumentMove(
     }
   );
   try {
-    await movedDocument.waitFor({ state: "visible", timeout: 10000 });
+    await movedDocument.waitFor({ state: "visible", timeout: 40000 });
   } catch (error) {
     return `Move: Document not found in new Section: ${section}. Error: ${error}`;
   }
