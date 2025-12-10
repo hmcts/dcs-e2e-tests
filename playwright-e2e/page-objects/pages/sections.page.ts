@@ -112,6 +112,36 @@ class SectionsPage extends Base {
     return sectionDocuments;
   }
 
+  async getSectionsAndDocumentsSample(
+    sampleSize = 6
+  ): Promise<DocumentModel[]> {
+    const sectionCount = await this.rowCount();
+    const sectionDocuments: DocumentModel[] = [];
+
+    const indexes = new Set<number>();
+    while (indexes.size < Math.min(sampleSize, sectionCount)) {
+      const randomIndex = Math.floor(Math.random() * sectionCount) + 1;
+      indexes.add(randomIndex);
+    }
+    const randomRows = Array.from(indexes);
+    console.log("RANDOMROWS", randomRows);
+
+    for (const rowIndex of randomRows) {
+      const sectionTitle = await this.getSectionTitle(rowIndex);
+      const sectionKey = await this.getSectionId(rowIndex);
+      await this.goToViewDocuments(rowIndex);
+
+      const documents = await this.sectionDocumentsPage.getSectionDocuments(
+        sectionKey,
+        sectionTitle
+      );
+      sectionDocuments.push(...documents);
+      await this.sectionDocumentsPage.verifyAllSectionDocumentsLoad();
+      await this.caseNavigation.navigateTo("Sections");
+    }
+    return sectionDocuments;
+  }
+
   async filterDocumentsByUser(user: string) {
     const filteredDocuments = documents.filter((document) =>
       document.roles?.includes(user)
@@ -158,6 +188,30 @@ class SectionsPage extends Base {
       }
     }
     return { missingDocuments, unexpectedDocuments };
+  }
+
+  async compareExpectedVsAvailableSectionsAndDocumentsSample(
+    userExpectedDocuments: DocumentModel[],
+    userAvailableDocuments: DocumentModel[]
+  ) {
+    const unexpectedDocuments: string[] = [];
+
+    // Check for unexpected access to sections/documents
+
+    for (const availableDocument of userAvailableDocuments) {
+      const expectedMatches = userExpectedDocuments.filter(
+        (expectedDocument) =>
+          expectedDocument.sectionTitle === availableDocument.sectionTitle &&
+          expectedDocument.documentName === availableDocument.documentName &&
+          expectedDocument.documentNumber === availableDocument.documentNumber
+      );
+      if (expectedMatches.length === 0) {
+        unexpectedDocuments.push(
+          `Section Title: ${availableDocument.sectionTitle}, Document Name: ${availableDocument.documentName} - is unexpectedly showing`
+        );
+      }
+    }
+    return unexpectedDocuments;
   }
 
   async getSectionKeys(sections: string[]) {
