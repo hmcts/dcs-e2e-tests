@@ -5,7 +5,6 @@ import { sections, config, pushTestResult } from "../utils";
 test.describe("Index Page Functionality", () => {
   let newCaseName : string;
   const unrestrictedUploadResults: string[] = [];
-  test.setTimeout(480000)
 
 test.beforeEach(
     async ({
@@ -40,6 +39,7 @@ test(`Retrieve & Validate Sections & Documents from Index Page`, async ({
     sectionDocumentsPage,
     sectionsPage
   }) => {
+    test.setTimeout(480000)
     await caseDetailsPage.caseNavigation.navigateTo("Sections"); 
     const unrestrictedSections = sections.unrestricted;
     const unrestrictedSectionKeys = await sectionsPage.getSectionKeys(
@@ -73,7 +73,7 @@ test(`Retrieve & Validate Sections & Documents from Index Page`, async ({
       throw new Error(
         `User ${
           config.users.hmctsAdmin.group
-        } experienced issues uploading unrestricted documents on Index:\n${unrestrictedUploadResults.join(
+        } experienced issues uploading unrestricted documents on Index for ${newCaseName}:\n${unrestrictedUploadResults.join(
           "\n"
         )}`
       );

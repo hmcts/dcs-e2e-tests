@@ -56,7 +56,6 @@ import { loginAndOpenCase } from "../helpers/login.helper";
 test.describe("Split & Merge Case Functionality", () => {
   let newCaseName: string;
   const hmctsAdminUser = config.users.hmctsAdmin;
-  test.setTimeout(600000);
 
 test.beforeEach(
     async ({
@@ -101,6 +100,7 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
     rocaPage
   }) => {
  
+    test.setTimeout(600000);
 // Add Memo, documents to unrestricted section as HMCTS Admin
     await caseDetailsPage.caseNavigation.navigateTo('Memos')
     await memoPage.addMemo(hmctsAdminUser.group);
