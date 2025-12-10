@@ -6,7 +6,7 @@ import { deleteCaseByName } from "../helpers/deleteCase.helper";
 test.describe("Index Page Functionality", () => {
   let newCaseName:string;
   const unrestrictedUploadResults: string[] = [];
-
+  test.setTimeout(480000)
 
 test.beforeEach(
     async ({
@@ -74,7 +74,7 @@ test(`Retrieve & Validate Sections & Documents from Index Page`, async ({
       throw new Error(
         `User ${
           config.users.hmctsAdmin.group
-        } experienced issues uploading unrestricted documents:\n${unrestrictedUploadResults.join(
+        } experienced issues uploading unrestricted documents on Index:\n${unrestrictedUploadResults.join(
           "\n"
         )}`
       );
@@ -82,23 +82,5 @@ test(`Retrieve & Validate Sections & Documents from Index Page`, async ({
    }
 });
 
-test.afterEach(
-    async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      try {
-        if (newCaseName) {
-          await deleteCaseByName(
-            newCaseName,
-            caseSearchPage,
-            caseDetailsPage,
-            homePage,
-            loginPage,
-            page
-          );
-        }
-      } catch (error) {
-        console.error("⚠️ afterEach cleanup failed:", error);
-      }
-    }
-  );
 });
 

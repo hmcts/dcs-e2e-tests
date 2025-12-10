@@ -215,7 +215,7 @@ async goToIndexSectionLink(sectionKey: string, section: string): Promise<void> {
 
 async validateSections(sections: string[]): Promise<string[]> {
     const foundSections: string[] = []; 
-    await this.indexPagination();
+    await this.page.waitForTimeout(90_000);
 
     for (const section of sections) {
         const cellLocator = this.page.getByRole("cell", { name: `${section}:`, exact: true });

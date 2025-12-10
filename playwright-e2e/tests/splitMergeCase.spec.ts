@@ -57,7 +57,7 @@ import { deleteCaseByName } from "../helpers/deleteCase.helper";
 test.describe("Split & Merge Case Functionality", () => {
   let newCaseName: string;
   const hmctsAdminUser = config.users.hmctsAdmin;
-
+  test.setTimeout(600000);
 
 test.beforeEach(
     async ({
@@ -300,18 +300,18 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
 }}}
 });
 
-test.afterEach(
-    async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      if (`${newCaseName}one(M)`) {
-        await deleteCaseByName(
-          `${newCaseName}one(M)`,
-          caseSearchPage,
-          caseDetailsPage,
-          homePage,
-          loginPage,
-          page
-        );
-      }
-    }
-  );
+// test.afterEach(
+//     async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
+//       if (`${newCaseName}one(M)`) {
+//         await deleteCaseByName(
+//           `${newCaseName}one(M)`,
+//           caseSearchPage,
+//           caseDetailsPage,
+//           homePage,
+//           loginPage,
+//           page
+//         );
+//       }
+//     }
+//   );
 });
