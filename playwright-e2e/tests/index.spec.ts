@@ -1,10 +1,8 @@
 import { test, expect } from "../fixtures";
 import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
 import { sections, config, pushTestResult } from "../utils";
-import { deleteCaseByName } from "../helpers/deleteCase.helper";
 
 test.describe("Index Page Functionality", () => {
-  let newCaseName:string;
   const unrestrictedUploadResults: string[] = [];
   test.setTimeout(480000)
 
@@ -31,7 +29,7 @@ test.beforeEach(
         "TestURN",
         "Defence"
       );
-      newCaseName = newCase.newCaseName;
+      newCase.newCaseName;
     }
   );
 
