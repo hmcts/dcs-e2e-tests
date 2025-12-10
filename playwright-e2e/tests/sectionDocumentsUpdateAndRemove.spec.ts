@@ -16,7 +16,7 @@ import { verifyDocumentMove } from "../helpers/sectionDocuments.helper";
 // I want to be able to update or remove a document in an unrestricted section
 // So that only relevant documents are available in the correct sections for further review for relevant parties
 
-test.describe("Unrestricted Document Update and Removal Tests", () => {
+test.describe("Unrestricted Document Update and Removal Tests @cleanup", () => {
   let sampleKey: [string, string][];
   let newCaseName: string;
   const unrestrictedRemoveResults: string[] = [];
@@ -178,24 +178,28 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
     }
   });
 
-  test.afterEach(
-    async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      try {
-        if (newCaseName) {
-          await deleteCaseByName(
-            newCaseName,
-            caseSearchPage,
-            caseDetailsPage,
-            homePage,
-            loginPage,
-            page
-          );
-        }
-      } catch (error) {
-        console.error("⚠️ afterEach cleanup failed:", error);
-      }
+  test.afterEach(async () => {
+    if (!newCaseName) return;
+
+    try {
+      console.log(`Attempting to delete test case: ${newCaseName}`);
+
+      // Run cleanup with timeout
+      await Promise.race([
+        deleteCaseByName(newCaseName, 180000),
+        new Promise<void>((resolve) =>
+          setTimeout(() => {
+            console.warn(
+              `⚠️ Cleanup for ${newCaseName} timed out after 3 minutes`
+            );
+            resolve();
+          }, 180000)
+        ),
+      ]);
+    } catch (err) {
+      console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
     }
-  );
+  });
 });
 
 // ============================================================
@@ -206,7 +210,7 @@ test.describe("Unrestricted Document Update and Removal Tests", () => {
 // I want to be able to update or remove a document in an restricted section
 // So that only relevant documents are available in the correct sections for further review for relevant parties
 
-test.describe("Restricted Document Update and Removal Tests", () => {
+test.describe("Restricted Document Update and Removal Tests @cleanup", () => {
   let sampleKey: [string, string][];
   let newCaseName: string;
   const restrictedRemoveResults: string[] = [];
@@ -413,22 +417,26 @@ test.describe("Restricted Document Update and Removal Tests", () => {
     }
   });
 
-  test.afterEach(
-    async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      try {
-        if (newCaseName) {
-          await deleteCaseByName(
-            newCaseName,
-            caseSearchPage,
-            caseDetailsPage,
-            homePage,
-            loginPage,
-            page
-          );
-        }
-      } catch (error) {
-        console.error("⚠️ afterEach cleanup failed:", error);
-      }
+  test.afterEach(async () => {
+    if (!newCaseName) return;
+
+    try {
+      console.log(`Attempting to delete test case: ${newCaseName}`);
+
+      // Run cleanup with timeout
+      await Promise.race([
+        deleteCaseByName(newCaseName, 180000),
+        new Promise<void>((resolve) =>
+          setTimeout(() => {
+            console.warn(
+              `⚠️ Cleanup for ${newCaseName} timed out after 3 minutes`
+            );
+            resolve();
+          }, 180000)
+        ),
+      ]);
+    } catch (err) {
+      console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
     }
-  );
+  });
 });

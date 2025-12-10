@@ -13,7 +13,7 @@ import { deleteCaseByName } from "../helpers/deleteCase.helper";
 // I want to be able to upload a document to an unrestricted section
 // So that this is added to the case for further review for all parties
 
-test.describe("Document Upload Tests", () => {
+test.describe("Document Upload Tests @cleanup", () => {
   let newCaseName: string;
   const unrestrictedUploadResults: string[] = [];
   const restrictedUploadResults: string[] = [];
@@ -215,22 +215,26 @@ test.describe("Document Upload Tests", () => {
     }
   });
 
-  test.afterEach(
-    async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      try {
-        if (newCaseName) {
-          await deleteCaseByName(
-            newCaseName,
-            caseSearchPage,
-            caseDetailsPage,
-            homePage,
-            loginPage,
-            page
-          );
-        }
-      } catch (error) {
-        console.error("⚠️ afterEach cleanup failed:", error);
-      }
+  test.afterEach(async () => {
+    if (!newCaseName) return;
+
+    try {
+      console.log(`Attempting to delete test case: ${newCaseName}`);
+
+      // Run cleanup with timeout
+      await Promise.race([
+        deleteCaseByName(newCaseName, 180000),
+        new Promise<void>((resolve) =>
+          setTimeout(() => {
+            console.warn(
+              `⚠️ Cleanup for ${newCaseName} timed out after 3 minutes`
+            );
+            resolve();
+          }, 180000)
+        ),
+      ]);
+    } catch (err) {
+      console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
     }
-  );
+  });
 });
