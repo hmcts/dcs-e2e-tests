@@ -95,14 +95,16 @@ withNightlyPipeline(type, product, component, 600) {
   enableSlackNotifications(channel)
 
   stage('Clean Sessions') {
-    def sessionsDir = "${env.WORKSPACE}/playwright-e2e/.sessions"
-    if (fileExists(sessionsDir)) {
-      echo "Deleting old sessions folder..."
-      dir(sessionsDir) {
-        deleteDir()
+    node {
+      def sessionsDir = "${env.WORKSPACE}/playwright-e2e/.sessions"
+      if (fileExists(sessionsDir)) {
+        echo "Deleting old sessions folder..."
+        dir(sessionsDir) {
+          deleteDir()
+        }
+      } else {
+        echo "No sessions folder to delete"
       }
-    } else {
-      echo "No sessions folder to delete"
     }
   }
 
