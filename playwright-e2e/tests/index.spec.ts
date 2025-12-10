@@ -3,6 +3,7 @@ import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helpe
 import { sections, config, pushTestResult } from "../utils";
 
 test.describe("Index Page Functionality", () => {
+  let newCaseName : string;
   const unrestrictedUploadResults: string[] = [];
   test.setTimeout(480000)
 
@@ -29,7 +30,7 @@ test.beforeEach(
         "TestURN",
         "Defence"
       );
-      newCase.newCaseName;
+      newCaseName = newCase.newCaseName;
     }
   );
 
