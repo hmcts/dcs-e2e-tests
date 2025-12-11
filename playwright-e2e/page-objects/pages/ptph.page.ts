@@ -76,6 +76,44 @@ class PTPHPage extends Base {
       { name: "intermediary", locator: this.intermediary },
     ];
   }
+
+  async waitForElementStability(
+    locator: Locator,
+    timeout = 2000,
+    interval = 50
+  ) {
+    const start = Date.now();
+    let previousBox: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    } | null = null;
+
+    while (Date.now() - start < timeout) {
+      const box = await locator.boundingBox();
+      if (!box) {
+        await locator.waitFor({ state: "visible" });
+        continue;
+      }
+
+      if (
+        previousBox &&
+        previousBox.x === box.x &&
+        previousBox.y === box.y &&
+        previousBox.width === box.width &&
+        previousBox.height === box.height
+      ) {
+        // Element has stabilized
+        return;
+      }
+
+      previousBox = box;
+      await new Promise((r) => setTimeout(r, interval));
+    }
+
+    console.warn("Element may not be fully stable after timeout.");
+  }
 }
 
 export default PTPHPage;
