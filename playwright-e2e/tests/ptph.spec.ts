@@ -57,12 +57,17 @@ test.describe("PTPH Form Rendering / Photosnaps @ptph", () => {
 
     const formSections = await ptphPage.ptphFormSections();
 
+    await ptphPage.page.waitForTimeout(60000);
+
     for (const section of formSections) {
       // Take and compare screenshot to expected form section
       try {
         await expect(section.locator).toHaveScreenshot(`${section.name}.png`, {
           maxDiffPixelRatio: 0.01,
         });
+        console.log(
+          `Successful screenshot match found for PTPH section: ${section.name}`
+        );
       } catch {
         currentUserIssues.push(
           `Screenshot mismatch for PTPH form section: ${section.name}`
