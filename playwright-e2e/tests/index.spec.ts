@@ -37,7 +37,8 @@ test(`Retrieve & Validate Sections & Documents from Index Page`, async ({
     caseDetailsPage,
     indexPage,
     sectionDocumentsPage,
-    sectionsPage
+    sectionsPage,
+    uploadDocumentPage
   }) => {
     test.setTimeout(480000)
     await caseDetailsPage.caseNavigation.navigateTo("Sections"); 
@@ -52,7 +53,8 @@ test(`Retrieve & Validate Sections & Documents from Index Page`, async ({
     await caseDetailsPage.caseNavigation.navigateTo('Index')
     for (const [section, key] of sampleEntries) {
       await indexPage.goToIndexSectionLink(key, section)
-      await indexPage.uploadDocumentFromIndex("unrestrictedSectionUpload");
+      await sectionDocumentsPage.goToUploadDocumentsFromIndex();
+      await uploadDocumentPage.uploadUnrestrictedDocument("unrestrictedSectionUpload");
       await caseDetailsPage.caseNavigation.navigateTo('Index')
       const documentList = await indexPage.getIndexDocuments();
       await expect(documentList.length).toBeGreaterThan(0); 

@@ -176,6 +176,11 @@ class SectionDocumentsPage extends Base {
       return `Edit: Unable to locate edited filename for restricted document in Section ${section}`;
     }
   }
+
+async goToUploadDocumentsFromIndex() {
+    const uploadButton = this.page.getByRole("link", { name: "Upload Document(s)" });
+    await uploadButton.click();
+}
 }
 
 export default SectionDocumentsPage;

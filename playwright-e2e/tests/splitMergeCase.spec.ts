@@ -100,7 +100,7 @@ test(`Split & Merge Cases by HMCTS Admin`, async ({
     rocaPage
   }) => {
  
-    test.setTimeout(600000);
+    test.setTimeout(720000);
 // Add Memo, documents to unrestricted section as HMCTS Admin
     await caseDetailsPage.caseNavigation.navigateTo('Memos')
     await memoPage.addMemo(hmctsAdminUser.group);

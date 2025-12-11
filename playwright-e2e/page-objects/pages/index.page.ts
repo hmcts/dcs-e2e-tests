@@ -172,20 +172,6 @@ async getIndexDocuments(): Promise<DocumentModel[]> {
     return documents;
 }
 
-
-async goToUploadDocumentsFromIndex() {
-    const uploadButton = this.page.getByRole("link", { name: "Upload Document(s)" });
-    await uploadButton.click();
-}
-  
-async uploadDocumentFromIndex(
-    filename: string,
-){
-    await this.goToUploadDocumentsFromIndex();
-    await this.uploadDocumentPage.uploadUnrestrictedDocument(filename);
-}
-
-
 async goToIndexSectionLink(sectionKey: string, section: string): Promise<void> {
     let matchFound = false;
     await this.page.waitForTimeout(90_000);
