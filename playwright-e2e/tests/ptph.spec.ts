@@ -2,6 +2,7 @@ import { test, expect } from "../fixtures";
 import { pushTestResult } from "../utils";
 import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
 import { uploadPTPHForm } from "../helpers/ptph.helper";
+import { deleteCaseByName } from "../helpers/deleteCase.helper";
 
 // ============================================================
 // Test 1: PTPH Form Rendering
@@ -13,6 +14,7 @@ import { uploadPTPHForm } from "../helpers/ptph.helper";
 
 test.describe("PTPH Form Rendering / Photosnaps @ptph", () => {
   let newCaseUrn: string;
+  let newCaseName: string;
 
   test.beforeEach(
     async ({
@@ -39,6 +41,7 @@ test.describe("PTPH Form Rendering / Photosnaps @ptph", () => {
         "CPS"
       );
       newCaseUrn = newCase.newCaseUrn;
+      newCaseName = newCase.newCaseName;
     }
   );
 
@@ -47,37 +50,59 @@ test.describe("PTPH Form Rendering / Photosnaps @ptph", () => {
 
     await uploadPTPHForm(context, newCaseUrn);
 
-    try {
-      await sectionsPage.caseNavigation.navigateTo("PTPH");
+    await sectionsPage.caseNavigation.navigateTo("PTPH");
 
-      const ptphTable = ptphPage.prosecutionContacts;
-      await expect(ptphTable).toBeVisible();
+    const ptphForm = ptphPage.ptphForm;
+    await expect(ptphForm).toBeVisible();
 
-      const screenshotName = `prosecution-contacts.png`;
+    const formSections = await ptphPage.ptphFormSections();
 
-      // Take and compare screenshot to expected document image
+    for (const section of formSections) {
+      // Take and compare screenshot to expected form section
       try {
-        await expect(ptphTable).toHaveScreenshot(screenshotName, {
+        await expect(section.locator).toHaveScreenshot(`${section.name}.png`, {
           maxDiffPixelRatio: 0.01,
         });
       } catch {
-        currentUserIssues.push(`Screenshot mismatch for PTPH form`);
+        currentUserIssues.push(
+          `Screenshot mismatch for PTPH form section: ${section.name}`
+        );
       }
-    } catch (error: unknown) {
-      console.error(`Error during PTPH rendering:`, error);
-    } finally {
-      // Aggregate results
-      pushTestResult({
-        user: "HMCTSAdmin",
-        heading: `Verify PTPH Rendering for HMCTSAdmin`,
-        category: "PTPH",
-        issues: currentUserIssues,
-      });
+    }
+    // Aggregate results
+    pushTestResult({
+      user: "HMCTSAdmin",
+      heading: `Verify PTPH Rendering for HMCTSAdmin`,
+      category: "PTPH",
+      issues: currentUserIssues,
+    });
 
-      // Fail the test if any issues were found
-      if (currentUserIssues.length > 0) {
-        throw new Error(`${currentUserIssues.join("\n")}`);
-      }
+    // Fail the test if any issues were found
+    if (currentUserIssues.length > 0) {
+      throw new Error(`${currentUserIssues.join("\n")}`);
+    }
+  });
+
+  test.afterEach(async () => {
+    if (!newCaseName) return;
+
+    try {
+      console.log(`Attempting to delete test case: ${newCaseName}`);
+
+      // Run cleanup with timeout
+      await Promise.race([
+        deleteCaseByName(newCaseName, 180000),
+        new Promise<void>((resolve) =>
+          setTimeout(() => {
+            console.warn(
+              `⚠️ Cleanup for ${newCaseName} timed out after 3 minutes`
+            );
+            resolve();
+          }, 180000)
+        ),
+      ]);
+    } catch (err) {
+      console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
     }
   });
 });
