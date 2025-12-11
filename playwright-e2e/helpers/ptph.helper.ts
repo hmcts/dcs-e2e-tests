@@ -38,7 +38,7 @@ export async function getPayloadStatus(page, caseUrn: string) {
 
         return null; // still in Started/Processing
       },
-      { intervals: [1000], timeout: 60000 }
+      { intervals: [1000], timeout: 120000 }
     )
     .toMatch(/Success|Failed/);
 

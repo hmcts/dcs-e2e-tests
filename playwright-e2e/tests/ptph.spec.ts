@@ -11,7 +11,7 @@ import { uploadPTPHForm } from "../helpers/ptph.helper";
 // When I upload a PTPH form into the DCS platform
 // This should be accurately displayed on the virtual PTPH form for the relevant case
 
-test.describe("PTPH Form Rendering / Photosnaps", () => {
+test.describe("PTPH Form Rendering / Photosnaps @ptph", () => {
   let newCaseUrn: string;
 
   test.beforeEach(
