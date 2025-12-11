@@ -51,6 +51,7 @@ test.describe("PTPH Form Rendering / Photosnaps @ptph", () => {
       await sectionsPage.caseNavigation.navigateTo("PTPH");
 
       const ptphTable = ptphPage.ptphForm;
+      await expect(ptphTable).toBeVisible();
 
       const screenshotName = `ptph-form.png`;
 
