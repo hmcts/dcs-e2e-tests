@@ -64,18 +64,19 @@ class CaseSearchPage extends Base {
     if (await this.toDateCheckbox.isChecked()) {
       await this.toDateCheckbox.uncheck();
     }
-    for (let i = 0; i < 2; i++) {
-      // TEMP FIX: try up to 2 times (need to address with Dev team: glitch often occurs where Apply Filter needs to be clicked twice before the right case will show)
+    const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
+    for (let attempt = 0; attempt < 3; attempt++) {
+      //  Retry up to 3 times to find case
       await this.applyFilter.click();
-      const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
-      try {
-        await caseRow.waitFor({ state: "visible", timeout: 5000 });
-        return; // success
-      } catch {
-        if (i === 1)
-          // Final attempt, throw test failure if case not found
-          await expect(caseRow).toBeVisible({ timeout: 20000 });
-        // otherwise retry loop
+      await caseRow.waitFor({ state: "attached" });
+      const isVisible = await caseRow.isVisible({ timeout: 10000 });
+      if (isVisible) {
+        return;
+      }
+      if (attempt === 2) {
+        throw new Error(
+          `❌ Case row "${textFieldInput}" (hearing: ${hearingDate}) did not appear after applying filter twice.`
+        );
       }
     }
   }

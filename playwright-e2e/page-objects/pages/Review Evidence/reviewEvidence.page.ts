@@ -40,6 +40,64 @@ class ReviewEvidencePage extends Base {
     );
   }
 
+  async waitForPanelToStabilise(timeout = 90000) {
+    const start = Date.now();
+    const pollingInterval = 300;
+
+    while (Date.now() - start < timeout) {
+      // Are any loaders visible
+      const loadersVisible = await this.page
+        .locator('img[alt="Please wait ..."]:visible')
+        .count();
+
+      // Any connectivity warning
+      const connectivityVisible = await this.page
+        .locator(".noInternetWarning:visible")
+        .count();
+
+      if (loadersVisible > 0 || connectivityVisible > 0) {
+        // Still waiting for everything to settle
+        await this.page.waitForTimeout(pollingInterval);
+        continue;
+      }
+
+      // Check stability
+      await this.page.waitForTimeout(500);
+
+      const stillLoaders = await this.page
+        .locator('img[alt="Please wait ..."]:visible')
+        .count();
+      const stillConnectivity = await this.page
+        .locator(".noInternetWarning:visible")
+        .count();
+
+      if (stillLoaders === 0 && stillConnectivity === 0) {
+        return; // Stable!
+      }
+    }
+
+    throw new Error("❌ Section panel did not stabilise in time");
+  }
+
+  async waitUntilFullyLoaded(sectionKey: string, timeout = 120000) {
+    const start = Date.now();
+
+    // 1 — Wait for section panel visibility
+    const sectionPanel = this.page.locator("#bundleIndexDiv");
+    await expect(sectionPanel).toBeVisible({ timeout });
+
+    // 2 — Stabilise loaders & connectivity warnings
+    await this.waitForPanelToStabilise(timeout);
+
+    // 3 — Wait for high-res image
+    await this.notes.waitForHighResImageLoad(sectionKey, timeout);
+
+    // 4 — Final safety check
+    await this.waitForPanelToStabilise(5000);
+
+    console.log(`✔ Review Evidence fully loaded in ${Date.now() - start} ms`);
+  }
+
   async getSectionsCount(): Promise<number> {
     await this.sections.first().waitFor({ state: "visible" });
     const count = await this.sectionPanel.locator(".sectionLi").count();
