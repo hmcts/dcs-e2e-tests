@@ -82,8 +82,7 @@ for (const user of Object.values(config.users).filter(
       const reviewEvidencePage = new ReviewEvidencePage(popup);
 
       const sectionKey = sampleKey[0][0];
-      await reviewEvidencePage.sectionPanelLoad();
-      await reviewEvidencePage.notes.waitForHighResImageLoad(sectionKey);
+      await reviewEvidencePage.waitUntilFullyLoaded(sectionKey);
       await reviewEvidencePage.notes.openNotes();
 
       const types = await reviewEvidencePage.notes.addNotesForUserGroup(
@@ -155,29 +154,30 @@ for (const user of Object.values(config.users).filter(
       }
     });
 
-  test.afterEach(async () => {
-    if (!newCaseName) return;
+    test.afterEach(async () => {
+      if (!newCaseName) return;
 
-    try {
-      console.log(`Attempting to delete test case: ${newCaseName}`);
+      try {
+        console.log(`Attempting to delete test case: ${newCaseName}`);
 
-      // Run cleanup with timeout
-      await Promise.race([
-        deleteCaseByName(newCaseName, 180000),
-        new Promise<void>((resolve) =>
-          setTimeout(() => {
-            console.warn(
-              `⚠️ Cleanup for ${newCaseName} timed out after 3 minutes`
-            );
-            resolve();
-          }, 180000)
-        ),
-      ]);
-    } catch (err) {
-      console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
-    }
+        // Run cleanup with timeout
+        await Promise.race([
+          deleteCaseByName(newCaseName, 180000),
+          new Promise<void>((resolve) =>
+            setTimeout(() => {
+              console.warn(
+                `⚠️ Cleanup for ${newCaseName} timed out after 3 minutes`
+              );
+              resolve();
+            }, 180000)
+          ),
+        ]);
+      } catch (err) {
+        console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
+      }
+    });
   });
-});
+}
 
 // // ============================================================
 // // Test 2: Notes Access Permissions

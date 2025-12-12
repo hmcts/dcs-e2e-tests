@@ -94,40 +94,58 @@ class CaseDetailsPage extends Base {
   async tryOpenReviewPopup(): Promise<Page | null> {
     let popupPage: Page | null = null;
 
-    try {
-      const popupPromise = this.page.waitForEvent("popup", { timeout: 5000 });
+    // 1 — Check for existing popup
+    const existingPopups = this.page
+      .context()
+      .pages()
+      .filter((p) => p !== this.page);
+    if (existingPopups.length > 0) {
+      popupPage = existingPopups[0];
+    } else {
+      const popupPromise = this.page.waitForEvent("popup");
       await this.caseNavigation.navigateTo("Review");
       popupPage = await popupPromise;
+    }
 
-      const bodyText =
-        (await popupPage
-          .locator("body")
-          .innerText()
-          .catch(() => "")) ?? "";
+    try {
+      const statusHandle = await popupPage.waitForFunction<
+        "wrong" | "ready" | "loading"
+      >(
+        () => {
+          const body = document.body.innerText || "";
 
-      const isPaginationPopup =
-        bodyText.includes("There are no documents in the paginated bundle") ||
-        bodyText.includes(
-          "The initial pagination for this bundle is underway"
-        ) ||
-        bodyText.trim().length === 0;
+          // clearly wrong content
+          const isPaginationPopup =
+            body.includes("There are no documents in the paginated bundle") ||
+            body.includes(
+              "The initial pagination for this bundle is underway"
+            ) ||
+            body.trim().length === 0;
 
-      if (isPaginationPopup) {
+          if (isPaginationPopup) return "wrong";
+
+          const panel = document.querySelector(
+            "#bundleIndexDiv"
+          ) as HTMLElement | null;
+          if (panel?.offsetParent !== null) return "ready";
+
+          return "loading"; // still loading
+        },
+        { timeout: 30000, polling: 500 }
+      );
+
+      const status = await statusHandle.jsonValue();
+
+      if (status === "wrong") {
         await popupPage.close().catch(() => {});
+        return null; // signal to retry
+      } else if (status === "ready") {
+        return popupPage; // good popup
+      } else {
+        // still loading — wait a bit and retry
+        await this.page.waitForTimeout(1000);
         return null;
       }
-
-      const reviewSectionPanel = await popupPage
-        .locator("#bundleIndexDiv")
-        .isVisible()
-        .catch(() => false);
-
-      if (!reviewSectionPanel) {
-        await popupPage.close().catch(() => {});
-        return null;
-      }
-
-      return popupPage;
     } catch {
       if (popupPage) await popupPage.close().catch(() => {});
       return null;
@@ -135,22 +153,21 @@ class CaseDetailsPage extends Base {
   }
 
   async openReviewPopupAwaitPagination(maxWaitMs = 90000): Promise<Page> {
+    const start = Date.now();
     let popup: Page | null = null;
 
-    await expect
-      .poll(
-        async () => {
-          popup = await this.tryOpenReviewPopup();
-          return popup;
-        },
-        {
-          timeout: maxWaitMs,
-          intervals: [5000],
-        }
-      )
-      .not.toBeNull();
+    while (Date.now() - start < maxWaitMs) {
+      popup = await this.tryOpenReviewPopup();
 
-    return popup!;
+      if (popup) return popup;
+
+      // retry loop — avoids creating multiple popups
+      await this.page.waitForTimeout(1000);
+    }
+
+    throw new Error(
+      `Unable to open Review popup with correct content after ${maxWaitMs}ms`
+    );
   }
 }
 

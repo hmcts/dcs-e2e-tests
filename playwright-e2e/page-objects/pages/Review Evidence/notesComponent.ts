@@ -16,6 +16,7 @@ class NotesComponent extends Base {
   noteTextArea: Locator;
   saveNote: Locator;
   stickyNotes: Locator;
+  activeEditor: Locator;
 
   constructor(page) {
     super(page);
@@ -23,8 +24,9 @@ class NotesComponent extends Base {
     this.notesMenuLink = this.topMenu.locator("#rmiAnnotations");
     this.addPageNote = page.locator("#ribbonAddPageNote");
     this.drawBoxBtn = page.locator("#ribbonAddRectangle");
-    this.noteTextArea = page.locator("#commentTextArea");
-    this.saveNote = page.locator("#saveComment");
+    this.activeEditor = page.locator("#editCommentDiv:visible");
+    this.noteTextArea = this.activeEditor.locator("#commentTextArea");
+    this.saveNote = this.activeEditor.locator("#saveComment");
     this.privateButton = page.locator(
       '#editCommentPrivate input[type="radio"]'
     );
@@ -109,7 +111,7 @@ class NotesComponent extends Base {
 
     await this.dragCreateNote(canvasX, canvasY, dragWidth, dragHeight);
 
-    await expect(this.noteTextArea).toBeVisible();
+    await expect(this.activeEditor).toBeVisible({ timeout: 30000 });
 
     await this.noteTextArea.fill(`${type} note for ${userGroup} ${username}`);
 
@@ -195,7 +197,7 @@ class NotesComponent extends Base {
       await types.push(type);
       const existingCount = await this.getNotesCount();
       await this.addnote(type, userGroup, username, canvasX, currentY);
-      await expect(this.noteTextArea).toBeHidden({ timeout: 5000 });
+      await expect(this.activeEditor).toBeHidden({ timeout: 10000 });
       await expect(this.stickyNotes).toHaveCount(existingCount + 1, {
         timeout: 15000,
       });
