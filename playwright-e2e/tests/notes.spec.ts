@@ -155,32 +155,29 @@ for (const user of Object.values(config.users).filter(
       }
     });
 
-    test.afterEach(
-      async ({
-        page,
-        caseSearchPage,
-        caseDetailsPage,
-        homePage,
-        loginPage,
-      }) => {
-        try {
-          if (newCaseName) {
-            await deleteCaseByName(
-              newCaseName,
-              caseSearchPage,
-              caseDetailsPage,
-              homePage,
-              loginPage,
-              page
+  test.afterEach(async () => {
+    if (!newCaseName) return;
+
+    try {
+      console.log(`Attempting to delete test case: ${newCaseName}`);
+
+      // Run cleanup with timeout
+      await Promise.race([
+        deleteCaseByName(newCaseName, 180000),
+        new Promise<void>((resolve) =>
+          setTimeout(() => {
+            console.warn(
+              `⚠️ Cleanup for ${newCaseName} timed out after 3 minutes`
             );
-          }
-        } catch (error) {
-          console.error("⚠️ afterEach cleanup failed:", error);
-        }
-      }
-    );
+            resolve();
+          }, 180000)
+        ),
+      ]);
+    } catch (err) {
+      console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
+    }
   });
-}
+});
 
 // // ============================================================
 // // Test 2: Notes Access Permissions
@@ -209,65 +206,58 @@ test.describe("Notes Permissions & Access", () => {
     }) => {
       const currentUserIssues: string[] = [];
 
-      try {
-        await loginPage.login(user);
-        await homePage.navigation.navigateTo("ViewCaseListLink");
-        await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
-        const [popup] = await Promise.all([
-          caseSearchPage.page.waitForEvent("popup"),
-          caseSearchPage.goToReviewEvidence("01AD111111"),
-        ]);
+      await loginPage.login(user);
+      await homePage.navigation.navigateTo("ViewCaseListLink");
+      await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
+      const [popup] = await Promise.all([
+        caseSearchPage.page.waitForEvent("popup"),
+        caseSearchPage.goToReviewEvidence("01AD111111"),
+      ]);
 
-        const reviewEvidencePage = new ReviewEvidencePage(popup);
-        await reviewEvidencePage.sectionPanelLoad();
-        await expect
-          .poll(
-            async () => {
-              return await reviewEvidencePage.notes.getNotesCount();
-            },
-            { timeout: 20000 }
-          )
-          .toBeGreaterThan(0);
+      const reviewEvidencePage = new ReviewEvidencePage(popup);
+      await reviewEvidencePage.sectionPanelLoad();
+      await expect
+        .poll(
+          async () => {
+            return await reviewEvidencePage.notes.getNotesCount();
+          },
+          { timeout: 20000 }
+        )
+        .toBeGreaterThan(0);
 
-        // Filter expected documents based on User Group
-        const expectedNotes = await reviewEvidencePage.notes.filterNotesByUser(
-          user.group
+      // Filter expected documents based on User Group
+      const expectedNotes = await reviewEvidencePage.notes.filterNotesByUser(
+        user.group
+      );
+
+      // Get all available Notes for User
+      const availableNotes = await reviewEvidencePage.notes.getAllNotes();
+
+      // Compare expected vs available Notes for the User
+      const { missingNotes, unexpectedNotes } =
+        await reviewEvidencePage.notes.compareExpectedVsAvailableNotes(
+          expectedNotes,
+          availableNotes
         );
 
-        // Get all available Notes for User
-        const availableNotes = await reviewEvidencePage.notes.getAllNotes();
+      // If there are any issues, push to currentUserIssues
+      currentUserIssues.push(...missingNotes, ...unexpectedNotes);
 
-        // Compare expected vs available Notes for the User
-        const { missingNotes, unexpectedNotes } =
-          await reviewEvidencePage.notes.compareExpectedVsAvailableNotes(
-            expectedNotes,
-            availableNotes
-          );
+      //Aggregate results across users
+      pushTestResult({
+        user: user.group,
+        heading: `Verify Notes Access for ${user.group}`,
+        category: "Notes",
+        issues: currentUserIssues,
+      });
 
-        // If there are any issues, push to currentUserIssues
-        currentUserIssues.push(...missingNotes, ...unexpectedNotes);
-      } catch (error: unknown) {
-        console.error(
-          `Error assessing notes availability for ${user.group}:`,
-          error
+      // Fail the test if any issues were found
+      if (currentUserIssues.length > 0) {
+        throw new Error(
+          `User ${
+            user.group
+          } has missing/unexpected Notes:\n${currentUserIssues.join("\n")}`
         );
-      } finally {
-        //Aggregate results across users
-        pushTestResult({
-          user: user.group,
-          heading: `Verify Notes Access for ${user.group}`,
-          category: "Notes",
-          issues: currentUserIssues,
-        });
-
-        // Fail the test if any issues were found
-        if (currentUserIssues.length > 0) {
-          throw new Error(
-            `User ${
-              user.group
-            } has missing/unexpected Notes:\n${currentUserIssues.join("\n")}`
-          );
-        }
       }
     });
   }

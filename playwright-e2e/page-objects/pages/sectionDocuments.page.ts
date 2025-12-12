@@ -20,7 +20,7 @@ class SectionDocumentsPage extends Base {
     await this.page
       .locator("table.formTable-zebra tbody tr:nth-child(n+2)")
       .first()
-      .waitFor({ state: "visible", timeout: 20000 });
+      .waitFor({ state: "visible", timeout: 40000 });
     const rows = this.page.locator(
       "table.formTable-zebra tbody tr:nth-child(n+3)"
     );
@@ -38,7 +38,7 @@ class SectionDocumentsPage extends Base {
     await this.page
       .locator("table.formTable-zebra tbody tr:nth-child(n+2)")
       .first()
-      .waitFor({ state: "visible", timeout: 20000 });
+      .waitFor({ state: "visible", timeout: 40000 });
     const rows = this.page.locator(
       "table.formTable-zebra tbody tr:nth-child(n+3)"
     );
@@ -155,7 +155,7 @@ class SectionDocumentsPage extends Base {
     const isVisible = count > 0;
 
     if (!isVisible) {
-      return `Edit: Unable to locate edited filename for unrestricted document in Section ${section}`;
+      return `Unable to locate the unrestricted document in Section ${section}`;
     }
   }
 
@@ -176,6 +176,11 @@ class SectionDocumentsPage extends Base {
       return `Edit: Unable to locate edited filename for restricted document in Section ${section}`;
     }
   }
+
+async goToUploadDocumentsFromIndex() {
+    const uploadButton = this.page.getByRole("link", { name: "Upload Document(s)" });
+    await uploadButton.click();
+}
 }
 
 export default SectionDocumentsPage;

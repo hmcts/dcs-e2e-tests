@@ -54,7 +54,7 @@ def secrets = [
     secret('DEFENCE-A-PASSWORD', 'DEFENCE_ADVOCATE_A_PASSWORD'),
     secret('DEFENCE-B-PASSWORD', 'DEFENCE_ADVOCATE_B_PASSWORD'),
     secret('DEFENCE-C-PASSWORD', 'DEFENCE_ADVOCATE_C_PASSWORD'),
-    secret('FULL-TIME-JUDGE-PASSWORD', 'FULL_TIME_JUDGE_PASSWORD'),
+    secret('FT-JUDGE-PASSWORD', 'FT_JUDGE_PASSWORD'),
     secret('PROBATION-STAFF-PASSWORD', 'PROBATION_STAFF_PASSWORD'),
     secret('TESTAC-PASSWORD', 'TESTAC_PASSWORD'),
     secret('USER-REG-PASSWORD', 'USER_REG_PASSWORD'),
@@ -94,6 +94,20 @@ withNightlyPipeline(type, product, component, 600) {
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
   enableSlackNotifications(channel)
 
+  stage('Clean Sessions') {
+    node {
+      def sessionsDir = "${env.WORKSPACE}/playwright-e2e/.sessions"
+      if (fileExists(sessionsDir)) {
+        echo "Deleting old sessions folder..."
+        dir(sessionsDir) {
+          deleteDir()
+        }
+      } else {
+        echo "No sessions folder to delete"
+      }
+    }
+  }
+
   afterAlways('DependencyCheckNightly') {
     // stage('Delete nightly dev branch') {
     //   try {
@@ -115,6 +129,8 @@ withNightlyPipeline(type, product, component, 600) {
           currentBuild.displayName = "${TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}"
           if (params.BROWSER_TO_RUN == 'edge') yarnBuilder.yarn('setup:edge')
           yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN))
+          // USE TO UPDATE SCREENSHOTS WITH PIPELINE BASELINE
+          // yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN)+ " --update-snapshots")
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -212,5 +228,9 @@ withNightlyPipeline(type, product, component, 600) {
       //   }
       // }
     }
+    //CAN BE USED FOR EXPORTING UPDATED PIPELINE SCREENSHOTS AS ARTEFACTS FOR MANUAL GITHUB UPDATE  
+    // stage('Archive PTPH Snapshots') {
+    //     archiveArtifacts artifacts: 'playwright-e2e/tests/**/*-snapshots/**/*.png', allowEmptyArchive: true
+    // }
   }
 }

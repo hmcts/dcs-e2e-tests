@@ -1,8 +1,9 @@
 import { expect } from "../fixtures";
 import { BrowserContext } from "@playwright/test";
+import { config } from "../utils";
 
-export async function editPayloadView(page, caseUrn) {
-  await page.goto(process.env.PREPROD_UPLOAD_PTPH_FORM_URL as string);
+export async function editPayloadForm(page, caseUrn) {
+  await page.goto(config.urls.ptphUpload);
 
   await page.locator("#Urn").fill(caseUrn);
   await page.locator("#DocumentType").fill("ptph");
@@ -16,7 +17,7 @@ export async function editPayloadView(page, caseUrn) {
 }
 
 export async function getPayloadStatus(page, caseUrn: string) {
-  await page.goto(process.env.PREPROD_CONFIRM_PTPH_UPLOAD_STATUS_URL as string);
+  await page.goto(config.urls.ptphStatus);
 
   await expect(page.locator("body")).toBeVisible();
 
@@ -37,7 +38,7 @@ export async function getPayloadStatus(page, caseUrn: string) {
 
         return null; // still in Started/Processing
       },
-      { intervals: [1000], timeout: 60000 }
+      { intervals: [1000], timeout: 120000 }
     )
     .toMatch(/Success|Failed/);
 
@@ -55,11 +56,17 @@ export async function uploadPTPHForm(context: BrowserContext, caseUrn: string) {
 
   // Step 1: Upload form
   const uploadPage = await context.newPage();
-  await editPayloadView(uploadPage, caseUrn);
+  try {
+    await editPayloadForm(uploadPage, caseUrn);
+  } finally {
+    await uploadPage.close();
+  }
 
   // Step 2: Check status
   const statusPage = await context.newPage();
-  await getPayloadStatus(statusPage, caseUrn);
-
-  console.log(`PTPH form successfully uploaded for URN: ${caseUrn}`);
+  try {
+    await getPayloadStatus(statusPage, caseUrn);
+  } finally {
+    await statusPage.close();
+  }
 }

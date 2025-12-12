@@ -26,13 +26,13 @@ constructor(page) {
     this.memoTableRow2 = page.locator("xpath= //table[@class='formTable-zebra']/tbody[1]/tr[3]/td[2]")
 }
 
-async addMemo(){
+async addMemo(user: string){
 if (await this.memoTextBox.isVisible()){
-    await this.memoTextBox.fill('Add memo test textbox directly available')
+    await this.memoTextBox.fill(`${user} memo test textbox directly available`);
     await this.addMemoButton.click();
 } else {
     await this.addMemoLink.click();
-    await this.memoTextBox.fill('Add memo test via Add A Memorandum button')
+    await this.memoTextBox.fill(`${user} memo test via Add a Memorandum button`)
     await this.addMemoButton.click();
 }}
 
@@ -48,6 +48,6 @@ async removeMemo(){
     await this.removeMemoButton.click()
 ]);
     await dialog.accept();
-}}
-
+}
+}
 export default MemoPage;

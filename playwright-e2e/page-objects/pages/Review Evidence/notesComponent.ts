@@ -465,20 +465,27 @@ class NotesComponent extends Base {
   }
 
   // === Extract details for one note ===
-  async getNoteDetails(row: number): Promise<NotesModel> {
+  async getNoteDetails(row: number): Promise<NotesModel[]> {
     const note = this.stickyNotes.nth(row);
+    const comments = note.locator(".stickyComment");
+    const count = await comments.count();
+    const noteModels: NotesModel[] = [];
 
-    const key = await note.getAttribute("id");
-    const text = await note.locator(".commentText").innerText();
-    const user = await note.locator(".commentUser").innerText();
-    const share = await note.locator(".commentSharing").innerText();
+    for (let i = 0; i < count; i++) {
+      const comment = comments.nth(i);
+      const key = await comment.getAttribute("id");
+      const text = await comment.locator(".commentText").innerText();
+      const user = await comment.locator(".commentUser").innerText();
+      const share = await comment.locator(".commentSharing").innerText();
 
-    return {
-      noteKey: key ?? "",
-      noteText: text,
-      noteUser: user,
-      noteShare: share,
-    };
+      noteModels.push({
+        noteKey: key ?? "",
+        noteText: text.trim(),
+        noteUser: user,
+        noteShare: share,
+      });
+    }
+    return noteModels;
   }
 
   // === Get all notes ===
@@ -487,14 +494,10 @@ class NotesComponent extends Base {
     const notes: NotesModel[] = [];
 
     for (let row = 0; row < count; row++) {
-      const model = await this.getNoteDetails(row);
-      notes.push(model);
+      const notesModels = await this.getNoteDetails(row);
+      notes.push(...notesModels);
     }
-    const availableNotes = notes.map((note) => ({
-      ...note,
-      noteText: note.noteText.trim(),
-    }));
-    return availableNotes;
+    return notes;
   }
 
   async filterNotesByUser(user: string) {

@@ -16,7 +16,7 @@ import { ROCAModel } from "../data/ROCAModel";
 // I want any updates or removal of unrestricted documents to be reflected in the ROCA unrestricted table
 // So that I can accurately track document activity
 
-test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
+test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", () => {
   let sampleKey: [string, string][];
   let newCaseName: string;
   let rocaExpected: ROCAModel[] = [];
@@ -199,20 +199,28 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
     }
   });
 
-  test.afterEach(
-    async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      if (newCaseName) {
-        await deleteCaseByName(
-          newCaseName,
-          caseSearchPage,
-          caseDetailsPage,
-          homePage,
-          loginPage,
-          page
-        );
-      }
+  test.afterEach(async () => {
+    if (!newCaseName) return;
+
+    try {
+      console.log(`Attempting to delete test case: ${newCaseName}`);
+
+      // Run cleanup with timeout
+      await Promise.race([
+        deleteCaseByName(newCaseName, 180000),
+        new Promise<void>((resolve) =>
+          setTimeout(() => {
+            console.warn(
+              `⚠️ Cleanup for ${newCaseName} timed out after 3 minutes`
+            );
+            resolve();
+          }, 180000)
+        ),
+      ]);
+    } catch (err) {
+      console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
     }
-  );
+  });
 });
 
 // ============================================================
@@ -223,7 +231,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted)", () => {
 // I want any updates or removal of restricted documents to be reflected in the ROCA restricted table
 // So that I can accurately track document activity
 
-test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
+test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", () => {
   let sampleKey: [string, string][];
   let newCaseName: string;
   let rocaExpected: ROCAModel[] = [];
@@ -457,18 +465,26 @@ test.describe("ROCA: Document Update Audit Validation (Restricted)", () => {
     }
   });
 
-  test.afterEach(
-    async ({ page, caseSearchPage, caseDetailsPage, homePage, loginPage }) => {
-      if (newCaseName) {
-        await deleteCaseByName(
-          newCaseName,
-          caseSearchPage,
-          caseDetailsPage,
-          homePage,
-          loginPage,
-          page
-        );
-      }
+  test.afterEach(async () => {
+    if (!newCaseName) return;
+
+    try {
+      console.log(`Attempting to delete test case: ${newCaseName}`);
+
+      // Run cleanup with timeout
+      await Promise.race([
+        deleteCaseByName(newCaseName, 180000),
+        new Promise<void>((resolve) =>
+          setTimeout(() => {
+            console.warn(
+              `⚠️ Cleanup for ${newCaseName} timed out after 3 minutes`
+            );
+            resolve();
+          }, 180000)
+        ),
+      ]);
+    } catch (err) {
+      console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
     }
-  );
+  });
 });

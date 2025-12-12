@@ -21,7 +21,11 @@ import UserSettingsPage from "./userSettings.page";
 import ApprovalRequestsPage from "./approvalRequests.page";
 import ApproveAccessRequestPage from "./approveAccessRequest.page";
 import RejectAccessRequestPage from "./rejectAccessRequest.page";
+import CreateNewSectionPage from "./createNewSection.page"
+import SplitCasePage from "./splitCase.page";
+import MergeCasePage from "./mergeCase.page";
 import UpdateDocumentsPage from "./updateDocuments.page";
+import IndexPage from "./index.page";
 import PTPHPage from "./ptph.page";
 
 export interface PageFixtures {
@@ -48,7 +52,11 @@ export interface PageFixtures {
   approvalRequestsPage: ApprovalRequestsPage;
   approveAccessRequestPage: ApproveAccessRequestPage;
   rejectAccessRequestPage: RejectAccessRequestPage;
+  createNewSectionPage: CreateNewSectionPage;
+  splitCasePage: SplitCasePage;
+  mergeCasePage: MergeCasePage;
   updateDocumentsPage: UpdateDocumentsPage;
+  indexPage: IndexPage;
   ptphPage: PTPHPage;
 }
 
@@ -86,6 +94,9 @@ export const pageFixtures = {
   sectionsPage: async ({ page }, use) => {
     await use(new SectionsPage(page));
   },
+  createNewSectionPage: async ({ page }, use) => {
+    await use(new CreateNewSectionPage(page));
+  },
   viewDocumentPage: async ({ page }, use) => {
     await use(new ViewDocumentPage(page));
   },
@@ -122,8 +133,17 @@ export const pageFixtures = {
   rejectAccessRequestPage: async ({ page }, use) => {
     await use(new RejectAccessRequestPage(page));
   },
+  splitCasePage: async ({ page }, use) => {
+    await use(new SplitCasePage(page));
+  },
+  mergeCasePage: async ({ page }, use) => {
+    await use(new MergeCasePage(page));
+  },
   updateDocumentsPage: async ({ page }, use) => {
     await use(new UpdateDocumentsPage(page));
+  },
+  indexPage: async ({ page }, use) => {
+    await use(new IndexPage(page));
   },
   ptphPage: async ({ page }, use) => {
     await use(new PTPHPage(page));
