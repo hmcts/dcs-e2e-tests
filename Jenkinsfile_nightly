@@ -128,7 +128,9 @@ withNightlyPipeline(type, product, component, 600) {
         try {
           currentBuild.displayName = "${TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}"
           if (params.BROWSER_TO_RUN == 'edge') yarnBuilder.yarn('setup:edge')
-          yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN)+ " --update-snapshots")
+          yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN))
+          // USE TO UPDATE SCREENSHOTS WITH PIPELINE BASELINE
+          // yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN)+ " --update-snapshots")
         } catch (Error) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         } finally {
@@ -225,9 +227,11 @@ withNightlyPipeline(type, product, component, 600) {
       //     ])
       //   }
       // }
-    }
-    stage('Archive PTPH Snapshots') {
-        archiveArtifacts artifacts: 'playwright-e2e/tests/**/*-snapshots/**/*.png', allowEmptyArchive: true
-    }
+
+    //CAN BE USED FOR EXPORTING UPDATED PIPELINE SCREENSHOTS AS ARTEFACTS FOR MANUAL GITHUB UPDATE  
+    // }
+    // stage('Archive PTPH Snapshots') {
+    //     archiveArtifacts artifacts: 'playwright-e2e/tests/**/*-snapshots/**/*.png', allowEmptyArchive: true
+    // }
   }
 }

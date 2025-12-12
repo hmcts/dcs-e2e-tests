@@ -76,31 +76,6 @@ class PTPHPage extends Base {
       { name: "intermediary", locator: this.intermediary },
     ];
   }
-
-  async waitForElasticTextareas(): Promise<void> {
-    const textareas = this.page.locator("textarea[elastic]");
-
-    let previous: { width: number; height: number }[] = [];
-
-    for (let i = 0; i < 10; i++) {
-      const boxes = await textareas.evaluateAll((elements) =>
-        elements.map((el) => {
-          const rect = el.getBoundingClientRect();
-          return { width: rect.width, height: rect.height };
-        })
-      );
-
-      if (JSON.stringify(boxes) === JSON.stringify(previous)) {
-        // Sizes stable → done
-        return;
-      }
-
-      previous = boxes;
-
-      // Give AngularJS elastic directive time to fire
-      await this.page.waitForTimeout(200);
-    }
-  }
 }
 
 export default PTPHPage;
