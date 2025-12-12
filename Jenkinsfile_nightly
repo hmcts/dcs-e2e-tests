@@ -227,7 +227,7 @@ withNightlyPipeline(type, product, component, 600) {
       // }
     }
     stage('Archive PTPH Snapshots') {
-    archiveArtifacts artifacts: 'playwright-e2e/tests/**/__snapshots__/**', allowEmptyArchive: true
+        archiveArtifacts artifacts: 'playwright-e2e/tests/**/*-snapshots/**/*.png', allowEmptyArchive: true
     }
   }
 }
