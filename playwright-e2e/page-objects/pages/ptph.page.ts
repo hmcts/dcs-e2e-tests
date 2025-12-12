@@ -77,42 +77,29 @@ class PTPHPage extends Base {
     ];
   }
 
-  async waitForElementStability(
-    locator: Locator,
-    timeout = 2000,
-    interval = 50
-  ) {
-    const start = Date.now();
-    let previousBox: {
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-    } | null = null;
+  async waitForElasticTextareas(): Promise<void> {
+    const textareas = this.page.locator("textarea[elastic]");
 
-    while (Date.now() - start < timeout) {
-      const box = await locator.boundingBox();
-      if (!box) {
-        await locator.waitFor({ state: "visible" });
-        continue;
-      }
+    let previous: { width: number; height: number }[] = [];
 
-      if (
-        previousBox &&
-        previousBox.x === box.x &&
-        previousBox.y === box.y &&
-        previousBox.width === box.width &&
-        previousBox.height === box.height
-      ) {
-        // Element has stabilized
+    for (let i = 0; i < 10; i++) {
+      const boxes = await textareas.evaluateAll((elements) =>
+        elements.map((el) => {
+          const rect = el.getBoundingClientRect();
+          return { width: rect.width, height: rect.height };
+        })
+      );
+
+      if (JSON.stringify(boxes) === JSON.stringify(previous)) {
+        // Sizes stable → done
         return;
       }
 
-      previousBox = box;
-      await new Promise((r) => setTimeout(r, interval));
-    }
+      previous = boxes;
 
-    console.warn("Element may not be fully stable after timeout.");
+      // Give AngularJS elastic directive time to fire
+      await this.page.waitForTimeout(200);
+    }
   }
 }
 

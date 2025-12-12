@@ -55,15 +55,11 @@ test.describe("PTPH Form Rendering / Photosnaps @ptph", () => {
     const ptphForm = ptphPage.ptphForm;
     await expect(ptphForm).toBeVisible();
 
+    await ptphPage.waitForElasticTextareas();
+
     const formSections = await ptphPage.ptphFormSections();
 
     for (const section of formSections) {
-      // Wait for DOM to stabilize
-      await ptphPage.waitForElementStability(section.locator);
-
-      // Ensure fonts loaded
-      await ptphPage.page.evaluate(() => document.fonts.ready);
-      // Take and compare screenshot to expected form section
       try {
         await expect(section.locator).toHaveScreenshot(`${section.name}.png`, {
           maxDiffPixelRatio: 0.01,
