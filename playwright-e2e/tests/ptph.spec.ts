@@ -56,8 +56,6 @@ test.describe("PTPH Form Rendering / Photosnaps @ptph", () => {
     await expect(ptphForm).toBeVisible();
     await ptphPage.page.waitForTimeout(30000);
 
-    await ptphPage.waitForElasticTextareas();
-
     const formSections = await ptphPage.ptphFormSections();
 
     for (const section of formSections) {
