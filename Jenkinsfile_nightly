@@ -227,9 +227,8 @@ withNightlyPipeline(type, product, component, 600) {
       //     ])
       //   }
       // }
-
+    }
     //CAN BE USED FOR EXPORTING UPDATED PIPELINE SCREENSHOTS AS ARTEFACTS FOR MANUAL GITHUB UPDATE  
-    // }
     // stage('Archive PTPH Snapshots') {
     //     archiveArtifacts artifacts: 'playwright-e2e/tests/**/*-snapshots/**/*.png', allowEmptyArchive: true
     // }
