@@ -20,6 +20,7 @@ import ReviewEvidencePage from "../page-objects/pages/Review Evidence/reviewEvid
 const excludedGroups = [
   "AccessCoordinator",
   "Admin",
+  "HMCTSAdmin",
   "DefenceAdvocateB",
   "DefenceAdvocateC",
   "CPSAdmin",
