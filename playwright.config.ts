@@ -63,16 +63,16 @@ export default defineConfig({
     //   },
     //   dependencies: ["setup"],
     // },
-    // {
-    //   name: "firefox",
-    //   use: {
-    //     ...ProjectsConfig.firefox.use,
-    //     //Use below line when running docker
-    //     channel: undefined,
-    //     storageState: "./playwright-e2e/.sessions/trainer01.json",
-    //   },
-    //   dependencies: ["setup"],
-    // },
+    {
+      name: "firefox",
+      use: {
+        ...ProjectsConfig.firefox.use,
+        //Use below line when running docker
+        channel: undefined,
+        storageState: "./playwright-e2e/.sessions/trainer01.json",
+      },
+      dependencies: ["setup"],
+    },
     {
       name: "firefox-notes-serial",
       testMatch: /notes\.spec\.ts/,
