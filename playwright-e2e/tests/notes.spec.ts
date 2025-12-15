@@ -17,7 +17,17 @@ import ReviewEvidencePage from "../page-objects/pages/Review Evidence/reviewEvid
 // I want to be able to edit or remove my notes of any share type (Widely Shared, Tightly Shared, Private) on a document I have access to
 // So that I can ensure up to date information is shared, to the right parties on a document.
 
-const excludedGroups = ["AccessCoordinator", "Admin"];
+const excludedGroups = [
+  "AccessCoordinator",
+  "Admin",
+  "DefenceAdvocateA",
+  "DefenceAdvocateB",
+  "DefenceAdvocateC",
+  "CPSAdmin",
+  "CPSProsecutor",
+  "ProbationStaff",
+  "FullTimeJudge",
+];
 
 for (const user of Object.values(config.users).filter(
   (u) => !excludedGroups.includes(u.group)
