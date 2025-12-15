@@ -96,6 +96,27 @@ class NotesComponent extends Base {
     await this.page.mouse.up();
   }
 
+  async clickSaveUntilEditorCloses(timeoutMs = 10000) {
+    const start = Date.now();
+
+    while (Date.now() - start < timeoutMs) {
+      // Success condition
+      if (!(await this.activeEditor.isVisible().catch(() => false))) {
+        return;
+      }
+
+      // Retry click if possible
+      if (await this.saveNote.isVisible().catch(() => false)) {
+        try {
+          await this.saveNote.click({ timeout: 1000 });
+        } catch {}
+      }
+      // Small wait before re-trying
+      await this.page.waitForTimeout(500);
+    }
+
+    throw new Error("Save did not close editor within timeout");
+  }
   // ---------------------------
   // Add a single note
   // ---------------------------
@@ -148,21 +169,25 @@ class NotesComponent extends Base {
     }
 
     // Save note
-    await expect
-      .poll(
-        async () => {
-          const buttonStillVisible = await this.saveNote.isVisible();
-          if (buttonStillVisible) await this.saveNote.click();
-          return buttonStillVisible;
-        },
-        {
-          // Allow 2s delay before retrying
-          intervals: [2000],
-          // Allow up to 10 seconds for the Save button to disappear
-          timeout: 10000,
-        }
-      )
-      .toBeFalsy();
+    await this.clickSaveUntilEditorCloses();
+    // await expect
+    //   .poll(
+    //     async () => {
+    //       if (!(await this.activeEditor.isVisible().catch(() => false))) {
+    //         return false;
+    //       }
+    //       const buttonStillVisible = await this.saveNote.isVisible();
+    //       if (buttonStillVisible) await this.saveNote.click();
+    //       return buttonStillVisible;
+    //     },
+    //     {
+    //       // Allow 2s delay before retrying
+    //       intervals: [2000],
+    //       // Allow up to 10 seconds for the Save button to disappear
+    //       timeout: 10000,
+    //     }
+    //   )
+    //   .toBeFalsy();
   }
 
   // ---------------------------
