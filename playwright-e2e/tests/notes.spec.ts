@@ -20,13 +20,6 @@ import ReviewEvidencePage from "../page-objects/pages/Review Evidence/reviewEvid
 const excludedGroups = [
   "AccessCoordinator",
   "Admin",
-  "HMCTSAdmin",
-  "DefenceAdvocateB",
-  "DefenceAdvocateC",
-  "CPSAdmin",
-  "CPSProsecutor",
-  "ProbationStaff",
-  "FullTimeJudge",
 ];
 
 for (const user of Object.values(config.users).filter(
