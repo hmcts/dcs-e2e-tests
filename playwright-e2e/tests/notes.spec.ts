@@ -82,7 +82,8 @@ for (const user of Object.values(config.users).filter(
       const reviewEvidencePage = new ReviewEvidencePage(popup);
 
       const sectionKey = sampleKey[0][0];
-      await reviewEvidencePage.waitUntilFullyLoaded(sectionKey);
+      await reviewEvidencePage.sectionPanelLoad();
+      await reviewEvidencePage.notes.waitForHighResImageLoad(sectionKey);
       await reviewEvidencePage.notes.openNotes();
 
       const types = await reviewEvidencePage.notes.addNotesForUserGroup(

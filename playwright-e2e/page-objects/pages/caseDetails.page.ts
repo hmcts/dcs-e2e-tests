@@ -94,11 +94,12 @@ class CaseDetailsPage extends Base {
   async tryOpenReviewPopup(): Promise<Page | null> {
     let popupPage: Page | null = null;
 
-    // 1 — Check for existing popup
+    // Reuse existing popup if present
     const existingPopups = this.page
       .context()
       .pages()
-      .filter((p) => p !== this.page);
+      .filter((p) => p !== this.page && !p.isClosed());
+
     if (existingPopups.length > 0) {
       popupPage = existingPopups[0];
     } else {
@@ -108,46 +109,50 @@ class CaseDetailsPage extends Base {
     }
 
     try {
-      const statusHandle = await popupPage.waitForFunction<
-        "wrong" | "ready" | "loading"
-      >(
-        () => {
-          const body = document.body.innerText || "";
+      // 🔑 Wait until DOM is safe to inspect
+      await popupPage.waitForFunction(() => !!document.body, {
+        timeout: 30000,
+      });
 
-          // clearly wrong content
+      const status = await popupPage.evaluate<"wrong" | "ready" | "loading">(
+        () => {
+          const bodyText = document.body?.innerText ?? "";
+
           const isPaginationPopup =
-            body.includes("There are no documents in the paginated bundle") ||
-            body.includes(
-              "The initial pagination for this bundle is underway"
+            bodyText.includes(
+              "There are no documents in the paginated bundle"
             ) ||
-            body.trim().length === 0;
+            bodyText.includes(
+              "The initial pagination for this bundle is underway"
+            );
 
           if (isPaginationPopup) return "wrong";
 
           const panel = document.querySelector(
             "#bundleIndexDiv"
           ) as HTMLElement | null;
-          if (panel?.offsetParent !== null) return "ready";
 
-          return "loading"; // still loading
-        },
-        { timeout: 30000, polling: 500 }
+          if (panel && panel.offsetParent !== null) return "ready";
+
+          return "loading";
+        }
       );
-
-      const status = await statusHandle.jsonValue();
 
       if (status === "wrong") {
         await popupPage.close().catch(() => {});
-        return null; // signal to retry
-      } else if (status === "ready") {
-        return popupPage; // good popup
-      } else {
-        // still loading — wait a bit and retry
-        await this.page.waitForTimeout(1000);
         return null;
       }
+
+      if (status === "ready") {
+        return popupPage;
+      }
+
+      // Still loading — keep popup open
+      return null;
     } catch {
-      if (popupPage) await popupPage.close().catch(() => {});
+      if (popupPage && !popupPage.isClosed()) {
+        await popupPage.close().catch(() => {});
+      }
       return null;
     }
   }
