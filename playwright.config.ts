@@ -23,6 +23,7 @@ export default defineConfig({
     },
     {
       name: "chrome",
+      testIgnore: /notes\.spec\.ts/,
       use: {
         ...ProjectsConfig.chrome.use,
         //Use below line when running docker
@@ -31,12 +32,23 @@ export default defineConfig({
       },
       dependencies: ["setup"],
     },
+    {
+      name: "chrome-notes-serial",
+      testMatch: /notes\.spec\.ts/, // 👈 ONLY notes
+      use: {
+        ...ProjectsConfig.chrome.use,
+        // channel: undefined,
+        storageState: "./playwright-e2e/.sessions/trainer01.json",
+      },
+      dependencies: ["setup"],
+      workers: 1,
+    },
     // {
     //   name: "chromium",
     //   use: {
     //     ...ProjectsConfig.chromium.use,
     //     //Use below line when running docker
-    //     // channel: undefined,
+    //     channel: undefined,
     //     storageState: "./playwright-e2e/.sessions/trainer01.json",
     //   },
     //   dependencies: ["setup"],
@@ -46,27 +58,38 @@ export default defineConfig({
     //   use: {
     //     ...ProjectsConfig.edge.use,
     //     //Use below line when running docker
-    //     // channel: undefined,
+    //     channel: undefined,
+    //     storageState: "./playwright-e2e/.sessions/trainer01.json",
+    //   },
+    //   dependencies: ["setup"],
+    // },
+    // {
+    //   name: "firefox",
+    //   use: {
+    //     ...ProjectsConfig.firefox.use,
+    //     //Use below line when running docker
+    //     channel: undefined,
     //     storageState: "./playwright-e2e/.sessions/trainer01.json",
     //   },
     //   dependencies: ["setup"],
     // },
     {
-      name: "firefox",
+      name: "firefox-notes-serial",
+      testMatch: /notes\.spec\.ts/,
       use: {
         ...ProjectsConfig.firefox.use,
-        //Use below line when running docker
         // channel: undefined,
         storageState: "./playwright-e2e/.sessions/trainer01.json",
       },
       dependencies: ["setup"],
+      workers: 1,
     },
     // {
     //   name: "webkit",
     //   use: {
     //     ...ProjectsConfig.webkit.use,
     //     //Use below line when running docker
-    //     // channel: undefined,git add
+    //     channel: undefined,
     //     storageState: "./playwright-e2e/.sessions/trainer01.json",
     //   },
     //   dependencies: ["setup"],
