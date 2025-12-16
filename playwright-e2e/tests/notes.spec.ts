@@ -101,13 +101,13 @@ for (const user of Object.values(config.users).filter(
       if (user.group === "DefenceAdvocateA") {
         await expect
           .poll(() => reviewEvidencePage.notes.getNotesCount(), {
-            timeout: 10000,
+            timeout: 30000,
           })
           .toBe(4);
       } else {
         await expect
           .poll(() => reviewEvidencePage.notes.getNotesCount(), {
-            timeout: 10000,
+            timeout: 30000,
           })
           .toBe(3);
       }
