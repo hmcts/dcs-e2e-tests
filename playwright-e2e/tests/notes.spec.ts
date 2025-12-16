@@ -5,6 +5,8 @@ import { loginAndOpenCase } from "../helpers/login.helper";
 import { deleteCaseByName } from "../helpers/deleteCase.helper";
 import ReviewEvidencePage from "../page-objects/pages/Review Evidence/reviewEvidence.page";
 
+test.describe.configure({ mode: "serial" });
+
 // ======================================================================
 // Test 1: Create, Delete, Edit Note
 // ======================================================================
@@ -17,7 +19,12 @@ import ReviewEvidencePage from "../page-objects/pages/Review Evidence/reviewEvid
 // I want to be able to edit or remove my notes of any share type (Widely Shared, Tightly Shared, Private) on a document I have access to
 // So that I can ensure up to date information is shared, to the right parties on a document.
 
-const excludedGroups = ["AccessCoordinator", "Admin"];
+const excludedGroups = [
+  "AccessCoordinator",
+  "Admin",
+  "DefenceAdvocateB",
+  "DefenceAdvocateC",
+];
 
 for (const user of Object.values(config.users).filter(
   (u) => !excludedGroups.includes(u.group)

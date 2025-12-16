@@ -31,7 +31,7 @@
     "setup:edge": "PLAYWRIGHT_BROWSERS_PATH=0 yarn playwright install msedge --with-deps",
     "load-secrets": "node node_modules/@hmcts/playwright-common/dist/scripts/get-secrets.js dcs-automation-bts-stg",
     "load-secrets2": "yarn get-secrets dcs-automation-bts-stg",
-    "test:chrome": "yarn playwright test tests/ --project=chrome --grep-invert='(@notes)|(@a11y)|(@performance)|(@visual)' --reporter=blob --output=blob-report-chrome && yarn playwright test tests/ --grep @notes --project=chrome-notes-serial --reporter=blob --output=blob-report-chrome-notes && yarn playwright merge-reports --reporter=html blob-report-chrome blob-report-chrome-notes",
+    "test:chrome": "yarn playwright test tests/ --project=chrome --grep-invert='(@a11y)|(@performance)|(@visual)'",
     "test:firefox": "yarn playwright test tests/ --project=firefox --grep-invert='(@a11y)|(@performance)|(@visual)'",
     "test:webkit": "yarn playwright test tests/ --project=webkit --grep-invert='(@a11y)|(@performance)|(@visual)'",
     "test:edge": "yarn playwright test tests/ --project=edge --grep-invert='(@a11y)|(@performance)|(@visual)'",
