@@ -29,7 +29,7 @@ const excludedGroups = [
 for (const user of Object.values(config.users).filter(
   (u) => !excludedGroups.includes(u.group)
 )) {
-  test.describe(`Notes Functionality for ${user.group}`, () => {
+  test.describe(`Notes Functionality for ${user.group} @notes`, () => {
     let sampleKey: [string, string][];
     let newCaseName: string;
 

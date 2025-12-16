@@ -80,7 +80,11 @@ def buildPlaywrightCommand(tags, browser) {
   }
 
   if (browser) {
-    command += " --project=${browser}"
+    if (tags.contains("@notes")) {
+        command += " --project=chrome-notes-serial"
+    } else {
+        command += " --project=${browser}"
+    }
   }
 
   return command

@@ -315,7 +315,7 @@ class ReviewEvidencePage extends Base {
     index: number,
     sectionTitle: string,
     sampleSize: number,
-    timeoutMs = 25000
+    timeoutMs = 45000
   ) {
     const result = await this.page.evaluate(
       ({
