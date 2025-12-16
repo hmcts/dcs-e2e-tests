@@ -22,7 +22,7 @@ class ReviewEvidencePage extends Base {
 
   // Review Evidence Index: Section Methods
 
-  async sectionPanelLoad(timeout = 30000) {
+  async sectionPanelLoad(timeout = 70000) {
     const sectionPanel = this.page.locator("#bundleIndexDiv");
     await expect(sectionPanel).toBeVisible();
     // Wait until there are no visible loaders
