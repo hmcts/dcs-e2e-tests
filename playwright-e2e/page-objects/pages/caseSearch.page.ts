@@ -66,17 +66,18 @@ class CaseSearchPage extends Base {
     }
     const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
     for (let attempt = 0; attempt < 3; attempt++) {
-      //  Retry up to 3 times to find case
       await this.applyFilter.click();
-      await caseRow.waitFor({ state: "attached" });
-      const isVisible = await caseRow.isVisible({ timeout: 10000 });
-      if (isVisible) {
+
+      try {
+        await expect(caseRow).toHaveCount(1, { timeout: 5000 });
+        await expect(caseRow).toBeVisible({ timeout: 5000 });
         return;
-      }
-      if (attempt === 2) {
-        throw new Error(
-          `❌ Case row "${textFieldInput}" (hearing: ${hearingDate}) did not appear after applying filter twice.`
-        );
+      } catch {
+        if (attempt === 2) {
+          throw new Error(
+            `❌ Case row "${textFieldInput}" (hearing: ${hearingDate}) did not appear after applying filter`
+          );
+        }
       }
     }
   }
