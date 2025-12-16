@@ -12,8 +12,6 @@ export default defineConfig({
     "{testDir}/{testFilePath}-snapshots/{arg}-{projectName}{ext}",
 
   ...CommonConfig.recommended,
-  // 👇 REQUIRED for merging reports
-  reporter: [["blob"]],
 
   timeout: 360_000,
 
@@ -26,7 +24,6 @@ export default defineConfig({
     },
     {
       name: "chrome",
-      testIgnore: /notes\.spec\.ts/,
       use: {
         ...ProjectsConfig.chrome.use,
         //Use below line when running docker
@@ -34,17 +31,6 @@ export default defineConfig({
         storageState: "./playwright-e2e/.sessions/trainer01.json",
       },
       dependencies: ["setup"],
-    },
-    {
-      name: "chrome-notes-serial",
-      testMatch: /notes\.spec\.ts/, // 👈 ONLY notes
-      use: {
-        ...ProjectsConfig.chrome.use,
-        // channel: undefined,
-        storageState: "./playwright-e2e/.sessions/trainer01.json",
-      },
-      dependencies: ["setup"],
-      workers: 1,
     },
     // {
     //   name: "chromium",
@@ -66,27 +52,16 @@ export default defineConfig({
     //   },
     //   dependencies: ["setup"],
     // },
-    {
-      name: "firefox",
-      use: {
-        ...ProjectsConfig.firefox.use,
-        //Use below line when running docker
-        channel: undefined,
-        storageState: "./playwright-e2e/.sessions/trainer01.json",
-      },
-      dependencies: ["setup"],
-    },
-    {
-      name: "firefox-notes-serial",
-      testMatch: /notes\.spec\.ts/,
-      use: {
-        ...ProjectsConfig.firefox.use,
-        // channel: undefined,
-        storageState: "./playwright-e2e/.sessions/trainer01.json",
-      },
-      dependencies: ["setup"],
-      workers: 1,
-    },
+    // {
+    //   name: "firefox",
+    //   use: {
+    //     ...ProjectsConfig.firefox.use,
+    //     //Use below line when running docker
+    //     channel: undefined,
+    //     storageState: "./playwright-e2e/.sessions/trainer01.json",
+    //   },
+    //   dependencies: ["setup"],
+    // },
     // {
     //   name: "webkit",
     //   use: {

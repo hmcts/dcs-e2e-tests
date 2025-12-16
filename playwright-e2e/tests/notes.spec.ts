@@ -5,6 +5,8 @@ import { loginAndOpenCase } from "../helpers/login.helper";
 import { deleteCaseByName } from "../helpers/deleteCase.helper";
 import ReviewEvidencePage from "../page-objects/pages/Review Evidence/reviewEvidence.page";
 
+test.describe.configure({ mode: "serial" });
+
 // ======================================================================
 // Test 1: Create, Delete, Edit Note
 // ======================================================================
