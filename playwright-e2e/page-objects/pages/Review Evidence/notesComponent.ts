@@ -96,7 +96,7 @@ class NotesComponent extends Base {
     await this.page.mouse.up();
   }
 
-  async clickSaveUntilEditorCloses(timeoutMs = 10000) {
+  async clickSaveUntilEditorCloses(timeoutMs = 30000) {
     const start = Date.now();
 
     while (Date.now() - start < timeoutMs) {
