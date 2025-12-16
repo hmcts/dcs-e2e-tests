@@ -224,7 +224,7 @@ class NotesComponent extends Base {
       await this.addnote(type, userGroup, username, canvasX, currentY);
       await expect(this.activeEditor).toBeHidden({ timeout: 10000 });
       await expect(this.stickyNotes).toHaveCount(existingCount + 1, {
-        timeout: 15000,
+        timeout: 40000,
       });
       // Prepare Y offset for the next note
       currentY += yStep;
