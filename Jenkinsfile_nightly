@@ -79,7 +79,7 @@ def buildPlaywrightCommand(tags, browser) {
     }
   }
 
-   if (browser) {
+  if (browser) {
     command += " --project=${browser}"
   }
 
