@@ -17,10 +17,10 @@ const userRoleConfig = {
 
 const groupPreset = {
   Defence: [
-    "DefenceAdvocateA",
-    "DefenceAdvocateB",
-    "DefenceAdvocateC",
-    "Admin",
+    "defenceAdvocateA",
+    "defenceAdvocateB",
+    "defenceAdvocateC",
+    "admin",
   ],
 };
 
@@ -37,7 +37,7 @@ export function getUserDetails(input: string) {
   } else if (userKey) {
     userGroups = [userKey];
   } else {
-    userGroups = ["Admin"];
+    userGroups = ["admin"];
   }
 
   const userDetails = userGroups
