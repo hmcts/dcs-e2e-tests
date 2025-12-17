@@ -26,8 +26,8 @@
     "typescript-eslint": "^8.8.0"
   },
   "scripts": {
-    "test:parallel": "npx playwright test --grep-invert @notes",
-    "test:notes": "npx playwright test --grep @notes --workers=1",
+    "test:parallel": "yarn playwright test --grep-invert @notes",
+    "test:notes": "yarn playwright test --grep @notes --workers=1",
     "lint": "yarn tsc -p tsconfig.json && yarn eslint .",
     "setup": "yarn playwright install --with-deps",
     "setup:edge": "PLAYWRIGHT_BROWSERS_PATH=0 yarn playwright install msedge --with-deps",
