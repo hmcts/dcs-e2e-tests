@@ -130,51 +130,56 @@ withNightlyPipeline(type, product, component, 600) {
           if (params.BROWSER_TO_RUN == 'edge') yarnBuilder.yarn('setup:edge')
 
           if (TAGS_TO_RUN.contains("@notes")) {
-            def notesUsers = ['HMCTSAdmin', 'CPSAdmin', 'CPSProsecutor', 'DefenceAdvocateA', 'FullTimeJudge', 'ProbationStaff']
-            sh "mkdir -p ${env.WORKSPACE}/playwright-report/users"
-            def userReports = []
+              // Run @notes per user, serially
+              def notesUsers = ['HMCTSAdmin', 'CPSAdmin', 'CPSProsecutor', 'DefenceAdvocateA', 'FullTimeJudge', 'ProbationStaff']
 
-            for (user in notesUsers) {
-              try {
-                echo "Running @notes @user:${user}"
-                yarnBuilder.yarn("playwright test tests/ --grep '@notes @user:${user}' --project=${params.BROWSER_TO_RUN}")
-              } catch (err) {
-                echo "⚠️ Tests failed for ${user}: ${err}"
-              } finally {
-                // Move each user's report to separate folder
-                def userDir = "${env.WORKSPACE}/playwright-report/users/${user}"
-                sh "mkdir -p ${userDir}"
-                sh "cp -r playwright-report/* ${userDir}/"
-                userReports.add(userDir)
+              // Ensure folders for individual and merged reports
+              sh "mkdir -p ${WORKSPACE}/playwright-report/all-users"
+              sh "mkdir -p ${WORKSPACE}/playwright-report/users"
+
+              for (user in notesUsers) {
+                  try {
+                      echo "Running @notes @user:${user}"
+                      yarnBuilder.yarn("playwright test tests/ --grep '@notes @user:${user}' --project=${params.BROWSER_TO_RUN}")
+
+                      // Copy user's report safely
+                      sh """
+                          mkdir -p ${WORKSPACE}/playwright-report/users/${user}
+                          cp -r playwright-report/index.html playwright-report/assets ${WORKSPACE}/playwright-report/users/${user}/ || true
+                      """
+
+                      // Copy to merged folder
+                      sh """
+                          cp -r playwright-report/index.html playwright-report/assets ${WORKSPACE}/playwright-report/all-users/ || true
+                      """
+                  } catch (err) {
+                      echo "⚠️ Tests failed for ${user}: ${err}"
+                  }
               }
-            }
 
-            // Merge all user reports into one combined report
-            def mergedDir = "${env.WORKSPACE}/playwright-report/merged-notes"
-            sh "mkdir -p ${mergedDir}"
-            sh """
-              echo '<html><body><h1>@notes Combined Report</h1>' > ${mergedDir}/index.html
-              for d in ${env.WORKSPACE}/playwright-report/users/*; do
-                if [ -d "\$d" ]; then
-                  echo '<h2>\$(basename \$d)</h2>' >> ${mergedDir}/index.html
-                  cat \$d/index.html >> ${mergedDir}/index.html
-                fi
-              done
-              echo '</body></html>' >> ${mergedDir}/index.html
-            """
-
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: mergedDir,
-              reportFiles: 'index.html',
-              reportName: "@notes Combined Report for ${params.BROWSER_TO_RUN}"
-            ])
+              // Publish merged HTML report of all users
+              publishHTML([
+                  allowMissing: true,
+                  alwaysLinkToLastBuild: true,
+                  keepAll: true,
+                  reportDir: "${WORKSPACE}/playwright-report/all-users",
+                  reportFiles: 'index.html',
+                  reportName: "@notes E2E Tests for ${params.BROWSER_TO_RUN} (All Users)"
+              ])
           } else {
             // Non-@notes tags run normally
             yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN))
-          }
+
+            // Publish report for non-@notes tests
+            publishHTML([
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: "playwright-report",
+                reportFiles: 'index.html',
+                reportName: "${TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}"
+            ])
+        }
         } catch (Error) { unstable(message: "${STAGE_NAME} is unstable: " + Error.toString()) }
       }
     } else {
