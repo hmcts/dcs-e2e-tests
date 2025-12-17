@@ -128,37 +128,54 @@ withNightlyPipeline(type, product, component, 600) {
         try {
           currentBuild.displayName = "${TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}"
           if (params.BROWSER_TO_RUN == 'edge') yarnBuilder.yarn('setup:edge')
+
           if (TAGS_TO_RUN.contains("@notes")) {
-            // Run @notes per user, serially
-            def notesUsers = ['Admin', 'HMCTSAdmin', 'CPSAdmin', 'CPSProsecutor', 'DefenceAdvocateA', 'FullTimeJudge', 'ProbationStaff']
+            def notesUsers = ['HMCTSAdmin', 'CPSAdmin', 'CPSProsecutor', 'DefenceAdvocateA', 'FullTimeJudge', 'ProbationStaff']
+            sh "mkdir -p ${env.WORKSPACE}/playwright-report/users"
+            def userReports = []
+
             for (user in notesUsers) {
               try {
                 echo "Running @notes @user:${user}"
                 yarnBuilder.yarn("playwright test tests/ --grep '@notes @user:${user}' --project=${params.BROWSER_TO_RUN}")
               } catch (err) {
                 echo "⚠️ Tests failed for ${user}: ${err}"
-                // Optionally collect failures here for reporting at the end
+              } finally {
+                // Move each user's report to separate folder
+                def userDir = "${env.WORKSPACE}/playwright-report/users/${user}"
+                sh "mkdir -p ${userDir}"
+                sh "cp -r playwright-report/* ${userDir}/"
+                userReports.add(userDir)
               }
             }
+
+            // Merge all user reports into one combined report
+            def mergedDir = "${env.WORKSPACE}/playwright-report/merged-notes"
+            sh "mkdir -p ${mergedDir}"
+            sh """
+              echo '<html><body><h1>@notes Combined Report</h1>' > ${mergedDir}/index.html
+              for d in ${env.WORKSPACE}/playwright-report/users/*; do
+                if [ -d "\$d" ]; then
+                  echo '<h2>\$(basename \$d)</h2>' >> ${mergedDir}/index.html
+                  cat \$d/index.html >> ${mergedDir}/index.html
+                fi
+              done
+              echo '</body></html>' >> ${mergedDir}/index.html
+            """
+
+            publishHTML([
+              allowMissing: true,
+              alwaysLinkToLastBuild: true,
+              keepAll: true,
+              reportDir: mergedDir,
+              reportFiles: 'index.html',
+              reportName: "@notes Combined Report for ${params.BROWSER_TO_RUN}"
+            ])
           } else {
             // Non-@notes tags run normally
             yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN))
           }
-
-          // USE TO UPDATE SCREENSHOTS WITH PIPELINE BASELINE
-          // yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN)+ " --update-snapshots")
-        } catch (Error) {
-          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-        } finally {
-          publishHTML([
-            allowMissing: true,
-            alwaysLinkToLastBuild: true,
-            keepAll: true,
-            reportDir: "playwright-report",
-            reportFiles: 'index.html',
-            reportName: "${TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}"
-          ])
-        }
+        } catch (Error) { unstable(message: "${STAGE_NAME} is unstable: " + Error.toString()) }
       }
     } else {
       currentBuild.displayName = "All E2E Tests"
