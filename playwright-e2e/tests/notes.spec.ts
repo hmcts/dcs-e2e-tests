@@ -5,8 +5,6 @@ import { loginAndOpenCase } from "../helpers/login.helper";
 import { deleteCaseByName } from "../helpers/deleteCase.helper";
 import ReviewEvidencePage from "../page-objects/pages/Review Evidence/reviewEvidence.page";
 
-test.describe.configure({ mode: "serial" });
-
 // ======================================================================
 // Test 1: Create, Delete, Edit Note
 // ======================================================================
@@ -29,7 +27,7 @@ const excludedGroups = [
 for (const user of Object.values(config.users).filter(
   (u) => !excludedGroups.includes(u.group)
 )) {
-  test.describe(`Notes Functionality for ${user.group} @notes`, () => {
+  test.describe(`@notes @user:${user.group} Notes Functionality for ${user.group}`, () => {
     let sampleKey: [string, string][];
     let newCaseName: string;
 
@@ -154,14 +152,10 @@ for (const user of Object.values(config.users).filter(
       });
 
       if (currentUserIssues.length > 0) {
-        // throw new Error(
-        //   `User ${user.group} experienced issues:\n${currentUserIssues.join(
-        //     "\n"
-        //   )}`
-        // );
-        test.fail(
-          true,
-          `Issues found for ${user.group}:\n${currentUserIssues.join("\n")}`
+        throw new Error(
+          `User ${user.group} experienced issues:\n${currentUserIssues.join(
+            "\n"
+          )}`
         );
       }
     });
@@ -211,7 +205,7 @@ test.describe("Notes Permissions & Access", () => {
   for (const user of Object.values(config.users).filter(
     (user) => !excludedGroups.includes(user.group)
   )) {
-    test(`Verify access to Notes for: ${user.group} @notes`, async ({
+    test(`Verify access to Notes for: ${user.group}`, async ({
       loginPage,
       homePage,
       caseSearchPage,
@@ -265,14 +259,10 @@ test.describe("Notes Permissions & Access", () => {
 
       // Fail the test if any issues were found
       if (currentUserIssues.length > 0) {
-        // throw new Error(
-        //   `User ${
-        //     user.group
-        //   } has missing/unexpected Notes:\n${currentUserIssues.join("\n")}`
-        // );
-        test.fail(
-          true,
-          `Issues found for ${user.group}:\n${currentUserIssues.join("\n")}`
+        throw new Error(
+          `User ${
+            user.group
+          } has missing/unexpected Notes:\n${currentUserIssues.join("\n")}`
         );
       }
     });

@@ -65,6 +65,7 @@ test.describe("Create & Update New Case in CCDCS", () => {
         defenceDetail?.defendants
       );
     }
+    await expect(peoplePage.pageTitle).toBeVisible({ timeout: 40_000 });
     await peoplePage.confirmUserAccess(
       config.users.defenceAdvocateA.username,
       "Defence"

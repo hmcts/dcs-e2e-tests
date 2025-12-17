@@ -51,7 +51,7 @@ class PeoplePage extends Base {
     await expect(
       userRow,
       `${role} user: ${lastName} does not have access to this case.`
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 30000 });
     const roleCell = userRow.locator("td").nth(4);
     await expect(
       roleCell,

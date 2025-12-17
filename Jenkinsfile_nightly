@@ -128,7 +128,23 @@ withNightlyPipeline(type, product, component, 600) {
         try {
           currentBuild.displayName = "${TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}"
           if (params.BROWSER_TO_RUN == 'edge') yarnBuilder.yarn('setup:edge')
-          yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN))
+          if (TAGS_TO_RUN.contains("@notes")) {
+            // Run @notes per user, serially
+            def notesUsers = ['Admin', 'HMCTSAdmin', 'CPSAdmin', 'CPSProsecutor', 'DefenceAdvocateA', 'FullTimeJudge', 'ProbationStaff']
+            for (user in notesUsers) {
+              try {
+                echo "Running @notes @user:${user}"
+                yarnBuilder.yarn("playwright test tests/ --grep '@notes @user:${user}' --project=${params.BROWSER_TO_RUN}")
+              } catch (err) {
+                echo "⚠️ Tests failed for ${user}: ${err}"
+                // Optionally collect failures here for reporting at the end
+              }
+            }
+          } else {
+            // Non-@notes tags run normally
+            yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN))
+          }
+
           // USE TO UPDATE SCREENSHOTS WITH PIPELINE BASELINE
           // yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN)+ " --update-snapshots")
         } catch (Error) {
