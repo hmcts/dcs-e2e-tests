@@ -130,11 +130,11 @@ withNightlyPipeline(type, product, component, 600) {
         stage("${browser.capitalize()} E2E Tests") {
           try {
             // non-@notes
-            try { yarnBuilder.yarn("yarn test:${browser}") }
+            try { yarnBuilder.yarn("test:${browser}") }
             catch (err) { unstable("${browser.capitalize()} non-@notes tests had failures") }
 
             // @notes
-            try { yarnBuilder.yarn("yarn test:notes --project=${browser}") }
+            try { yarnBuilder.yarn("test:notes --project=${browser}") }
             catch (err) { unstable("${browser.capitalize()} @notes tests had failures") }
 
           } finally {
