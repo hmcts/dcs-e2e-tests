@@ -26,13 +26,15 @@
     "typescript-eslint": "^8.8.0"
   },
   "scripts": {
+    "test:parallel": "npx playwright test --grep-invert @notes",
+    "test:notes": "npx playwright test --grep @notes --workers=1",
     "lint": "yarn tsc -p tsconfig.json && yarn eslint .",
     "setup": "yarn playwright install --with-deps",
     "setup:edge": "PLAYWRIGHT_BROWSERS_PATH=0 yarn playwright install msedge --with-deps",
     "load-secrets": "node node_modules/@hmcts/playwright-common/dist/scripts/get-secrets.js dcs-automation-bts-stg",
     "load-secrets2": "yarn get-secrets dcs-automation-bts-stg",
-    "test:chrome": "yarn playwright test tests/ --project=chrome --grep-invert='(@a11y)|(@performance)|(@visual)'",
-    "test:firefox": "yarn playwright test tests/ --project=firefox --grep-invert='(@a11y)|(@performance)|(@visual)'",
+    "test:chrome": "yarn playwright test tests/ --project=chrome --grep-invert='(@a11y)|(@performance)|(@visual)|(@notes)'",
+    "test:firefox": "yarn playwright test tests/ --project=firefox --grep-invert='(@a11y)|(@performance)|(@visual)|(@notes)'",
     "test:webkit": "yarn playwright test tests/ --project=webkit --grep-invert='(@a11y)|(@performance)|(@visual)'",
     "test:edge": "yarn playwright test tests/ --project=edge --grep-invert='(@a11y)|(@performance)|(@visual)'",
     "test:tabletchrome": "yarn playwright test tests/ --project=tabletchrome --grep-invert='(@a11y)|(@performance)|(@visual)'",
