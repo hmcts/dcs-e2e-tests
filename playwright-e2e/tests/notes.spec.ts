@@ -154,10 +154,14 @@ for (const user of Object.values(config.users).filter(
       });
 
       if (currentUserIssues.length > 0) {
-        throw new Error(
-          `User ${user.group} experienced issues:\n${currentUserIssues.join(
-            "\n"
-          )}`
+        // throw new Error(
+        //   `User ${user.group} experienced issues:\n${currentUserIssues.join(
+        //     "\n"
+        //   )}`
+        // );
+        test.fail(
+          true,
+          `Issues found for ${user.group}:\n${currentUserIssues.join("\n")}`
         );
       }
     });
@@ -261,10 +265,14 @@ test.describe("Notes Permissions & Access", () => {
 
       // Fail the test if any issues were found
       if (currentUserIssues.length > 0) {
-        throw new Error(
-          `User ${
-            user.group
-          } has missing/unexpected Notes:\n${currentUserIssues.join("\n")}`
+        // throw new Error(
+        //   `User ${
+        //     user.group
+        //   } has missing/unexpected Notes:\n${currentUserIssues.join("\n")}`
+        // );
+        test.fail(
+          true,
+          `Issues found for ${user.group}:\n${currentUserIssues.join("\n")}`
         );
       }
     });
