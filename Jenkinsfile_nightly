@@ -129,46 +129,48 @@ withNightlyPipeline(type, product, component, 600) {
 
       ['chrome','firefox'].each { browser ->
         stage("${browser.capitalize()} E2E Tests") {
-          try {
-            // Run non-@notes tests (normal workers)
+
+          stage("${browser.capitalize()} - multi-worker") {
             try {
               yarnBuilder.yarn(
-                "PLAYWRIGHT_HTML_REPORT=playwright-report/${browser}/normal test:${browser}"
+                "PLAYWRIGHT_HTML_REPORT=playwright-report/${browser}/normal yarn test:${browser}"
               )
             } catch (err) {
-              unstable("${browser.capitalize()} non-@notes tests had failures")
+              unstable("${browser.capitalize()} multi-worker tests had failures")
+            } finally {
+              publishHTML([
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: "playwright-report/${browser}/normal",
+                reportFiles: 'index.html',
+                reportName: "${browser.capitalize()} multi-worker tests"
+              ])
             }
-
-            // Run @notes tests (1 worker)
-            try {
-              yarnBuilder.yarn(
-                "PLAYWRIGHT_HTML_REPORT=playwright-report/${browser}/notes test:notes --project=${browser}"
-              )
-            } catch (err) {
-              unstable("${browser.capitalize()} @notes tests had failures")
-            }
-
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report/${browser}/normal",
-              reportFiles: 'index.html',
-              reportName: "${browser.capitalize()} E2E Tests"
-            ])
-
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report/${browser}/notes",
-              reportFiles: 'index.html',
-              reportName: "${browser.capitalize()} @notes Tests"
-            ])
           }
+
+          stage("${browser.capitalize()} - single-worker") {
+            try {
+              yarnBuilder.yarn(
+                "PLAYWRIGHT_HTML_REPORT=playwright-report/${browser}/notes yarn test:notes --project=${browser}"
+              )
+            } catch (err) {
+              unstable("${browser.capitalize()} single-worker tests had failures")
+            } finally {
+              publishHTML([
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: "playwright-report/${browser}/notes",
+                reportFiles: 'index.html',
+                reportName: "${browser.capitalize()} single-worker tests"
+              ])
+            }
+          }
+
         }
       }
+
     }
 
   } 
