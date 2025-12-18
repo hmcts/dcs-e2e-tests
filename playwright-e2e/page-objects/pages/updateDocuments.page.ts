@@ -40,7 +40,7 @@ class UpdateDocumentsPage extends Base {
       await this.removeBtn.click();
       const dialog = await dialogPromise;
       await dialog.accept();
-      console.log("Dialog accepted");
+      console.log("Dialog accepted - remove document");
     } catch {
       console.log("Issue accepting document deletion dialog");
     }

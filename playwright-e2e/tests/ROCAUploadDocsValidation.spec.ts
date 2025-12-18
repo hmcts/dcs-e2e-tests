@@ -4,7 +4,10 @@ import { config } from "../utils";
 import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
 import { sections, pushTestResult } from "../utils";
 import { loginAndOpenCase } from "../helpers/login.helper";
-import { deleteCaseByName } from "../helpers/deleteCase.helper";
+import {
+  deleteCaseByName,
+  runCleanupSafely,
+} from "../helpers/deleteCase.helper";
 
 test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cleanup", () => {
   let newCaseName: string;
@@ -55,7 +58,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
     for (const [sectionIndex, sectionKey] of sampleEntries) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadUnrestrictedDocument(
-        "unrestrictedSectionUpload",
+        "unrestrictedSectionUpload"
       );
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
       await rocaPage.createROCAModelRecord(
@@ -271,23 +274,10 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
   test.afterEach(async () => {
     if (!newCaseName) return;
 
-    try {
+    await runCleanupSafely(async () => {
       console.log(`Attempting to delete test case: ${newCaseName}`);
-
-      // Run cleanup with timeout
-      await Promise.race([
-        deleteCaseByName(newCaseName, 180000),
-        new Promise<void>((resolve) =>
-          setTimeout(() => {
-            console.warn(
-              `⚠️ Cleanup for ${newCaseName} timed out after 3 minutes`
-            );
-            resolve();
-          }, 180000)
-        ),
-      ]);
-    } catch (err) {
-      console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
-    }
+      await deleteCaseByName(newCaseName, 180_000);
+      console.log(`Cleanup completed for ${newCaseName}`);
+    }, 180_000);
   });
 });

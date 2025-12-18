@@ -5,6 +5,28 @@ import { todaysDate } from "../utils";
 import CaseSearchPage from "../page-objects/pages/caseSearch.page";
 import CaseDetailsPage from "../page-objects/pages/caseDetails.page";
 
+export async function runCleanupSafely(
+  fn: () => Promise<void>,
+  timeoutMs: number
+) {
+  let finished = false;
+
+  const timeout = setTimeout(() => {
+    if (!finished) {
+      console.warn(`⚠️ Cleanup timed out after ${timeoutMs}ms`);
+    }
+  }, timeoutMs);
+
+  try {
+    await fn();
+  } catch (err) {
+    console.warn(`⚠️ Cleanup failed:`, err);
+  } finally {
+    finished = true;
+    clearTimeout(timeout);
+  }
+}
+
 export async function runAsAdmin(
   callback: (page: Page) => Promise<void>,
   headed = true
