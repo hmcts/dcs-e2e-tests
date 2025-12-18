@@ -57,7 +57,7 @@ class CaseDetailsPage extends Base {
               dialog
                 .accept()
                 .catch((err) =>
-                  console.warn("⚠️ Failed to accept dialog:", err)
+                  console.warn("⚠️ Failed to accept case deletion dialog:", err)
                 );
             };
             this.page.on("dialog", dialogHandler);
