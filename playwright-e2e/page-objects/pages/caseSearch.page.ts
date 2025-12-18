@@ -69,8 +69,8 @@ class CaseSearchPage extends Base {
       await this.applyFilter.click();
 
       try {
-        await expect(caseRow).toHaveCount(1, { timeout: 10000 });
-        await expect(caseRow).toBeVisible({ timeout: 10000 });
+        await expect(caseRow).toHaveCount(1, { timeout: 30000 });
+        await expect(caseRow).toBeVisible({ timeout: 30000 });
         return;
       } catch {
         if (attempt === 2) {

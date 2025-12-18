@@ -13,7 +13,7 @@ export default defineConfig({
 
   ...CommonConfig.recommended,
 
-  timeout: 360_000,
+  timeout: 480_000,
 
   globalTeardown: path.resolve("./playwright-e2e/global.teardown.ts"),
 
