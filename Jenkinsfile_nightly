@@ -131,9 +131,10 @@ withNightlyPipeline(type, product, component, 600) {
 
         stage("${browser.capitalize()} - multi-worker") {
           try {
-            yarnBuilder.yarn(
-              "PLAYWRIGHT_HTML_REPORT=playwright-report/${browser}/normal test:${browser}"
-            )
+            yarnBuilder.yarn("""
+              mkdir -p playwright-report/${browser}/normal &&
+              PLAYWRIGHT_HTML_REPORT=playwright-report/${browser}/normal yarn test:${browser}
+            """)
           } catch (err) {
             unstable("${browser.capitalize()} multi-worker tests had failures")
           } finally {
@@ -150,9 +151,10 @@ withNightlyPipeline(type, product, component, 600) {
 
         stage("${browser.capitalize()} - single-worker") {
           try {
-            yarnBuilder.yarn(
-              "PLAYWRIGHT_HTML_REPORT=playwright-report/${browser}/notes test:notes --project=${browser}"
-            )
+            yarnBuilder.yarn("""
+              mkdir -p playwright-report/${browser}/notes &&
+              PLAYWRIGHT_HTML_REPORT=playwright-report/${browser}/notes yarn test:notes --project=${browser}
+            """)
           } catch (err) {
             unstable("${browser.capitalize()} single-worker tests had failures")
           } finally {
