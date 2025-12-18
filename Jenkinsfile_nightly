@@ -130,7 +130,6 @@ withNightlyPipeline(type, product, component, 600) {
       stage('Chrome – Multi-worker E2E Tests') {
         try {
           yarnBuilder.yarn('test:chrome')
-          sh 'cp playwright-report/index.html playwright-report/chrome-multi.html'
         } catch (Error) {
           unstable("Chrome multi-worker tests had failures")
         } finally {
@@ -139,7 +138,7 @@ withNightlyPipeline(type, product, component, 600) {
             alwaysLinkToLastBuild: true,
             keepAll: true,
             reportDir: "playwright-report",
-            reportFiles: 'chrome-multi.html',
+            reportFiles: 'index.html',
             reportName: 'Chrome – Multi-worker'
           ])
         }
@@ -148,7 +147,6 @@ withNightlyPipeline(type, product, component, 600) {
       stage('Chrome – Single-worker (@notes)') {
         try {
           yarnBuilder.yarn('test:notes --project=chrome')
-          sh 'cp playwright-report/index.html playwright-report/chrome-single.html'
         } catch (Error) {
           unstable("Chrome single-worker (@notes) tests had failures")
         } finally {
@@ -157,7 +155,7 @@ withNightlyPipeline(type, product, component, 600) {
             alwaysLinkToLastBuild: true,
             keepAll: true,
             reportDir: "playwright-report",
-            reportFiles: 'chrome-single.html',
+            reportFiles: 'index.html',
             reportName: 'Chrome – Single-worker (@notes)'
           ])
         }
@@ -166,7 +164,6 @@ withNightlyPipeline(type, product, component, 600) {
       stage('Firefox – Multi-worker E2E Tests') {
         try {
           yarnBuilder.yarn('test:firefox')
-          sh 'cp playwright-report/index.html playwright-report/firefox-multi.html'
         } catch (Error) {
           unstable("Firefox multi-worker tests had failures")
         } finally {
@@ -175,7 +172,7 @@ withNightlyPipeline(type, product, component, 600) {
             alwaysLinkToLastBuild: true,
             keepAll: true,
             reportDir: "playwright-report",
-            reportFiles: 'firefox-multi.html',
+            reportFiles: 'index.html',
             reportName: 'Firefox – Multi-worker'
           ])
         }
@@ -184,7 +181,6 @@ withNightlyPipeline(type, product, component, 600) {
       stage('Firefox – Single-worker (@notes)') {
         try {
           yarnBuilder.yarn('test:notes --project=firefox')
-          sh 'cp playwright-report/index.html playwright-report/firefox-single.html'
         } catch (Error) {
           unstable("Firefox single-worker (@notes) tests had failures")
         } finally {
@@ -193,7 +189,7 @@ withNightlyPipeline(type, product, component, 600) {
             alwaysLinkToLastBuild: true,
             keepAll: true,
             reportDir: "playwright-report",
-            reportFiles: 'firefox-single.html',
+            reportFiles: 'index.html',
             reportName: 'Firefox – Single-worker (@notes)'
           ])
         }
