@@ -127,52 +127,77 @@ withNightlyPipeline(type, product, component, 600) {
     } else {
       currentBuild.displayName = "All E2E Tests"
 
-      ['chrome','firefox'].each { browser ->
-
-        stage("${browser.capitalize()} - multi-worker") {
-          try {
-            yarnBuilder.yarn("""
-              mkdir -p playwright-report/${browser}/normal &&
-              PLAYWRIGHT_HTML_REPORT=playwright-report/${browser}/normal yarn test:${browser}
-            """)
-          } catch (err) {
-            unstable("${browser.capitalize()} multi-worker tests had failures")
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report/${browser}/normal",
-              reportFiles: 'index.html',
-              reportName: "${browser.capitalize()} multi-worker tests"
-            ])
-          }
+      stage('Chrome – Multi-worker E2E Tests') {
+        try {
+          yarnBuilder.yarn('test:chrome')
+          sh 'cp playwright-report/index.html playwright-report/chrome-multi.html'
+        } catch (Error) {
+          unstable("Chrome multi-worker tests had failures")
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'chrome-multi.html',
+            reportName: 'Chrome – Multi-worker'
+          ])
         }
-
-        stage("${browser.capitalize()} - single-worker") {
-          try {
-            yarnBuilder.yarn("""
-              mkdir -p playwright-report/${browser}/notes &&
-              PLAYWRIGHT_HTML_REPORT=playwright-report/${browser}/notes yarn test:notes --project=${browser}
-            """)
-          } catch (err) {
-            unstable("${browser.capitalize()} single-worker tests had failures")
-          } finally {
-            publishHTML([
-              allowMissing: true,
-              alwaysLinkToLastBuild: true,
-              keepAll: true,
-              reportDir: "playwright-report/${browser}/notes",
-              reportFiles: 'index.html',
-              reportName: "${browser.capitalize()} single-worker tests"
-            ])
-          }
-        }
-
       }
 
+      stage('Chrome – Single-worker (@notes)') {
+        try {
+          yarnBuilder.yarn('test:notes --project=chrome')
+          sh 'cp playwright-report/index.html playwright-report/chrome-single.html'
+        } catch (Error) {
+          unstable("Chrome single-worker (@notes) tests had failures")
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'chrome-single.html',
+            reportName: 'Chrome – Single-worker (@notes)'
+          ])
+        }
+      }
 
+      stage('Firefox – Multi-worker E2E Tests') {
+        try {
+          yarnBuilder.yarn('test:firefox')
+          sh 'cp playwright-report/index.html playwright-report/firefox-multi.html'
+        } catch (Error) {
+          unstable("Firefox multi-worker tests had failures")
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'firefox-multi.html',
+            reportName: 'Firefox – Multi-worker'
+          ])
+        }
+      }
+
+      stage('Firefox – Single-worker (@notes)') {
+        try {
+          yarnBuilder.yarn('test:notes --project=firefox')
+          sh 'cp playwright-report/index.html playwright-report/firefox-single.html'
+        } catch (Error) {
+          unstable("Firefox single-worker (@notes) tests had failures")
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'firefox-single.html',
+            reportName: 'Firefox – Single-worker (@notes)'
+          ])
+        }
+      }
     }
-
   } 
 } 
