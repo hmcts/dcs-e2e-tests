@@ -129,22 +129,41 @@ withNightlyPipeline(type, product, component, 600) {
       ['chrome','firefox'].each { browser ->
         stage("${browser.capitalize()} E2E Tests") {
           try {
-            // non-@notes
-            try { yarnBuilder.yarn("test:${browser}") }
-            catch (err) { unstable("${browser.capitalize()} non-@notes tests had failures") }
+            // Run non-@notes tests (normal workers)
+            try {
+              yarnBuilder.yarn(
+                "PLAYWRIGHT_HTML_REPORT=playwright-report/${browser}/normal test:${browser}"
+              )
+            } catch (err) {
+              unstable("${browser.capitalize()} non-@notes tests had failures")
+            }
 
-            // @notes
-            try { yarnBuilder.yarn("test:notes --project=${browser}") }
-            catch (err) { unstable("${browser.capitalize()} @notes tests had failures") }
+            // Run @notes tests (1 worker)
+            try {
+              yarnBuilder.yarn(
+                "PLAYWRIGHT_HTML_REPORT=playwright-report/${browser}/notes test:notes --project=${browser}"
+              )
+            } catch (err) {
+              unstable("${browser.capitalize()} @notes tests had failures")
+            }
 
           } finally {
             publishHTML([
               allowMissing: true,
               alwaysLinkToLastBuild: true,
               keepAll: true,
-              reportDir: "playwright-report",
+              reportDir: "playwright-report/${browser}/normal",
               reportFiles: 'index.html',
               reportName: "${browser.capitalize()} E2E Tests"
+            ])
+
+            publishHTML([
+              allowMissing: true,
+              alwaysLinkToLastBuild: true,
+              keepAll: true,
+              reportDir: "playwright-report/${browser}/notes",
+              reportFiles: 'index.html',
+              reportName: "${browser.capitalize()} @notes Tests"
             ])
           }
         }
