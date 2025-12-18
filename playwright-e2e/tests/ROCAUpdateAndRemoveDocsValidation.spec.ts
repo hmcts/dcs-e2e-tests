@@ -5,7 +5,10 @@ import {
   createNewCaseWithRestrictedDocument,
 } from "../helpers/createCase.helper";
 import { loginAndOpenCase } from "../helpers/login.helper";
-import { deleteCaseByName } from "../helpers/deleteCase.helper";
+import {
+  deleteCaseByName,
+  runCleanupSafely,
+} from "../helpers/deleteCase.helper";
 import { ROCAModel } from "../data/ROCAModel";
 
 // ======================================================================
@@ -202,24 +205,11 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
   test.afterEach(async () => {
     if (!newCaseName) return;
 
-    try {
+    await runCleanupSafely(async () => {
       console.log(`Attempting to delete test case: ${newCaseName}`);
-
-      // Run cleanup with timeout
-      await Promise.race([
-        deleteCaseByName(newCaseName, 180000),
-        new Promise<void>((resolve) =>
-          setTimeout(() => {
-            console.warn(
-              `⚠️ Cleanup for ${newCaseName} timed out after 3 minutes`
-            );
-            resolve();
-          }, 180000)
-        ),
-      ]);
-    } catch (err) {
-      console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
-    }
+      await deleteCaseByName(newCaseName, 180_000);
+      console.log(`Cleanup completed for ${newCaseName}`);
+    }, 180_000);
   });
 });
 
@@ -468,23 +458,10 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
   test.afterEach(async () => {
     if (!newCaseName) return;
 
-    try {
+    await runCleanupSafely(async () => {
       console.log(`Attempting to delete test case: ${newCaseName}`);
-
-      // Run cleanup with timeout
-      await Promise.race([
-        deleteCaseByName(newCaseName, 180000),
-        new Promise<void>((resolve) =>
-          setTimeout(() => {
-            console.warn(
-              `⚠️ Cleanup for ${newCaseName} timed out after 3 minutes`
-            );
-            resolve();
-          }, 180000)
-        ),
-      ]);
-    } catch (err) {
-      console.warn(`⚠️ Cleanup failed for ${newCaseName}:`, err);
-    }
+      await deleteCaseByName(newCaseName, 180_000);
+      console.log(`Cleanup completed for ${newCaseName}`);
+    }, 180_000);
   });
 });
