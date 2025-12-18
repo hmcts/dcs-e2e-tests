@@ -3,6 +3,7 @@
 properties([
   pipelineTriggers([cron('H 7 * * 1-5')]),
   disableConcurrentBuilds(),
+  durabilityHint('MAX_SURVIVABILITY'),
   parameters([
     string(
       name: 'BASE_URL',
