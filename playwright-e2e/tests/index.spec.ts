@@ -53,7 +53,6 @@ test.describe("Index Page Functionality", () => {
       .sort(() => Math.random() - 0.5)
       .slice(0, 1);
 
-    console.log("sampleEntries", sampleEntries);
     await caseDetailsPage.caseNavigation.navigateTo("Index");
 
     for (const sectionKey of sampleEntries) {
@@ -77,9 +76,7 @@ test.describe("Index Page Functionality", () => {
           documentNumber: "1",
         });
       }
-      console.log("expected document", expectedDocuments);
 
-      console.log("DOCUMENT LIST", documentList);
       const uploadIssues = await indexPage.validateIndexDocuments(
         expectedDocuments,
         documentList
