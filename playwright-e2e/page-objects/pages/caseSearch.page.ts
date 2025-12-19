@@ -116,9 +116,10 @@ class CaseSearchPage extends Base {
     try {
       await this.applyFilter.click();
       await this.noCasesText.waitFor({ state: "visible", timeout: 40000 });
-      return await expect(this.noCasesText).toHaveText(
-        /There are no cases on the system/i
-      );
+
+      const text = await this.noCasesText.textContent();
+      console.log("DELETION TEXT", text);
+      return text?.match(/There are no cases on the system/i) !== null;
     } catch {
       return false;
     }
