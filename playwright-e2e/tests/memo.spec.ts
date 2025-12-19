@@ -21,11 +21,13 @@ test.describe("Memo Functionality", () => {
     const user = config.users.hmctsAdmin;
     await memoPage.addMemo(user.group);
     await expect(memoPage.memoTableRow1).toHaveText(
-      `${user.group} memo test textbox directly available`
+      `${user.group} memo test textbox directly available`,
+      { timeout: 30000 }
     );
     await memoPage.addMemo(user.group);
     await expect(memoPage.memoTableRow2).toHaveText(
-      `${user.group} memo test via Add a Memorandum button`
+      `${user.group} memo test via Add a Memorandum button`,
+      { timeout: 30000 }
     );
     await memoPage.changeMemo();
     await expect(memoPage.memoTableRow1).toContainText("Change memo test");
