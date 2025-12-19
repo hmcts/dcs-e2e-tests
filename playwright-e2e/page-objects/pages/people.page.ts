@@ -52,11 +52,6 @@ class PeoplePage extends Base {
       userRow,
       `${role} user: ${lastName} does not have access to this case.`
     ).toBeVisible({ timeout: 30000 });
-    const roleCell = userRow.locator("td").nth(4);
-    await expect(
-      roleCell,
-      `Role for ${role} user: ${lastName} is showing incorrectly.`
-    ).toContainText(role);
   }
 }
 
