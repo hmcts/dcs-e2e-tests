@@ -8,8 +8,6 @@ import {
 } from "../helpers/deleteCase.helper";
 import ReviewEvidencePage from "../page-objects/pages/Review Evidence/reviewEvidence.page";
 
-test.describe.configure({ mode: "serial" });
-
 // ======================================================================
 // Test 1: Create, Delete, Edit Note
 // ======================================================================
@@ -32,7 +30,7 @@ const excludedGroups = [
 for (const user of Object.values(config.users).filter(
   (u) => !excludedGroups.includes(u.group)
 )) {
-  test.describe(`Notes Functionality for ${user.group} @notes`, () => {
+  test.describe(`@notes @user:${user.group} Notes Functionality for ${user.group}`, () => {
     let sampleKey: [string, string][];
     let newCaseName: string;
 

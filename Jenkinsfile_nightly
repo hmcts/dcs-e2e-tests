@@ -68,22 +68,13 @@ def secrets = [
 ]
 
 def buildPlaywrightCommand(tags, browser) {
-  if (tags == null || tags.trim().isEmpty()) {
-    return;
-  }
+  if (!tags?.trim()) return
   def tagList = tags.split(',').collect { it.trim() }
-
   def command = 'playwright test tests/'
-    tagList.each { tag ->
-    if (!tag.isEmpty()) {
-      command += " --grep ${tag}"
-    }
+  tagList.each { tag ->
+    if (tag) command += " --grep ${tag}"
   }
-
-  if (browser) {
-    command += " --project=${browser}"
-  }
-
+  if (browser) command += " --project=${browser}"
   return command
 }
 
@@ -100,9 +91,7 @@ withNightlyPipeline(type, product, component, 600) {
       def sessionsDir = "${env.WORKSPACE}/playwright-e2e/.sessions"
       if (fileExists(sessionsDir)) {
         echo "Deleting old sessions folder..."
-        dir(sessionsDir) {
-          deleteDir()
-        }
+        dir(sessionsDir) { deleteDir() }
       } else {
         echo "No sessions folder to delete"
       }
@@ -110,30 +99,20 @@ withNightlyPipeline(type, product, component, 600) {
   }
 
   afterAlways('DependencyCheckNightly') {
-    // stage('Delete nightly dev branch') {
-    //   try {
-    //     yarnBuilder.yarn('delete-nightly-dev-branch dcs-e2e-tests')
-    //   } catch (Error) {
-    //     unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-    //   }
-    // }
+
     stage('Set up playwright') {
-      try {
-        yarnBuilder.yarn('setup')
-      } catch (Error) {
-        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      }
+      try { yarnBuilder.yarn('setup') }
+      catch (Error) { unstable("${STAGE_NAME} is unstable: ${Error}") }
     }
-    if (!TAGS_TO_RUN.isEmpty()) {
+
+    if (TAGS_TO_RUN?.trim()) {
       stage("${TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}") {
         try {
           currentBuild.displayName = "${TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}"
           if (params.BROWSER_TO_RUN == 'edge') yarnBuilder.yarn('setup:edge')
           yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN))
-          // USE TO UPDATE SCREENSHOTS WITH PIPELINE BASELINE
-          // yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN)+ " --update-snapshots")
         } catch (Error) {
-          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+          unstable("${STAGE_NAME} is unstable: ${Error}")
         } finally {
           publishHTML([
             allowMissing: true,
@@ -147,11 +126,12 @@ withNightlyPipeline(type, product, component, 600) {
       }
     } else {
       currentBuild.displayName = "All E2E Tests"
-      stage('Chrome E2E Tests') {
+
+      stage('Chrome – Multi-worker E2E Tests') {
         try {
           yarnBuilder.yarn('test:chrome')
         } catch (Error) {
-          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+          unstable("Chrome multi-worker tests had failures")
         } finally {
           publishHTML([
             allowMissing: true,
@@ -159,15 +139,33 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: 'Chrome E2E Tests'
+            reportName: 'Chrome – Multi-worker'
           ])
         }
       }
-      stage('Firefox E2E Tests') {
+
+      stage('Chrome – Single-worker (@notes)') {
+        try {
+          yarnBuilder.yarn('test:notes --project=chrome')
+        } catch (Error) {
+          unstable("Chrome single-worker (@notes) tests had failures")
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome – Single-worker (@notes)'
+          ])
+        }
+      }
+
+      stage('Firefox – Multi-worker E2E Tests') {
         try {
           yarnBuilder.yarn('test:firefox')
         } catch (Error) {
-          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+          unstable("Firefox multi-worker tests had failures")
         } finally {
           publishHTML([
             allowMissing: true,
@@ -175,63 +173,27 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: 'Firefox E2E Tests'
+            reportName: 'Firefox – Multi-worker'
           ])
         }
       }
-      // stage('Webkit E2E Tests') {
-      //   try {
-      //     yarnBuilder.yarn('test:webkit')
-      //   } catch (Error) {
-      //     unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      //   } finally {
-      //     publishHTML([
-      //       allowMissing: true,
-      //       alwaysLinkToLastBuild: true,
-      //       keepAll: true,
-      //       reportDir: "playwright-report",
-      //       reportFiles: 'index.html',
-      //       reportName: 'Webkit E2E Tests'
-      //     ])
-      //   }
-      // }
-      // stage('Edge E2E Tests') {
-      //   try {
-      //     yarnBuilder.yarn('setup:edge') // Use hermetic install for edge
-      //     yarnBuilder.yarn('test:edge')
-      //   } catch (Error) {
-      //     unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      //   } finally {
-      //     publishHTML([
-      //       allowMissing: true,
-      //       alwaysLinkToLastBuild: true,
-      //       keepAll: true,
-      //       reportDir: "playwright-report",
-      //       reportFiles: 'index.html',
-      //       reportName: 'Edge E2E Tests'
-      //     ])
-      //   }
-      // }
-      // stage('Accessibiity Tests') {
-      //   try {
-      //     yarnBuilder.yarn('test:a11y')
-      //   } catch (Error) {
-      //     unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      //   } finally {
-      //     publishHTML([
-      //       allowMissing: true,
-      //       alwaysLinkToLastBuild: true,
-      //       keepAll: true,
-      //       reportDir: "playwright-report",
-      //       reportFiles: 'index.html',
-      //       reportName: 'Accessibility Tests'
-      //     ])
-      //   }
-      // }
+
+      stage('Firefox – Single-worker (@notes)') {
+        try {
+          yarnBuilder.yarn('test:notes --project=firefox')
+        } catch (Error) {
+          unstable("Firefox single-worker (@notes) tests had failures")
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Firefox – Single-worker (@notes)'
+          ])
+        }
+      }
     }
-    //CAN BE USED FOR EXPORTING UPDATED PIPELINE SCREENSHOTS AS ARTEFACTS FOR MANUAL GITHUB UPDATE  
-    // stage('Archive PTPH Snapshots') {
-    //     archiveArtifacts artifacts: 'playwright-e2e/tests/**/*-snapshots/**/*.png', allowEmptyArchive: true
-    // }
-  }
-}
+  } 
+} 

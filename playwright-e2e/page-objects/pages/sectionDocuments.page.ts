@@ -177,7 +177,7 @@ class SectionDocumentsPage extends Base {
     }
   }
 
-async goToUploadDocumentsFromIndex() {
+async goToUploadDocuments() {
     const uploadButton = this.page.getByRole("link", { name: "Upload Document(s)" });
     await uploadButton.click();
 }
