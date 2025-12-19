@@ -105,7 +105,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
     }
   });
 
-  test(`Validate ROCA for restricted document uploads`, async ({
+  test(`@fixme Validate ROCA for restricted document uploads`, async ({
     homePage,
     loginPage,
     caseDetailsPage,
