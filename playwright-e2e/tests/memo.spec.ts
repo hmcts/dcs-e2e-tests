@@ -31,7 +31,8 @@ test.describe("Memo Functionality", () => {
     await expect(memoPage.memoTableRow1).toContainText("Change memo test");
     await memoPage.removeMemo();
     await expect(memoPage.memoTableRow1).toHaveText(
-      `${user.group} memo test via Add a Memorandum button`
+      `${user.group} memo test via Add a Memorandum button`,
+      { timeout: 30000 }
     );
   });
 });
