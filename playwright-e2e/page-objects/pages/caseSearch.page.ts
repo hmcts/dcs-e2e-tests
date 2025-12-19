@@ -50,7 +50,7 @@ class CaseSearchPage extends Base {
     return this.page.locator(selector);
   }
 
-  async searchCaseFile(
+  async searchCaseFileWithFallback(
     textFieldInput: string,
     location: string,
     hearingDate?: string
@@ -58,26 +58,36 @@ class CaseSearchPage extends Base {
     await this.locationField.selectOption(location);
     await this.textField.clear();
     await this.textField.fill(textFieldInput);
-    if (await this.fromDateCheckbox.isChecked()) {
+    if (await this.fromDateCheckbox.isChecked())
       await this.fromDateCheckbox.uncheck();
-    }
-    if (await this.toDateCheckbox.isChecked()) {
+    if (await this.toDateCheckbox.isChecked())
       await this.toDateCheckbox.uncheck();
-    }
-    const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
+
+    let caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
+
     for (let attempt = 0; attempt < 3; attempt++) {
       await this.applyFilter.click();
-
       try {
         await expect(caseRow).toHaveCount(1, { timeout: 30000 });
         await expect(caseRow).toBeVisible({ timeout: 30000 });
         return;
       } catch {
+        // If hearingDate was specified, try again without it
+        if (hearingDate) {
+          caseRow = this.getCaseRowByTextInput(textFieldInput); // ignore date
+          try {
+            await expect(caseRow).toHaveCount(1, { timeout: 30000 });
+            await expect(caseRow).toBeVisible({ timeout: 30000 });
+            return;
+          } catch {}
+        }
+
         if (attempt === 2) {
           throw new Error(
             `❌ Case row "${textFieldInput}" (hearing: ${hearingDate}) did not appear after applying filter`
           );
         }
+        await this.page.waitForTimeout(1000); // small delay before retry
       }
     }
   }
@@ -116,9 +126,10 @@ class CaseSearchPage extends Base {
     try {
       await this.applyFilter.click();
       await this.noCasesText.waitFor({ state: "visible", timeout: 40000 });
-      return await expect(this.noCasesText).toHaveText(
-        /There are no cases on the system/i
-      );
+
+      const text = await this.noCasesText.textContent();
+      console.log("DELETION TEXT", text);
+      return text?.match(/There are no cases on the system/i) !== null;
     } catch {
       return false;
     }

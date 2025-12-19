@@ -1,7 +1,7 @@
 import { test, expect } from "../fixtures";
 import { config } from "../utils";
 
-test.describe("Memo Functionality", () => {
+test.describe("@memo Memo Functionality", () => {
   test.beforeEach(async ({ homePage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");
