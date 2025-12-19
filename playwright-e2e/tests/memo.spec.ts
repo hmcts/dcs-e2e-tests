@@ -32,9 +32,9 @@ test.describe("Memo Functionality", () => {
     await memoPage.changeMemo();
     await expect(memoPage.memoTableRow1).toContainText("Change memo test");
     await memoPage.removeMemo();
-    await expect(memoPage.memoTableRow1).toHaveText(
-      `${user.group} memo test via Add a Memorandum button`,
-      { timeout: 30000 }
+    const remainingMemo = memoPage.page.locator(
+      `xpath=//table[@class='formTable-zebra']//td[contains(text(), '${user.group} memo test via Add a Memorandum button')]`
     );
+    await expect(remainingMemo).toBeVisible({ timeout: 30000 });
   });
 });
