@@ -210,5 +210,23 @@ class IndexPage extends Base {
     await expect(sectionLink).toBeVisible();
     await sectionLink.click();
   }
+
+  async validateSections(sections: string[]): Promise<string[]> {
+    const foundSections: string[] = [];
+    await this.page.waitForTimeout(90_000);
+
+    for (const section of sections) {
+      const cellLocator = this.page.getByRole("cell", {
+        name: `${section}:`,
+        exact: true,
+      });
+      const isVisible = await cellLocator.isVisible({ timeout: 5000 });
+
+      if (isVisible) {
+        foundSections.push(section);
+      }
+    }
+    return foundSections;
+  }
 }
 export default IndexPage;
