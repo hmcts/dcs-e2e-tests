@@ -339,14 +339,14 @@ test.describe("Split & Merge Case Functionality", () => {
         }
       }
     }
-    test.afterEach(async () => {
-      if (!newCaseName) return;
+  });
+  test.afterEach(async () => {
+    if (!newCaseName) return;
 
-      await runCleanupSafely(async () => {
-        console.log(`Attempting to delete test case: ${newCaseName}`);
-        await deleteCaseByName(newCaseName, 180_000);
-        console.log(`Cleanup completed for ${newCaseName}`);
-      }, 180_000);
-    });
+    await runCleanupSafely(async () => {
+      console.log(`Attempting to delete test case: ${newCaseName}`);
+      await deleteCaseByName(newCaseName, 180_000);
+      console.log(`Cleanup completed for ${newCaseName}`);
+    }, 180_000);
   });
 });
