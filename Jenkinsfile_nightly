@@ -110,7 +110,8 @@ withNightlyPipeline(type, product, component, 600) {
         try {
           currentBuild.displayName = "${TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}"
           if (params.BROWSER_TO_RUN == 'edge') yarnBuilder.yarn('setup:edge')
-          yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN))
+          // yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN))
+          yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN)+ " --update-snapshots")
         } catch (Error) {
           unstable("${STAGE_NAME} is unstable: ${Error}")
         } finally {
@@ -193,6 +194,10 @@ withNightlyPipeline(type, product, component, 600) {
             reportName: 'Firefox – Single-worker (@notes)'
           ])
         }
+      }
+
+      stage('Archive PTPH Snapshots') {
+        archiveArtifacts artifacts: 'playwright-e2e/tests/**/*-snapshots/**/*.png', allowEmptyArchive: true
       }
     }
   } 
