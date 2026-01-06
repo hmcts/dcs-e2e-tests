@@ -86,14 +86,19 @@ withNightlyPipeline(type, product, component, 600) {
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
   enableSlackNotifications(channel)
 
-  stage('Clean Sessions') {
+    stage('Clean Sessions & Allure Results') {
     node {
+      // Clean old sessions
       def sessionsDir = "${env.WORKSPACE}/playwright-e2e/.sessions"
       if (fileExists(sessionsDir)) {
         echo "Deleting old sessions folder..."
         dir(sessionsDir) { deleteDir() }
-      } else {
-        echo "No sessions folder to delete"
+      }
+      // Clean old allure-results but preserve report history
+      def allureDir = "${env.WORKSPACE}/allure-results"
+      if (fileExists(allureDir)) {
+        echo "Deleting old Allure results..."
+        dir(allureDir) { deleteDir() }
       }
     }
   }
@@ -198,7 +203,38 @@ withNightlyPipeline(type, product, component, 600) {
           ])
         }
       }
-      // RUN THIS TO UPDATE SCREENSHOTS AND ACCESS A DOWNLOADABLE ARCHIVE
+
+      stage('Generate Allure Report') {
+        steps {
+          script {
+            // Preserve history if it exists
+            if (fileExists('allure-report/history')) {
+              sh 'cp -r allure-report/history old-history || true'
+            }
+
+            // Generate Allure report from the fresh allure-results folder
+            sh 'yarn allure:generate || true'
+
+            // Restore previous history into the new report
+            if (fileExists('old-history')) {
+              sh 'cp -r old-history/* allure-report/history/ || true'
+            }
+          }
+        }
+      }
+
+      stage('Publish Allure Report') {
+        steps {
+          allure([
+            includeProperties: false,
+            results: [[path: 'allure-results']],
+            reportBuildPolicy: 'ALWAYS',
+            showConsole: true
+          ])
+        }
+      }
+
+      // RUN THIS TO ACCESS SNAPSHOTS AS A DOWNLOADABLE ARCHIVE
       // stage('Archive PTPH Snapshots') {
       //   archiveArtifacts artifacts: 'playwright-e2e/tests/**/*-snapshots/**/*.png', allowEmptyArchive: true
       // }
