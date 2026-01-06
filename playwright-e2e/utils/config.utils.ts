@@ -176,7 +176,6 @@ export const sections = {
     "L",
     "O",
     "P",
-    "R",
     "S",
     "W",
     "X",
