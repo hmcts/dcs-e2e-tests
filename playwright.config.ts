@@ -13,6 +13,11 @@ export default defineConfig({
 
   ...CommonConfig.recommended,
 
+  reporter: [
+    ["line"],
+    ["allure-playwright", { outputFolder: "allure-results" }],
+  ],
+
   timeout: 480_000,
 
   globalTeardown: path.resolve("./playwright-e2e/global.teardown.ts"),
