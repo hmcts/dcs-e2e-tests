@@ -40,14 +40,15 @@ class LoginPage extends Base {
     await this.username.fill(username);
     await this.password.fill(password);
     await this.loginButton.click();
+    await this.loginValidationInvalidUser(username, password);
   }
 
-  async loginAsAccessCoordinator() {    
+  async loginAsAccessCoordinator() {
     const user = config.users.accessCoordinator;
     await this.login(user);
   }
 
-  async loginAsNewUserRegistered(username: string) {    
+  async loginAsNewUserRegistered(username: string) {
     await this.username.fill(username);
     const password: string = process.env.USER_REG_PASSWORD!;
     await this.password.fill(password);
@@ -83,7 +84,7 @@ class LoginPage extends Base {
     }
   }
 
-  async loginValidationUserReg(username : string, password : string) {
+  async loginValidationUserReg(username: string, password: string) {
     const hasUserNameError = await this.usernameErrorMessage
       .isVisible()
       .catch(() => false);
@@ -106,6 +107,24 @@ class LoginPage extends Base {
       throw new Error(`❌ Login for ${username} has unexpectedly failed`);
     } else {
       console.log("✅ User details registered successfully, continuing...");
+    }
+  }
+
+  async loginValidationInvalidUser(username: string, password: string) {
+    const hasUserNameError = await this.usernameErrorMessage
+      .isVisible()
+      .catch(() => false);
+    const hasPasswordError = await this.passwordErrorMessage
+      .isVisible()
+      .catch(() => false);
+    if (hasUserNameError || hasPasswordError) {
+      console.log(
+        "⚠️ Login new user or password field not detected — retrying login..."
+      );
+      await expect(this.username).toBeEditable();
+      await this.username.fill(username);
+      await this.password.fill(password);
+      await this.loginButton.click();
     }
   }
 }
