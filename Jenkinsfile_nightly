@@ -87,21 +87,18 @@ withNightlyPipeline(type, product, component, 600) {
   enableSlackNotifications(channel)
 
     stage('Clean Sessions & Allure Results') {
-    node {
-      // Clean old sessions
       def sessionsDir = "${env.WORKSPACE}/playwright-e2e/.sessions"
       if (fileExists(sessionsDir)) {
         echo "Deleting old sessions folder..."
         dir(sessionsDir) { deleteDir() }
       }
-      // Clean old allure-results but preserve report history
+
       def allureDir = "${env.WORKSPACE}/allure-results"
       if (fileExists(allureDir)) {
         echo "Deleting old Allure results..."
         dir(allureDir) { deleteDir() }
       }
     }
-  }
 
   afterAlways('DependencyCheckNightly') {
 
