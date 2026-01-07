@@ -13,10 +13,13 @@ export default defineConfig({
 
   ...CommonConfig.recommended,
 
-  reporter: [
-    ["line"],
-    ["allure-playwright", { outputFolder: "allure-results" }],
-  ],
+  reporter: process.env.CI
+    ? [
+        ["html"],
+        ["list"],
+        ["allure-playwright", { outputFolder: "allure-results" }],
+      ]
+    : [["list"]],
 
   timeout: 480_000,
 

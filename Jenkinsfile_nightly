@@ -86,17 +86,15 @@ withNightlyPipeline(type, product, component, 600) {
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
   enableSlackNotifications(channel)
 
-    stage('Clean Sessions & Allure Results') {
-      def sessionsDir = "${env.WORKSPACE}/playwright-e2e/.sessions"
-      if (fileExists(sessionsDir)) {
-        echo "Deleting old sessions folder..."
-        dir(sessionsDir) { deleteDir() }
-      }
-
-      def allureDir = "${env.WORKSPACE}/allure-results"
-      if (fileExists(allureDir)) {
-        echo "Deleting old Allure results..."
-        dir(allureDir) { deleteDir() }
+    stage('Clean Sessions') {
+      node {
+        def sessionsDir = "${env.WORKSPACE}/playwright-e2e/.sessions"
+        if (fileExists(sessionsDir)) {
+          echo "Deleting old sessions folder..."
+          dir(sessionsDir) { deleteDir() }
+        } else {
+          echo "No sessions folder to delete"
+        }
       }
     }
 
@@ -201,28 +199,23 @@ withNightlyPipeline(type, product, component, 600) {
         }
       }
 
-      stage('Generate Allure Report') {
-        script {
-          if (fileExists('allure-report/history')) {
-            sh 'cp -r allure-report/history old-history || true'
-          }
+      stage('Generate & Publish Allure Report') {
+        try {
           sh 'yarn allure:generate || true'
-          if (fileExists('old-history')) {
-            sh 'cp -r old-history/* allure-report/history/ || true'
-          }
+        } catch (Error) {
+          unstable("Allure report generation failed")
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "allure-report",
+            reportFiles: 'index.html',
+            reportName: 'Allure Test Report'
+          ])
         }
       }
 
-      stage('Publish Allure Report') {
-        publishHTML([
-          allowMissing: true,
-          alwaysLinkToLastBuild: true,
-          keepAll: true,
-          reportDir: "allure-report",
-          reportFiles: 'index.html',
-          reportName: 'Allure Test Report'
-        ])
-      }
 
       // RUN THIS TO ACCESS SNAPSHOTS AS A DOWNLOADABLE ARCHIVE
       // stage('Archive PTPH Snapshots') {
