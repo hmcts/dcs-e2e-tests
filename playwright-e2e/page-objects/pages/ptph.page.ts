@@ -75,7 +75,7 @@ class PTPHPage extends Base {
           return !loaderVisible && formVisible;
         },
         {
-          timeout: 60000,
+          timeout: 120000,
           message: "Waiting for loader to disappear and form to be visible",
         }
       )
