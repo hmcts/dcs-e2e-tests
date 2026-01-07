@@ -39,11 +39,29 @@ class UserSettingsPage extends Base {
       .first();
   }
 
-  async usersTableLoad() {
+  async usersTableLoad(minStableMs = 2000) {
     const loaders = this.userResultsContainer.locator(
       'img[alt="Please wait ..."]'
     );
-    await expect(loaders).toHaveCount(0, { timeout: 60_000 });
+
+    await expect
+      .poll(
+        async () => {
+          const count = await loaders.count();
+          if (count > 0) return false; // still visible
+
+          // loader is currently gone, wait for stability
+          await this.page.waitForTimeout(minStableMs);
+
+          // check loader is still gone as periodically is reappears
+          return (await loaders.count()) === 0;
+        },
+        {
+          timeout: 60_000,
+          message: `User table loader did not remain hidden for ${minStableMs}ms`,
+        }
+      )
+      .toBe(true);
   }
 
   async searchUser(userName: string) {
