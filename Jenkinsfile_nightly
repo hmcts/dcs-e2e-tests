@@ -214,14 +214,15 @@ withNightlyPipeline(type, product, component, 600) {
       }
 
       stage('Publish Allure Report') {
-        allure([
-          includeProperties: false,
-          results: [[path: 'allure-results']],
-          reportBuildPolicy: 'ALWAYS',
-          showConsole: true
+        publishHTML([
+          allowMissing: true,
+          alwaysLinkToLastBuild: true,
+          keepAll: true,
+          reportDir: "allure-report",
+          reportFiles: 'index.html',
+          reportName: 'Allure Test Report'
         ])
       }
-
 
       // RUN THIS TO ACCESS SNAPSHOTS AS A DOWNLOADABLE ARCHIVE
       // stage('Archive PTPH Snapshots') {
