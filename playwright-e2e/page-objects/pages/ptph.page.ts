@@ -1,5 +1,6 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../base";
+import { expect } from "../../fixtures";
 
 class PTPHPage extends Base {
   ptphForm: Locator;
@@ -13,9 +14,11 @@ class PTPHPage extends Base {
   allPartiesInfo: Locator;
   prosecutionWitnesses: Locator;
   intermediary: Locator;
+  pageLoader: Locator;
 
   constructor(page) {
     super(page);
+    this.pageLoader = page.locator("#loader");
     this.ptphForm = page.locator("#reviewform");
     this.defendant = this.defendant = page
       .locator("table.composite-table")
@@ -61,6 +64,15 @@ class PTPHPage extends Base {
         ),
       }
     );
+  }
+
+  async PTPHPageLoad() {
+    await this.pageLoader.waitFor({ state: "hidden", timeout: 60000 });
+  }
+
+  async PTPHFormLoad() {
+    const ptphForm = this.ptphForm;
+    await expect(ptphForm).toBeVisible({ timeout: 60000 });
   }
 
   async ptphFormSections() {

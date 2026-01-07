@@ -54,9 +54,8 @@ test.describe("PTPH Form Rendering / Photosnaps @ptph", () => {
     await uploadPTPHForm(context, newCaseUrn);
 
     await sectionsPage.caseNavigation.navigateTo("PTPH");
-
-    const ptphForm = ptphPage.ptphForm;
-    await expect(ptphForm).toBeVisible();
+    await ptphPage.PTPHPageLoad();
+    await ptphPage.PTPHFormLoad();
     await ptphPage.page.waitForTimeout(30000);
 
     const formSections = await ptphPage.ptphFormSections();
