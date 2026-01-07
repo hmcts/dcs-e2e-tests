@@ -66,13 +66,20 @@ class PTPHPage extends Base {
     );
   }
 
-  async PTPHPageLoad() {
-    await this.pageLoader.waitFor({ state: "hidden", timeout: 60000 });
-  }
-
-  async PTPHFormLoad() {
-    const ptphForm = this.ptphForm;
-    await expect(ptphForm).toBeVisible({ timeout: 60000 });
+  async ptphFormLoad() {
+    await expect
+      .poll(
+        async () => {
+          const loaderVisible = await this.pageLoader.isVisible();
+          const formVisible = await this.ptphForm.isVisible();
+          return !loaderVisible && formVisible;
+        },
+        {
+          timeout: 60000,
+          message: "Waiting for loader to disappear and form to be visible",
+        }
+      )
+      .toBe(true);
   }
 
   async ptphFormSections() {
