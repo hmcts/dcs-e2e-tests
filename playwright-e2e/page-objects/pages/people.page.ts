@@ -31,6 +31,7 @@ class PeoplePage extends Base {
 
   async addUser(username: string, defendants?: string[]) {
     await this.inviteNewParticipantBtn.click();
+    await expect(this.addEmailAddress).toBeEditable({ timeout: 30000 });
     await this.addEmailAddress.fill(`${username}`);
     await this.selectBtn.click();
     await this.roleSelector.first().click();
