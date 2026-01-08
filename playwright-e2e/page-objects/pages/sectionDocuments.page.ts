@@ -2,6 +2,7 @@ import { Base } from "../base";
 import { DocumentModel } from "../../data/documentModel";
 import ViewDocumentPage from "./viewDocument.page";
 import { expect } from "../../fixtures";
+import { Locator } from "playwright-core";
 
 interface DocumentCheck {
   name: string;
@@ -10,13 +11,36 @@ interface DocumentCheck {
 
 class SectionDocumentsPage extends Base {
   readonly viewDocumentPage: ViewDocumentPage;
+  sectionDocumentsLoader: Locator;
+  sectionsTable: Locator;
 
   constructor(page) {
     super(page);
     this.viewDocumentPage = new ViewDocumentPage(page);
+    this.sectionDocumentsLoader = page.locator("i", {
+      hasText: "Fetching detail ...",
+    });
+    this.sectionsTable = page.locator(".formTable-zebra");
+  }
+
+  async sectionTableLoad() {
+    await expect
+      .poll(
+        async () => {
+          const loaderVisible = await this.sectionDocumentsLoader.isVisible();
+          const tableVisible = await this.sectionsTable.isVisible();
+          return !loaderVisible && tableVisible;
+        },
+        {
+          timeout: 30000,
+          message: "Waiting for loader to disappear and table to be visible",
+        }
+      )
+      .toBe(true);
   }
 
   async verifyDocumentRemoval(user, section) {
+    await this.sectionTableLoad();
     await this.page
       .locator("table.formTable-zebra tbody tr:nth-child(n+2)")
       .first()
@@ -78,6 +102,7 @@ class SectionDocumentsPage extends Base {
   }
 
   async verifyAllSectionDocumentsLoad() {
+    await this.sectionTableLoad();
     const rows = this.page.locator(
       "table.formTable-zebra tbody tr:nth-child(n+3)"
     );
@@ -112,7 +137,7 @@ class SectionDocumentsPage extends Base {
     const issues: string[] = [];
 
     await this.page;
-
+    await this.sectionTableLoad();
     await expect(
       this.page.locator("td.documentInContentsIndex span").first(),
       `Documents table did not load for User: ${user}, Section: ${section}`
@@ -142,6 +167,7 @@ class SectionDocumentsPage extends Base {
   }
 
   async validateUnrestrictedSectionDocument(filename, section) {
+    await this.sectionTableLoad();
     await expect(
       this.page.locator("td.documentInContentsIndex span").first(),
       `Documents table did not load for Section: ${section}, filename: ${filename}`
@@ -160,6 +186,7 @@ class SectionDocumentsPage extends Base {
   }
 
   async validateSingleRestrictedSectionDocument(filename, section) {
+    await this.sectionTableLoad();
     await expect(
       this.page.locator("td.documentInContentsIndex span").first(),
       `Documents table did not load for Section: ${section}, Filename: ${filename}`
@@ -177,10 +204,12 @@ class SectionDocumentsPage extends Base {
     }
   }
 
-async goToUploadDocuments() {
-    const uploadButton = this.page.getByRole("link", { name: "Upload Document(s)" });
+  async goToUploadDocuments() {
+    const uploadButton = this.page.getByRole("link", {
+      name: "Upload Document(s)",
+    });
     await uploadButton.click();
-}
+  }
 }
 
 export default SectionDocumentsPage;
