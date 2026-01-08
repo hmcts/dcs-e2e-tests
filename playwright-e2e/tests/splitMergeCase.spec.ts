@@ -88,33 +88,35 @@ test.describe("Split & Merge Case Functionality", () => {
     }
   );
 
-  test(`@split Split & Merge Cases by HMCTS Admin`, async ({
-    sectionsPage,
-    createNewSectionPage,
-    sectionDocumentsPage,
-    loginPage,
-    caseSearchPage,
-    caseDetailsPage,
-    homePage,
-    memoPage,
-    uploadDocumentPage,
-    indexPage,
-    splitCasePage,
-    mergeCasePage,
-    rocaPage,
-  }) => {
-    test.setTimeout(720000);
-    // Add Memo, documents to unrestricted section as HMCTS Admin
-    await caseDetailsPage.caseNavigation.navigateTo("Memos");
-    await memoPage.addMemo(hmctsAdminUser.group);
-    await caseDetailsPage.caseNavigation.navigateTo("Sections");
-    const unrestrictedSections = sections.unrestricted;
-    const unrestrictedSectionKeys = await sectionsPage.getSectionKeys(
-      unrestrictedSections
-    );
-    const sampleEntries = Object.entries(unrestrictedSectionKeys)
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 1);
+  test(
+    `Split & Merge Cases by HMCTS Admin`,
+    async ({
+      sectionsPage,
+      createNewSectionPage,
+      sectionDocumentsPage,
+      loginPage,
+      caseSearchPage,
+      caseDetailsPage,
+      homePage,
+      memoPage,
+      uploadDocumentPage,
+      indexPage,
+      splitCasePage,
+      mergeCasePage,
+      rocaPage,
+    }) => {
+      test.setTimeout(720000);
+      // Add Memo, documents to unrestricted section as HMCTS Admin
+      await caseDetailsPage.caseNavigation.navigateTo("Memos");
+      await memoPage.addMemo(hmctsAdminUser.group);
+      await caseDetailsPage.caseNavigation.navigateTo("Sections");
+      const unrestrictedSections = sections.unrestricted;
+      const unrestrictedSectionKeys = await sectionsPage.getSectionKeys(
+        unrestrictedSections
+      );
+      const sampleEntries = Object.entries(unrestrictedSectionKeys)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 1);
 
     for (const [section, key] of sampleEntries) {
       await sectionsPage.uploadUnrestrictedSectionDocument(
