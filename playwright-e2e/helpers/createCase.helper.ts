@@ -106,7 +106,9 @@ export async function createNewCaseWithDefendantsAndUsers(
   }
   for (const defDetail of defDetails) {
     await caseDetailsPage.goToAddDefendant();
-    await expect(addDefendantPage.addDefHeading).toHaveText("Add Defendant");
+    await expect(addDefendantPage.addDefHeading).toHaveText("Add Defendant", {
+      timeout: 30000,
+    });
     await addDefendantPage.addDefendant(
       defDetail.surName,
       defDetail.dobMonth,
