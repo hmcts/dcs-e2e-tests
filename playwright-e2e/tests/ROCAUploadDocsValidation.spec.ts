@@ -105,175 +105,172 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
     }
   });
 
-  test.fixme(
-    `Validate ROCA for restricted document uploads`,
-    async ({
+  test(`Validate ROCA for restricted document uploads`, async ({
+    homePage,
+    loginPage,
+    caseDetailsPage,
+    caseSearchPage,
+    sectionsPage,
+    sectionDocumentsPage,
+    uploadDocumentPage,
+    rocaPage,
+    peoplePage,
+  }) => {
+    await peoplePage.caseNavigation.navigateTo("Sections");
+    const restrictedSectionKeys = await sectionsPage.getSectionKeys(
+      sections.restricted
+    );
+
+    const uploadedDocuments: ROCAModel[] = [];
+
+    const sampleEntries = Object.entries(restrictedSectionKeys)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3);
+    await peoplePage.navigation.navigateTo("LogOff");
+
+    // Upload documents to restricted section as Defence Advocate A
+    await loginAndOpenCase(
       homePage,
       loginPage,
-      caseDetailsPage,
       caseSearchPage,
-      sectionsPage,
-      sectionDocumentsPage,
-      uploadDocumentPage,
-      rocaPage,
-      peoplePage,
-    }) => {
-      await peoplePage.caseNavigation.navigateTo("Sections");
-      const restrictedSectionKeys = await sectionsPage.getSectionKeys(
-        sections.restricted
+      config.users.defenceAdvocateA,
+      newCaseName
+    );
+    await caseDetailsPage.caseNavigation.navigateTo("Sections");
+    for (const [sectionIndex, sectionKey] of sampleEntries) {
+      await sectionsPage.goToUploadDocuments(sectionKey);
+      await uploadDocumentPage.uploadRestrictedSectionDocument(
+        "One, Defendant",
+        "restrictedSectionUploadDefendantOne"
       );
-
-      const uploadedDocuments: ROCAModel[] = [];
-
-      const sampleEntries = Object.entries(restrictedSectionKeys)
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 3);
-      await peoplePage.navigation.navigateTo("LogOff");
-
-      // Upload documents to restricted section as Defence Advocate A
-      await loginAndOpenCase(
-        homePage,
-        loginPage,
-        caseSearchPage,
-        config.users.defenceAdvocateA,
-        newCaseName
+      await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
+      await rocaPage.createROCAModelRecord(
+        uploadedDocuments,
+        sectionIndex,
+        "restrictedSectionUploadDefendantOne",
+        "Create",
+        config.users.defenceAdvocateA.username,
+        "One Defendant"
       );
-      await caseDetailsPage.caseNavigation.navigateTo("Sections");
-      for (const [sectionIndex, sectionKey] of sampleEntries) {
-        await sectionsPage.goToUploadDocuments(sectionKey);
-        await uploadDocumentPage.uploadRestrictedSectionDocument(
-          "One, Defendant",
-          "restrictedSectionUploadDefendantOne"
-        );
-        await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
-        await rocaPage.createROCAModelRecord(
-          uploadedDocuments,
-          sectionIndex,
-          "restrictedSectionUploadDefendantOne",
-          "Create",
-          config.users.defenceAdvocateA.username,
-          "One Defendant"
-        );
-      }
-      await sectionsPage.navigation.navigateTo("LogOff");
-
-      // Upload documents to restricted section as Defence Advocate B and validate ROCA
-      await loginAndOpenCase(
-        homePage,
-        loginPage,
-        caseSearchPage,
-        config.users.defenceAdvocateB,
-        newCaseName
-      );
-      await caseDetailsPage.caseNavigation.navigateTo("Sections");
-      for (const [sectionIndex, sectionKey] of sampleEntries) {
-        await sectionsPage.goToUploadDocuments(sectionKey);
-        await uploadDocumentPage.uploadRestrictedSectionDocument(
-          "Two, Defendant",
-          "restrictedSectionUploadDefendantTwo"
-        );
-        await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
-        await rocaPage.createROCAModelRecord(
-          uploadedDocuments,
-          sectionIndex,
-          "restrictedSectionUploadDefendantTwo",
-          "Create",
-          config.users.defenceAdvocateB.username,
-          "Two Defendant"
-        );
-      }
-      await sectionsPage.caseNavigation.navigateTo("ROCA");
-      await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
-
-      const expectedROCADefenceB = uploadedDocuments.filter((document) =>
-        document.defendants!.includes("Two Defendant")
-      );
-
-      const issuesB = await rocaPage.validateROCAForUser(
-        expectedROCADefenceB,
-        rocaPage.restrictedTable
-      );
-
-      await sectionsPage.navigation.navigateTo("LogOff");
-
-      // Validate ROCA as Defence Advocate A
-      await loginAndOpenCase(
-        homePage,
-        loginPage,
-        caseSearchPage,
-        config.users.defenceAdvocateA,
-        newCaseName
-      );
-      await caseDetailsPage.caseNavigation.navigateTo("ROCA");
-      await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
-
-      const expectedROCADefenceA = uploadedDocuments.filter((document) =>
-        document.defendants!.includes("One Defendant")
-      );
-      const issuesA = await rocaPage.validateROCAForUser(
-        expectedROCADefenceA,
-        rocaPage.restrictedTable
-      );
-
-      await sectionsPage.navigation.navigateTo("LogOff");
-
-      // Upload restricted document and validate ROCA as Defence Advocate C
-      await loginAndOpenCase(
-        homePage,
-        loginPage,
-        caseSearchPage,
-        config.users.defenceAdvocateC,
-        newCaseName
-      );
-      await caseDetailsPage.caseNavigation.navigateTo("Sections");
-      for (const [sectionIndex, sectionKey] of sampleEntries) {
-        await sectionsPage.goToUploadDocuments(sectionKey);
-        await uploadDocumentPage.uploadRestrictedSectionDocument(
-          "Two, Defendant",
-          "restrictedSectionUploadD1&D2",
-          "One, Defendant"
-        );
-        await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
-        await rocaPage.createROCAModelRecord(
-          uploadedDocuments,
-          sectionIndex,
-          "restrictedSectionUploadD1&D2",
-          "Create",
-          config.users.defenceAdvocateC.username,
-          "One Defendant, Two Defendant"
-        );
-      }
-      await sectionsPage.caseNavigation.navigateTo("ROCA");
-      await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
-
-      const expectedROCADefenceC = uploadedDocuments.filter(
-        (document) =>
-          document.defendants!.includes("One Defendant") ||
-          document.defendants!.includes("Two Defendant") ||
-          document.defendants!.includes("One Defendant, Two Defendant")
-      );
-      const issuesC = await rocaPage.validateROCAForUser(
-        expectedROCADefenceC,
-        rocaPage.restrictedTable
-      );
-      // Aggragate Results
-      const uploadIssues = [...issuesA, ...issuesB, ...issuesC];
-      pushTestResult({
-        user: "Defence Users",
-        heading: `ROCA Validation: Upload and Access to Restricted Documents`,
-        category: "ROCA",
-        issues: uploadIssues,
-      });
-      // Fail the test if any issues were found
-      if (uploadIssues.length > 0) {
-        throw new Error(
-          `Defence Users had issues uploading and accessing restricted documents:\n${uploadIssues.join(
-            "\n"
-          )}`
-        );
-      }
     }
-  );
+    await sectionsPage.navigation.navigateTo("LogOff");
+
+    // Upload documents to restricted section as Defence Advocate B and validate ROCA
+    await loginAndOpenCase(
+      homePage,
+      loginPage,
+      caseSearchPage,
+      config.users.defenceAdvocateB,
+      newCaseName
+    );
+    await caseDetailsPage.caseNavigation.navigateTo("Sections");
+    for (const [sectionIndex, sectionKey] of sampleEntries) {
+      await sectionsPage.goToUploadDocuments(sectionKey);
+      await uploadDocumentPage.uploadRestrictedSectionDocument(
+        "Two, Defendant",
+        "restrictedSectionUploadDefendantTwo"
+      );
+      await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
+      await rocaPage.createROCAModelRecord(
+        uploadedDocuments,
+        sectionIndex,
+        "restrictedSectionUploadDefendantTwo",
+        "Create",
+        config.users.defenceAdvocateB.username,
+        "Two Defendant"
+      );
+    }
+    await sectionsPage.caseNavigation.navigateTo("ROCA");
+    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
+
+    const expectedROCADefenceB = uploadedDocuments.filter((document) =>
+      document.defendants!.includes("Two Defendant")
+    );
+
+    const issuesB = await rocaPage.validateROCAForUser(
+      expectedROCADefenceB,
+      rocaPage.restrictedTable
+    );
+
+    await sectionsPage.navigation.navigateTo("LogOff");
+
+    // Validate ROCA as Defence Advocate A
+    await loginAndOpenCase(
+      homePage,
+      loginPage,
+      caseSearchPage,
+      config.users.defenceAdvocateA,
+      newCaseName
+    );
+    await caseDetailsPage.caseNavigation.navigateTo("ROCA");
+    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
+
+    const expectedROCADefenceA = uploadedDocuments.filter((document) =>
+      document.defendants!.includes("One Defendant")
+    );
+    const issuesA = await rocaPage.validateROCAForUser(
+      expectedROCADefenceA,
+      rocaPage.restrictedTable
+    );
+
+    await sectionsPage.navigation.navigateTo("LogOff");
+
+    // Upload restricted document and validate ROCA as Defence Advocate C
+    await loginAndOpenCase(
+      homePage,
+      loginPage,
+      caseSearchPage,
+      config.users.defenceAdvocateC,
+      newCaseName
+    );
+    await caseDetailsPage.caseNavigation.navigateTo("Sections");
+    for (const [sectionIndex, sectionKey] of sampleEntries) {
+      await sectionsPage.goToUploadDocuments(sectionKey);
+      await uploadDocumentPage.uploadRestrictedSectionDocument(
+        "Two, Defendant",
+        "restrictedSectionUploadD1&D2",
+        "One, Defendant"
+      );
+      await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
+      await rocaPage.createROCAModelRecord(
+        uploadedDocuments,
+        sectionIndex,
+        "restrictedSectionUploadD1&D2",
+        "Create",
+        config.users.defenceAdvocateC.username,
+        "One Defendant, Two Defendant"
+      );
+    }
+    await sectionsPage.caseNavigation.navigateTo("ROCA");
+    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
+
+    const expectedROCADefenceC = uploadedDocuments.filter(
+      (document) =>
+        document.defendants!.includes("One Defendant") ||
+        document.defendants!.includes("Two Defendant") ||
+        document.defendants!.includes("One Defendant, Two Defendant")
+    );
+    const issuesC = await rocaPage.validateROCAForUser(
+      expectedROCADefenceC,
+      rocaPage.restrictedTable
+    );
+    // Aggragate Results
+    const uploadIssues = [...issuesA, ...issuesB, ...issuesC];
+    pushTestResult({
+      user: "Defence Users",
+      heading: `ROCA Validation: Upload and Access to Restricted Documents`,
+      category: "ROCA",
+      issues: uploadIssues,
+    });
+    // Fail the test if any issues were found
+    if (uploadIssues.length > 0) {
+      throw new Error(
+        `Defence Users had issues uploading and accessing restricted documents:\n${uploadIssues.join(
+          "\n"
+        )}`
+      );
+    }
+  });
   test.afterEach(async () => {
     if (!newCaseName) return;
 

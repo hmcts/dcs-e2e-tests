@@ -88,7 +88,7 @@ test.describe("Split & Merge Case Functionality", () => {
     }
   );
 
-  test.fixme(
+  test(
     `Split & Merge Cases by HMCTS Admin`,
     async ({
       sectionsPage,
