@@ -26,8 +26,10 @@ export async function getPayloadStatus(page, caseUrn: string) {
   await expect
     .poll(
       async () => {
-        page.reload();
-        const html = await page.locator("body").innerHTML();
+        await page.reload();
+        const body = page.locator("body");
+        await expect(body).toBeVisible();
+        const html = await body.innerHTML();
         const blocks = html.split("<hr>"); // each block = JSON + status
 
         block = blocks.find((b) => b.includes(`"Urn":"${caseUrn}"`));
