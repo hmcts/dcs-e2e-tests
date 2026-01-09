@@ -27,7 +27,7 @@ class IndexPage extends Base {
   async indexTableLoad() {
     const indexTable = this.page.locator(".fullContents");
     const loaders = indexTable.locator(
-      'img[alt="working"][src*="spinning/wait16trans.gif"]'
+      'img[alt="working"][src*="spinning/wait16trans.gif"]:visible'
     );
     await expect(loaders).toHaveCount(0, { timeout: 180_000 });
     console.log("Successful load of Index Table");
@@ -209,6 +209,25 @@ class IndexPage extends Base {
     );
     await expect(sectionLink).toBeVisible();
     await sectionLink.click();
+  }
+
+  async validateIndexDocument(filename, section) {
+    const sectionCell = this.page.locator(
+      "table.sectionHeadTable td.tableText",
+      {
+        has: this.page.getByText(`${section}:`, { exact: true }),
+      }
+    );
+    const sectionRow = sectionCell.locator("xpath=ancestor::tr");
+    const documentRow = sectionRow.locator("xpath=following-sibling::tr[1]");
+    const tdCount = await documentRow.locator("td").count();
+    expect(tdCount).toBeGreaterThan(4);
+    await expect(documentRow).toContainText(`${filename}`);
+  }
+
+  async validateNoAccessToRestrictedIndexDocument(filename) {
+    const contentsTable = this.page.locator(".fullContents > tbody");
+    await expect(contentsTable).not.toContainText(`${filename}:`);
   }
 
   async validateSections(sections: string[]): Promise<string[]> {
