@@ -7,7 +7,7 @@ test.describe("Memo Functionality", () => {
     await homePage.navigation.navigateTo("ViewCaseListLink");
   });
 
-  test.fixme(
+  test(
     "Add, Change and Remove Memos",
     async ({ createCasePage, caseDetailsPage, caseSearchPage, memoPage }) => {
       await caseSearchPage.goToCreateCase();
