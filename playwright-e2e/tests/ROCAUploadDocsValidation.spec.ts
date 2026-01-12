@@ -38,7 +38,9 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
       newCaseName = newCase.newCaseName;
     }
   );
-  test(`Validate ROCA for unrestricted document uploads`, async ({
+  test(
+    `Validate ROCA for unrestricted document uploads`, 
+    async ({
     sectionsPage,
     sectionDocumentsPage,
     uploadDocumentPage,
