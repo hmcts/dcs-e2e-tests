@@ -115,20 +115,23 @@ withNightlyPipeline(type, product, component, 600) {
       'ProbationStaff'
   ]
   
-  def lastUserIndexFile = "${env.WORKSPACE}/last_user_index.txt"
-  def lastIndex = -1
+  def nextUser
+  node {
+      def lastUserIndexFile = "${env.WORKSPACE}/last_user_index.txt"
+      def lastIndex = -1
 
-  if (fileExists(lastUserIndexFile)) {
-      lastIndex = readFile(lastUserIndexFile).trim().toInteger()
+      if (fileExists(lastUserIndexFile)) {
+          lastIndex = readFile(lastUserIndexFile).trim().toInteger()
+      }
+
+      def nextIndex = (lastIndex + 1) % eligibleUsers.size()
+      nextUser = eligibleUsers[nextIndex]
+
+      writeFile file: lastUserIndexFile, text: nextIndex.toString()
   }
-
-  def nextIndex = (lastIndex + 1) % eligibleUsers.size()
-  def nextUser = eligibleUsers[nextIndex]
-
-  writeFile file: lastUserIndexFile, text: nextIndex.toString()
-
   env.TEST_USER = nextUser
   echo "Nightly Playwright tests will run as user: ${env.TEST_USER}"
+
   // ------------------------
 
   stage('Clean Sessions') {
