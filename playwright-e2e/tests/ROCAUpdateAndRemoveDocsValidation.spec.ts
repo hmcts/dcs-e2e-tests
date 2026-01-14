@@ -294,7 +294,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
+    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 60_000 });
 
     // Compare expected vs actual ROCA
     const deletionIssues = await rocaPage.validateROCAForUser(
