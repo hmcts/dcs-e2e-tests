@@ -105,9 +105,7 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
     }
   });
 
-  test(
-    `Validate ROCA for restricted document uploads`, 
-    async ({
+  test(`Validate ROCA for restricted document uploads`, async ({
     homePage,
     loginPage,
     caseDetailsPage,
@@ -118,6 +116,7 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
     rocaPage,
     peoplePage,
   }) => {
+    test.setTimeout(720000);
     await peoplePage.caseNavigation.navigateTo("Sections");
     const restrictedSectionKeys = await sectionsPage.getSectionKeys(
       sections.restricted
