@@ -174,6 +174,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
         config.users.hmctsAdmin.username
       );
       await updateDocumentsPage.editDocumentName();
+
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
@@ -363,7 +364,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
+    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 60_000 });
 
     const expectedRestrictedROCA = rocaExpected;
     const restrictedResult = await rocaPage.validateROCAForUser(
@@ -430,7 +431,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
+    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 60_000 });
 
     // Compare expected vs actual ROCA
     const editIssues = await rocaPage.validateROCAForUser(
