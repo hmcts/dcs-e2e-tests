@@ -27,12 +27,12 @@ const TEST_USERS = process.env.TEST_USERS || "nightly";
 // Test 1: Notes Functionality
 // -----------------------------
 
-test.describe("Notes Functionality", () => {
+test.describe("@regression @nightly Notes Functionality", () => {
   // Pick users based on scope
   const usersToTest = TEST_USERS === "nightly" ? [currentUser] : eligibleUsers;
 
   for (const user of usersToTest) {
-    test.describe(`@notes @user:${user.group} Notes Functionality for ${user.group}`, () => {
+    test.describe(`Notes Functionality for ${user.group}`, () => {
       let sampleKey: [string, string][];
       let newCaseName: string;
 
@@ -187,7 +187,7 @@ test.describe("Notes Functionality", () => {
 // // I want be able to see a list of the correct available Notes for an existing case as per my user permissions
 // // So I don't get exposed to information outside of my remit that could impact the case integrity
 
-test.describe("Notes Permissions & Access", () => {
+test.describe("@nightly @regression Notes Permissions & Access", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
   test.beforeEach(async ({ homePage }) => {
     await homePage.open();
