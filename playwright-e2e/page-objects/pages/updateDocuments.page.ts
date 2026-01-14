@@ -1,6 +1,7 @@
 import { Locator } from "playwright-core";
 import { Base } from "../base";
 import { waitUntilClickable } from "../../utils";
+import { expect } from "../../fixtures";
 
 class UpdateDocumentsPage extends Base {
   updateHeading: Locator;
@@ -86,6 +87,9 @@ class UpdateDocumentsPage extends Base {
     } catch {
       console.warn("⚠️ Loader did not appear");
     }
+    await expect(this.documentTitle).toHaveValue("TestEdit", {
+      timeout: 30000,
+    });
   }
 }
 
