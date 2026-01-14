@@ -84,7 +84,52 @@ withNightlyPipeline(type, product, component, 600) {
   loadVaultSecrets(secrets)
   env.BASE_URL = params.BASE_URL
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
+
+  // Derive execution mode from TAGS_TO_RUN
+  if (params.TAGS_TO_RUN?.contains('@regression')) {
+    env.TEST_USERS = 'regression'
+  } else {
+    env.TEST_USERS = 'nightly'
+  }
+  
+  if (env.TEST_USERS == 'regression') {
+    env.TEST_TAG = '@regression'
+    env.TEST_TAG_REGEX = '(?=.*@regression)'
+  } else {
+    env.TEST_TAG = '@nightly'
+    env.TEST_TAG_REGEX = '(?=.*@nightly)'
+  }
+
+  echo "Running with TEST_USERS=${env.TEST_USERS}"
+  echo "Running with TEST_TAG=${env.TEST_TAG}"
+  
   enableSlackNotifications(channel)
+
+  // ---- USER ROTATION ----
+  def eligibleUsers = [
+      'HMCTSAdmin',
+      'CPSAdmin',
+      'CPSProsecutor',
+      'DefenceAdvocateA',
+      'FullTimeJudge',
+      'ProbationStaff'
+  ]
+  
+  def lastUserIndexFile = "${env.WORKSPACE}/last_user_index.txt"
+  def lastIndex = -1
+
+  if (fileExists(lastUserIndexFile)) {
+      lastIndex = readFile(lastUserIndexFile).trim().toInteger()
+  }
+
+  def nextIndex = (lastIndex + 1) % eligibleUsers.size()
+  def nextUser = eligibleUsers[nextIndex]
+
+  writeFile file: lastUserIndexFile, text: nextIndex.toString()
+
+  env.TEST_USER = nextUser
+  echo "Nightly Playwright tests will run as user: ${env.TEST_USER}"
+  // ------------------------
 
   stage('Clean Sessions') {
     node {

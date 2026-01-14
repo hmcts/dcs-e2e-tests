@@ -7,7 +7,7 @@ import {
   runCleanupSafely,
 } from "../helpers/deleteCase.helper";
 
-test.describe("Index Page Functionality", () => {
+test.describe("@nightly @regression Index Page Functionality", () => {
   let newCaseName: string;
   const unrestrictedUploadResults: string[] = [];
 

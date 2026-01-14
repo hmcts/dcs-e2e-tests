@@ -29,7 +29,7 @@ import { test, expect } from "../fixtures";
 // 11. If the User has selected a Self-Inviting Role, DCS emails the Access Coordinators for the User’s requested Location and Role.
 // 12. An Access Coordinator goes to an Approvals screen and sees the outstanding Approval request. They either “Approve” or “Reject” the request.
 
-test.describe("Register New user in CCDCS", () => {
+test.describe("@nightly @regression Register New user in CCDCS", () => {
 
 test.beforeEach(async ({ homePage }) => {
     await homePage.open();

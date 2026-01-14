@@ -1,7 +1,7 @@
 import { test, expect } from "../fixtures";
 import { caseLinks } from "../data/navLinks";
 
-test.describe.serial("Case navigation links", () => {
+test.describe("@regression @nightly Case navigation links", () => {
   test.beforeEach(async ({ homePage, caseSearchPage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");

@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { test } from "../fixtures";
+import { test, currentUser, eligibleUsers } from "../fixtures";
 import { UserCredentials, config, pushTestResult } from "../utils";
+
+const TEST_USERS = process.env.TEST_USERS || "nightly";
+// Please update TEST_USERS=regression locally to run all users
 
 // ============================================================
 // Test 1: Sections & Documents Availability
@@ -18,7 +21,7 @@ import { UserCredentials, config, pushTestResult } from "../utils";
 // If I navigate to View each Document within a Section
 // The View Document page should load
 
-test.describe("Sections Page", () => {
+test.describe("@nightly @regression Sections Page", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
   test.beforeEach(async ({ homePage }) => {
@@ -26,16 +29,9 @@ test.describe("Sections Page", () => {
     await homePage.navigation.navigateTo("LogOn");
   });
 
-  const excludedGroups = [
-    "AccessCoordinator",
-    "DefenceAdvocateB",
-    "DefenceAdvocateC",
-    "Admin",
-  ];
+  const usersToTest = TEST_USERS === "nightly" ? [currentUser] : eligibleUsers;
 
-  for (const [_, user] of Object.entries(config.users).filter(
-    ([_, user]) => !excludedGroups.includes(user.group)
-  ) as [string, UserCredentials][]) {
+  for (const user of usersToTest) {
     test(`Verify Sections & Documents for: ${user.group}`, async ({
       loginPage,
       caseSearchPage,

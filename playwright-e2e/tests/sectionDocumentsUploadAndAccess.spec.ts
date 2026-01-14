@@ -16,7 +16,7 @@ import {
 // I want to be able to upload a document to an unrestricted section
 // So that this is added to the case for further review for all parties
 
-test.describe("Document Upload Tests @cleanup", () => {
+test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
   let newCaseName: string;
   const unrestrictedUploadResults: string[] = [];
   const restrictedUploadResults: string[] = [];

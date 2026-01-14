@@ -57,7 +57,7 @@ import {
 // 6. When all the cases to be merged have been added to the list, confirm the New Case Name and New Case URN and then click on Merge cases button.
 // A status bar will display detailing the progress of the merge. Once completed you will be taken to the new merged case.
 
-test.describe("Split & Merge Case Functionality", () => {
+test.describe("@nightly @regression Split & Merge Case Functionality", () => {
   let newCaseName: string;
   const hmctsAdminUser = config.users.hmctsAdmin;
 
