@@ -1,4 +1,4 @@
-import { Locator } from "@playwright/test";
+import { Locator, expect } from "@playwright/test";
 import { Base } from "../base";
 
 class RejectAccessRequestPage extends Base {
@@ -7,14 +7,13 @@ class RejectAccessRequestPage extends Base {
 
   constructor(page) {
     super(page);
-    this.confirmButton = page.getByRole('button', { name: 'Confirm' });
-    this.rejectRequestHeading = page.locator('div#content h2')
+    this.confirmButton = page.getByRole("button", { name: "Confirm" });
+    this.rejectRequestHeading = page.locator("div#content h2");
+  }
 
-}
-async confirmReject() {
+  async rejectUserRequest() {
+    await expect(this.rejectRequestHeading).toHaveText("Reject Access Request");
     await this.confirmButton.click();
-
-}
-
+  }
 }
 export default RejectAccessRequestPage;
