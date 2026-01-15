@@ -187,7 +187,7 @@ test.describe("@regression @nightly @notes Notes Functionality", () => {
 // // I want be able to see a list of the correct available Notes for an existing case as per my user permissions
 // // So I don't get exposed to information outside of my remit that could impact the case integrity
 
-test.describe("@nightly @regression @notes Notes Permissions & Access", () => {
+test.describe("@nightly @regression Notes Permissions & Access", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
   test.beforeEach(async ({ homePage }) => {
     await homePage.open();
