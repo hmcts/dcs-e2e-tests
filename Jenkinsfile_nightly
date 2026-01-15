@@ -85,12 +85,9 @@ withNightlyPipeline(type, product, component, 600) {
   env.BASE_URL = params.BASE_URL
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
 
-  // Derive execution mode from TAGS_TO_RUN
-  if (params.TAGS_TO_RUN?.contains('@regression')) {
-    env.TEST_USERS = 'regression'
-  } else {
-    env.TEST_USERS = 'nightly'
-  }
+  def isFullRegressionRun = TAGS_TO_RUN?.trim() == '@regression'
+
+  env.TEST_USERS = isFullRegressionRun ? 'regression' : 'nightly'
   
   if (env.TEST_USERS == 'regression') {
     env.TEST_TAG = '@regression'
@@ -153,7 +150,7 @@ withNightlyPipeline(type, product, component, 600) {
       catch (Error) { unstable("${STAGE_NAME} is unstable: ${Error}") }
     }
 
-    if (TAGS_TO_RUN?.trim()) {
+    if (TAGS_TO_RUN?.trim() && !isFullRegressionRun) {
       stage("${TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}") {
         try {
           currentBuild.displayName = "${TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}"
