@@ -6,11 +6,6 @@ class UserSettingsPage extends Base {
   userSettingsHeading: Locator;
   searchText: Locator;
   applyFilter: Locator;
-  changeIsVerifiedUser: Locator;
-  verifiedUserFlag: Locator;
-  approvedUserFlag: Locator;
-  deniedUserFlag: Locator;
-  userResultsTitle: Locator;
   userResultsContainer: Locator;
   userResultsTable: Locator;
 
@@ -21,22 +16,6 @@ class UserSettingsPage extends Base {
     this.applyFilter = page.getByRole("link", { name: "Apply Filter" });
     this.userResultsContainer = page.locator("#personListDiv");
     this.userResultsTable = page.locator(".formTable-zebra");
-    this.changeIsVerifiedUser = page.locator(
-      "xpath=(//a[contains(text(),'Change')])[5]"
-    );
-    this.verifiedUserFlag = page.locator(
-      'xpath=//*[@id="personListDiv"]/table/tbody/tr[2]/td[12]'
-    );
-    this.approvedUserFlag = page.locator(
-      'xpath=//*[@id="personListDiv"]/table/tbody/tr[2]/td[7]'
-    );
-    this.deniedUserFlag = page.locator(
-      'xpath=//*[@id="personListDiv"]/table/tbody/tr[2]/td[14]'
-    );
-    this.userResultsTitle = page
-      .locator("td")
-      .filter({ hasText: "Results:" })
-      .first();
   }
 
   async usersTableLoad(minStableMs = 2000) {
@@ -72,10 +51,35 @@ class UserSettingsPage extends Base {
     await expect(this.userResultsTable).toBeVisible({ timeout: 30000 });
   }
 
-  async updateVerifyUserFlag() {
-    await this.changeIsVerifiedUser.click();
-    const verifiedFlag = this.verifiedUserFlag.textContent;
-    return verifiedFlag;
+  async verifyUserEmail(userEmail) {
+    const row = this.page.locator("tr", {
+      has: this.page.locator("td", { hasText: `${userEmail}` }),
+    });
+    const verify = row.locator("td").nth(11);
+    await verify.getByRole("link", { name: "Change" }).click();
+    await this.usersTableLoad();
+    const verifiedFlag = await verify.textContent();
+    expect(verifiedFlag).toContain("Y");
+  }
+
+  async verifyApprovalFlag(userName: string) {
+    await expect(this.userSettingsHeading).toContainText("People List");
+    await this.searchUser(userName);
+    const row = this.page.locator("tr", {
+      has: this.page.locator("td", { hasText: `${userName}` }),
+    });
+    const approval = row.locator("td").nth(11);
+    await expect(approval).toContainText("Y");
+  }
+
+  async verifyRejectionFlag(userName: string) {
+    await expect(this.userSettingsHeading).toContainText("People List");
+    await this.searchUser(userName);
+    const row = this.page.locator("tr", {
+      has: this.page.locator("td", { hasText: `${userName}` }),
+    });
+    const accessDenied = row.locator("td").nth(13);
+    await expect(accessDenied).toContainText("Y");
   }
 }
 export default UserSettingsPage;

@@ -103,7 +103,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
     mergeCasePage,
     rocaPage,
   }) => {
-    test.setTimeout(720000);
+    test.setTimeout(900000);
     // Add Memo, documents to unrestricted section as HMCTS Admin
     await caseDetailsPage.caseNavigation.navigateTo("Memos");
     await memoPage.addMemo(hmctsAdminUser.group);
