@@ -7,28 +7,28 @@ class MergeCasePage extends Base {
   newCaseUrn: Locator;
   findCaseToMerge: Locator;
   mergeCasesButton: Locator;
-  progressBar : Locator;
+  progressBar: Locator;
   mergeCaseSelect: Locator;
   caseListTable: Locator;
-  
-constructor(page) {
-    super(page);
-    this.mergeHeading = page.getByText('Merge Cases', { exact: true })
-    this.newCaseName = page.locator('#newName')
-    this.newCaseUrn = page.locator('#newUrn')
-    this.findCaseToMerge = this.page.locator('#Search')
-    this.mergeCaseSelect = page.locator('.typeahead')
-    this.mergeCasesButton = page.getByRole('link', { name: 'Merge cases' });
-    this.progressBar = page.locator('div.progress')
-    this.caseListTable = page.locator('#caseListTable')
-}
 
-async mergeCases(caseName1: string, caseName2: string){
+  constructor(page) {
+    super(page);
+    this.mergeHeading = page.getByText("Merge Cases", { exact: true });
+    this.newCaseName = page.locator("#newName");
+    this.newCaseUrn = page.locator("#newUrn");
+    this.findCaseToMerge = this.page.locator("#Search");
+    this.mergeCaseSelect = page.locator(".typeahead");
+    this.mergeCasesButton = page.getByRole("link", { name: "Merge cases" });
+    this.progressBar = page.locator("div.progress");
+    this.caseListTable = page.locator("#caseListTable");
+  }
+
+  async mergeCases(caseName1: string, caseName2: string) {
     await expect(this.newCaseUrn).toBeEditable();
     await this.newCaseUrn.clear();
-    await this.newCaseUrn.fill(caseName1+'(M)')
-    await expect (this.mergeCaseSelect).toBeEnabled();
-    await this.findCaseToMerge.fill(caseName2)
+    await this.newCaseUrn.fill(caseName1 + "(M)");
+    await expect(this.mergeCaseSelect).toBeEnabled();
+    await this.findCaseToMerge.fill(caseName2);
     await this.page.getByRole("option", { name: caseName2 }).click();
     const caseRow = this.caseListTable.locator("tr").nth(1);
     await expect(caseRow.locator("td:nth-child(3)")).not.toBeEmpty({
@@ -36,11 +36,13 @@ async mergeCases(caseName1: string, caseName2: string){
     });
     await expect(this.mergeCasesButton).toBeVisible({ timeout: 20000 });
     await this.mergeCasesButton.click();
-}
-
-async waitForMergeCasesCompletion(){
-  await this.page.waitForTimeout(60_000);
-  console.log('Merge Cases completion')
-}
+    const progressText = await this.progressBar.textContent();
+    await expect(this.progressBar).toContainText("Preparing", {
+      timeout: 60_000,
+    });
+    if (!progressText?.includes("Preparing")) {
+      await this.caseNavigation.navigateTo("CaseHome");
+    }
+  }
 }
 export default MergeCasePage;

@@ -174,6 +174,56 @@ class CaseDetailsPage extends Base {
       `Unable to open Review popup with correct content after ${maxWaitMs}ms`
     );
   }
+
+  async confirmCaseSplit() {
+    await expect
+      .poll(
+        async () => {
+          await this.caseNavigation.navigateTo("CaseHome");
+
+          const caseSplitConfirmation = this.page.locator(".heading-medium");
+          const text = await caseSplitConfirmation.textContent();
+
+          if (text === "Case Has Split") {
+            return true;
+          } else {
+            return false;
+          }
+        },
+        {
+          timeout: 120_000,
+          message: `Unable to verify Case Split`,
+        }
+      )
+      .toBe(true);
+  }
+
+  async goToSplitCase(caseName) {
+    await this.page.getByRole("link", { name: `${caseName}One` }).click();
+  }
+
+  async confirmCaseMerge() {
+    await expect
+      .poll(
+        async () => {
+          await this.caseNavigation.navigateTo("CaseHome");
+
+          const caseSplitConfirmation = this.page.locator(".heading-medium");
+          const text = await caseSplitConfirmation.textContent();
+
+          if (text === "Case Has Merged") {
+            return true;
+          } else {
+            return false;
+          }
+        },
+        {
+          timeout: 120_000,
+          message: `Unable to verify Case Merge`,
+        }
+      )
+      .toBe(true);
+  }
 }
 
 export default CaseDetailsPage;
