@@ -15,59 +15,62 @@ class SplitCasePage extends Base {
   newCaseUrn2: Locator;
   caseListTable: Locator;
   firstDefendantInTable: Locator;
-  progressBar : Locator;
-   
-constructor(page) {
+  progressBar: Locator;
+  defendantsTable: Locator;
+
+  constructor(page) {
     super(page);
-    this.splitHeading = page.locator('.heading-small')
-    this.noOfCasesTextBox = page.locator('#noCases')
-    this.updateButton = page.locator('#btnUpdate')
-    this.caseSelect1 = page.locator('#caseSelect1')
-    this.caseSelect2 = page.locator('#caseSelect2')
-    this.splitCaseButton = page.locator('#splitCase')
-    this.caseNameTable = page.locator('#caseNameTable')
-    this.newCaseName1 = page.locator("(//input[@name='newCaseName'])[1]")
-    this.newCaseName2 = page.locator("(//input[@name='newCaseName'])[2]")
-    this.newCaseUrn1 = page.locator("(//*[@id=\"newUrn\"])[1]")
-    this.newCaseUrn2 = page.locator("(//*[@id=\"newUrn\"])[2]")
-    this.caseListTable = page.locator('#caseListTable')
-    this.firstDefendantInTable = page.locator('//*[@id=\"caseListTable\"]/tbody/tr[1]/td[1]')
-    this.progressBar = page.locator('.progress-bar')
-}
+    this.splitHeading = page.locator(".heading-small");
+    this.noOfCasesTextBox = page.locator("#noCases");
+    this.updateButton = page.locator("#btnUpdate");
+    this.caseSelect1 = page.locator("#caseSelect1");
+    this.caseSelect2 = page.locator("#caseSelect2");
+    this.splitCaseButton = page.locator("#splitCase");
+    this.caseNameTable = page.locator("#caseNameTable");
+    this.newCaseName1 = page.locator("#newCaseName").first();
+    this.newCaseName2 = page.locator("#newCaseName").nth(1);
+    this.newCaseUrn1 = page.locator("#newUrn").first();
+    this.newCaseUrn2 = page.locator("#newUrn").nth(1);
+    this.caseListTable = page.locator("#caseListTable");
+    this.defendantsTable = page.locator("#caseListTable");
+    this.firstDefendantInTable = this.defendantsTable
+      .locator("tbody tr")
+      .first()
+      .locator("td")
+      .first();
+    this.progressBar = page.locator(".progress-bar");
+  }
 
-
-async splitACase(caseName: string){
-    await this.noOfCasesTextBox.fill('2')
-    await expect (this.updateButton).toBeEnabled();
+  async splitCase(caseName: string) {
+    await this.noOfCasesTextBox.fill("2");
+    await expect(this.updateButton).toBeEnabled();
     await Promise.all([
-    await expect (this.caseNameTable).toBeVisible(),
-    await this.updateButton.click()]);
+      await expect(this.caseNameTable).toBeVisible(),
+      await this.updateButton.click(),
+    ]);
 
-    await this.newCaseName1.fill(caseName+ "one")
-    await this.newCaseName2.fill(caseName+ "two")
-    const defendantLocator =  this.firstDefendantInTable.getByText('Defendant Two');
-    const defendantTwoIsVisible = await defendantLocator.isVisible();
+    await this.newCaseName1.fill(caseName + "One");
+    await this.newCaseName2.fill(caseName + "Two");
 
-    if (defendantTwoIsVisible) {
-        // This block executes if 'Defendant Two' IS found and visible.
-        await this.caseSelect1.selectOption("Case2");
-        await this.caseSelect2.selectOption("Case1");
+    const firstDefendantInTableText =
+      await this.firstDefendantInTable.textContent();
 
+    if (firstDefendantInTableText!.includes("Defendant One")) {
+      await this.caseSelect1.selectOption("Case1");
+      await this.caseSelect2.selectOption("Case2");
     } else {
-        // This block executes if 'Defendant Two' is NOT found or is NOT visible.
-        await this.caseSelect1.selectOption("Case1");
-        await this.caseSelect2.selectOption("Case2");
+      await this.caseSelect1.selectOption("Case2");
+      await this.caseSelect2.selectOption("Case1");
     }
-    
     await this.splitCaseButton.click();
+    const progressText = await this.progressBar.textContent();
+    await expect(this.progressBar).toContainText("Preparing", {
+      timeout: 60_000,
+    });
+    if (!progressText?.includes("Preparing")) {
+      await this.caseNavigation.navigateTo("CaseHome");
+    }
+  }
 }
 
-
-async waitForSplitCaseCompletion(){
-    await this.page.waitForTimeout(60_000);
-    console.log('Split case completion')
-}
-
-}
 export default SplitCasePage;
-

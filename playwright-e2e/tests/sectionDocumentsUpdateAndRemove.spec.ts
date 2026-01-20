@@ -52,11 +52,11 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
         rocaPage,
         "TestCase",
         "TestURN",
-        "Defence"
+        "Defence",
       );
       sampleKey = newCase.sampleKey as [string, string][];
       newCaseName = newCase.newCaseName;
-    }
+    },
   );
 
   test(`Validate document removal in unrestricted sections for user: HMCTS Admin`, async ({
@@ -70,7 +70,7 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
       await updateDocumentsPage.sectionDocumentsBtn.click();
       const removeIssues = await sectionDocumentsPage.verifyDocumentRemoval(
         "HMCTSAdmin",
-        section
+        section,
       );
       if (removeIssues) {
         unrestrictedRemoveResults.push(removeIssues);
@@ -90,8 +90,8 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
         `User ${
           config.users.hmctsAdmin.group
         } experienced issues deleting an unrestricted document:\n${unrestrictedRemoveResults.join(
-          "\n"
-        )}`
+          "\n",
+        )}`,
       );
     }
   });
@@ -107,7 +107,7 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
       await sectionsPage.goToUpdateDocuments(key);
       const newSection = await updateDocumentsPage.moveDocument(
         sampleKey,
-        newSections
+        newSections,
       );
       await updateDocumentsPage.sectionDocumentsBtn.click();
 
@@ -117,7 +117,7 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
         newSection,
         "unrestrictedSectionUpload",
         sectionDocumentsPage,
-        sectionsPage
+        sectionsPage,
       );
       if (moveIssues) {
         unrestrictedMoveResults.push(moveIssues);
@@ -137,8 +137,8 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
         `User ${
           config.users.hmctsAdmin.group
         } experienced issues moving unrestricted document:\n${unrestrictedMoveResults.join(
-          "\n"
-        )}`
+          "\n",
+        )}`,
       );
     }
   });
@@ -155,7 +155,7 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
       const editIssues =
         await sectionDocumentsPage.validateUnrestrictedSectionDocument(
           "TestEdit",
-          section
+          section,
         );
       if (editIssues) {
         unrestrictedEditResults.push(editIssues);
@@ -175,8 +175,8 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
         `User ${
           config.users.hmctsAdmin.group
         } experienced issues editing unrestricted document:\n${unrestrictedEditResults.join(
-          "\n"
-        )}`
+          "\n",
+        )}`,
       );
     }
   });
@@ -233,11 +233,11 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
         rocaPage,
         "TestCase",
         "TestURN",
-        "Defence"
+        "Defence",
       );
       sampleKey = newCase.sampleKey as [string, string][];
       newCaseName = newCase.newCaseName;
-    }
+    },
   );
 
   test(`Validate document removal in restricted sections for user: Defence Advocate A`, async ({
@@ -249,7 +249,7 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
     sectionDocumentsPage,
     updateDocumentsPage,
   }) => {
-    await sectionsPage.navigation.navigateTo("LogOff");
+    await sectionsPage.navigation.logOff();
 
     // Remove documents in restricted sections as Defence Advocate A
     await loginAndOpenCase(
@@ -257,7 +257,7 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
       loginPage,
       caseSearchPage,
       config.users.defenceAdvocateA,
-      newCaseName
+      newCaseName,
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [section, key] of sampleKey) {
@@ -266,7 +266,7 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
       await updateDocumentsPage.sectionDocumentsBtn.click();
       const removeIssues = await sectionDocumentsPage.verifyDocumentRemoval(
         "Defence Advocate A",
-        section
+        section,
       );
       if (removeIssues) {
         restrictedRemoveResults.push(removeIssues);
@@ -286,8 +286,8 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
         `User ${
           config.users.defenceAdvocateA.group
         } experienced issues deleting restricted document:\n${restrictedRemoveResults.join(
-          "\n"
-        )}`
+          "\n",
+        )}`,
       );
     }
   });
@@ -303,7 +303,7 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
   }) => {
     const newSections: string[] = [];
 
-    await sectionsPage.navigation.navigateTo("LogOff");
+    await sectionsPage.navigation.logOff();
 
     // Move documents from restricted sections to either a restricted or unrestricted section as Defence Advocate A
     await loginAndOpenCase(
@@ -311,14 +311,14 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
       loginPage,
       caseSearchPage,
       config.users.defenceAdvocateA,
-      newCaseName
+      newCaseName,
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
       const randomSection = await updateDocumentsPage.moveDocument(
         sampleKey,
-        newSections
+        newSections,
       );
       await updateDocumentsPage.sectionDocumentsBtn.click();
 
@@ -328,7 +328,7 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
         randomSection,
         "restrictedSectionUploadDefendantOne",
         sectionDocumentsPage,
-        sectionsPage
+        sectionsPage,
       );
       if (moveIssues) {
         restrictedMoveResults.push(moveIssues);
@@ -348,8 +348,8 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
         `User ${
           config.users.defenceAdvocateA.group
         } experienced issues moving restricted document:\n${restrictedMoveResults.join(
-          "\n"
-        )}`
+          "\n",
+        )}`,
       );
     }
   });
@@ -363,7 +363,7 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
     sectionDocumentsPage,
     updateDocumentsPage,
   }) => {
-    await sectionsPage.navigation.navigateTo("LogOff");
+    await sectionsPage.navigation.logOff();
 
     // Edit documents in restricted sections as Defence Advocate C
     await loginAndOpenCase(
@@ -371,7 +371,7 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
       loginPage,
       caseSearchPage,
       config.users.defenceAdvocateC,
-      newCaseName
+      newCaseName,
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [section, key] of sampleKey) {
@@ -381,7 +381,7 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
       const editIssues =
         await sectionDocumentsPage.validateSingleRestrictedSectionDocument(
           "TestEdit",
-          section
+          section,
         );
       if (editIssues) {
         restrictedEditResults.push(editIssues);
@@ -401,8 +401,8 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
         `User ${
           config.users.defenceAdvocateC.group
         } experienced issues editing restricted document:\n${restrictedEditResults.join(
-          "\n"
-        )}`
+          "\n",
+        )}`,
       );
     }
   });

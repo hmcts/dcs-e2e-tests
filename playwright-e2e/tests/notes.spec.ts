@@ -219,13 +219,13 @@ test.describe("@nightly @regression Notes Permissions & Access", () => {
           async () => {
             return await reviewEvidencePage.notes.getNotesCount();
           },
-          { timeout: 20000 }
+          { timeout: 20000 },
         )
         .toBeGreaterThan(0);
 
       // Filter expected documents based on User Group
       const expectedNotes = await reviewEvidencePage.notes.filterNotesByUser(
-        user.group
+        user.group,
       );
 
       // Get all available Notes for User
@@ -235,7 +235,7 @@ test.describe("@nightly @regression Notes Permissions & Access", () => {
       const { missingNotes, unexpectedNotes } =
         await reviewEvidencePage.notes.compareExpectedVsAvailableNotes(
           expectedNotes,
-          availableNotes
+          availableNotes,
         );
 
       // If there are any issues, push to currentUserIssues
@@ -254,7 +254,7 @@ test.describe("@nightly @regression Notes Permissions & Access", () => {
         throw new Error(
           `User ${
             user.group
-          } has missing/unexpected Notes:\n${currentUserIssues.join("\n")}`
+          } has missing/unexpected Notes:\n${currentUserIssues.join("\n")}`,
         );
       }
     });

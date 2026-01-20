@@ -42,10 +42,10 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
         peoplePage,
         "TestCase",
         "TestURN",
-        "Defence"
+        "Defence",
       );
       newCaseName = newCase.newCaseName;
-    }
+    },
   );
 
   test(`Validate document upload to unrestricted sections for user: HMCTS Admin`, async ({
@@ -55,9 +55,8 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
   }) => {
     await peoplePage.caseNavigation.navigateTo("Sections");
     const unrestrictedSections = sections.unrestricted;
-    const unrestrictedSectionKeys = await sectionsPage.getSectionKeys(
-      unrestrictedSections
-    );
+    const unrestrictedSectionKeys =
+      await sectionsPage.getSectionKeys(unrestrictedSections);
     const sampleEntries = Object.entries(unrestrictedSectionKeys)
       .sort(() => Math.random() - 0.5)
       .slice(0, 3);
@@ -66,7 +65,7 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
         await sectionsPage.uploadAndValidateUnrestrictedSectionDocument(
           key,
           "unrestrictedSectionUpload",
-          section
+          section,
         );
       if (uploadIssues) {
         unrestrictedUploadResults.push(uploadIssues);
@@ -86,8 +85,8 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
         `User ${
           config.users.hmctsAdmin.group
         } experienced issues uploading unrestricted documents:\n${unrestrictedUploadResults.join(
-          "\n"
-        )}`
+          "\n",
+        )}`,
       );
     }
   });
@@ -110,7 +109,7 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
     peoplePage,
   }) => {
     const restrictedSections = sections.restricted;
-    await peoplePage.navigation.navigateTo("LogOff");
+    await peoplePage.navigation.logOff();
 
     // Upload documents to restricted section as Defence Advocate A
     await loginAndOpenCase(
@@ -118,12 +117,11 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
       loginPage,
       caseSearchPage,
       config.users.defenceAdvocateA,
-      newCaseName
+      newCaseName,
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
-    const restrictedSectionKeys = await sectionsPage.getSectionKeys(
-      restrictedSections
-    );
+    const restrictedSectionKeys =
+      await sectionsPage.getSectionKeys(restrictedSections);
     const sampleEntries = Object.entries(restrictedSectionKeys)
       .sort(() => Math.random() - 0.5)
       .slice(0, 2);
@@ -136,7 +134,7 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
       sectionsPage,
       sectionDocumentsPage,
       "restrictedSectionUploadDefendantOne",
-      "One, Defendant"
+      "One, Defendant",
     );
 
     //   Upload documents to restricted section as Defence Advocate B
@@ -146,7 +144,7 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
       loginPage,
       caseSearchPage,
       config.users.defenceAdvocateB,
-      newCaseName
+      newCaseName,
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     await uploadAndValidateRestrictedDocumentUpload(
@@ -160,7 +158,7 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
       sectionsPage,
       sectionDocumentsPage,
       "restrictedSectionUploadDefendantTwo",
-      "Two, Defendant"
+      "Two, Defendant",
     );
 
     //   Validate access to both Defendant One and Defendant Two's documents as Defence Advocate C
@@ -169,7 +167,7 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
       loginPage,
       caseSearchPage,
       config.users.defenceAdvocateC,
-      newCaseName
+      newCaseName,
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     await uploadAndValidateRestrictedDocumentUpload(
@@ -181,7 +179,7 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
       ],
       restrictedUploadResults,
       sectionsPage,
-      sectionDocumentsPage
+      sectionDocumentsPage,
     );
 
     //   Re-validate access to only Defendant One documents as Defence Advocate A
@@ -190,7 +188,7 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
       loginPage,
       caseSearchPage,
       config.users.defenceAdvocateA,
-      newCaseName
+      newCaseName,
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     await uploadAndValidateRestrictedDocumentUpload(
@@ -199,7 +197,7 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
       [{ name: "restrictedSectionUploadDefendantTwo", shouldBeVisible: false }],
       restrictedUploadResults,
       sectionsPage,
-      sectionDocumentsPage
+      sectionDocumentsPage,
     );
     // Aggragate Results
     pushTestResult({
@@ -212,8 +210,8 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
     if (restrictedUploadResults.length > 0) {
       throw new Error(
         `Defence Users experienced issues uploading and accessing restricted documents:\n${restrictedUploadResults.join(
-          "\n"
-        )}`
+          "\n",
+        )}`,
       );
     }
   });

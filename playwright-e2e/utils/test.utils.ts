@@ -18,11 +18,18 @@ export async function getRandomSectionKeys(
     .slice(0, 3); // returns [ [section, key], ... ]
 }
 
-export async function getRandomSectionKey(sectionsPage, sectionList: string[]) {
-  const keys = await sectionsPage.getSectionKeys(sectionList);
-  return Object.entries(keys)
+export async function getRandomSectionKey(
+  sectionsPage,
+  sectionList: string[]
+): Promise<[string, string][]> {
+  const keys = (await sectionsPage.getSectionKeys(sectionList)) as Record<
+    string,
+    string
+  >;
+  const randomKey = Object.entries(keys)
     .sort(() => Math.random() - 0.5)
     .slice(0, 1); // returns [ [section, key], ... ]
+  return randomKey;
 }
 
 export async function waitUntilClickable(locator, timeout = 10000) {

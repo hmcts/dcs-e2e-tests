@@ -6,14 +6,14 @@ export async function uploadAndValidateRestrictedDocumentUpload(
   sectionsPage,
   sectionDocumentsPage,
   filename?: string,
-  defendant?: string
+  defendant?: string,
 ) {
   for (const [section, key] of entries) {
     if (filename) {
       await sectionsPage.uploadRestrictedSectionDocument(
         key,
         filename,
-        defendant
+        defendant,
       );
     } else {
       await sectionsPage.goToViewDocumentsByKey(key);
@@ -22,12 +22,12 @@ export async function uploadAndValidateRestrictedDocumentUpload(
       await sectionDocumentsPage.validateRestrictedSectionDocumentUpload(
         section,
         user,
-        expectedDocs
+        expectedDocs,
       );
     if (validationIssues) resultsArray.push(validationIssues);
     await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
   }
-  await sectionsPage.navigation.navigateTo("LogOff");
+  await sectionsPage.navigation.logOff();
 }
 
 export async function verifyDocumentMove(
@@ -36,14 +36,14 @@ export async function verifyDocumentMove(
   newSection,
   filename,
   sectionDocumentsPage,
-  sectionsPage
+  sectionsPage,
 ) {
   await sectionDocumentsPage.page
     .locator("table.formTable-zebra tbody tr:nth-child(n+2)")
     .first()
     .waitFor({ state: "visible", timeout: 40000 });
   const rows = sectionDocumentsPage.page.locator(
-    "table.formTable-zebra tbody tr:nth-child(n+3)"
+    "table.formTable-zebra tbody tr:nth-child(n+3)",
   );
   const count = await rows.count();
   if (count > 0) {
@@ -55,7 +55,7 @@ export async function verifyDocumentMove(
     "td.documentInContentsIndex span",
     {
       hasText: `${filename}`,
-    }
+    },
   );
   try {
     await movedDocument.waitFor({ state: "visible", timeout: 40000 });

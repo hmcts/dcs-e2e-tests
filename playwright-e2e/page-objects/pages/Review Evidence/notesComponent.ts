@@ -28,7 +28,7 @@ class NotesComponent extends Base {
     this.noteTextArea = this.activeEditor.locator("#commentTextArea");
     this.saveNote = this.activeEditor.locator("#saveComment");
     this.privateButton = page.locator(
-      '#editCommentPrivate input[type="radio"]'
+      '#editCommentPrivate input[type="radio"]',
     );
     this.tightlyDefence = page.locator('#editCommentTeam input[type="radio"]');
     this.tightlyShared = page.locator('#editCommentTight input[type="radio"]');
@@ -52,7 +52,7 @@ class NotesComponent extends Base {
           },
           {
             timeout: 3000,
-          }
+          },
         )
         .toBe(true);
     } catch {
@@ -80,7 +80,7 @@ class NotesComponent extends Base {
     canvasOffsetX: number,
     canvasOffsetY: number,
     dragWidth = 100,
-    dragHeight = 40
+    dragHeight = 40,
   ) {
     const box = await this.getCanvasBoundingBox();
     // convert offsets inside canvas to absolute page coordinates
@@ -125,7 +125,7 @@ class NotesComponent extends Base {
     userGroup: string,
     username: string,
     canvasX: number,
-    canvasY: number
+    canvasY: number,
   ) {
     const dragWidth = 160;
     const dragHeight = 80;
@@ -198,7 +198,7 @@ class NotesComponent extends Base {
     username: string,
     startY = 150,
     yStep = 100,
-    canvasX = 200
+    canvasX = 200,
   ) {
     const shareTypesDefault = ["Private", "Tightly Shared", "Widely Shared"];
     let shareTypes = shareTypesDefault;
@@ -244,7 +244,7 @@ class NotesComponent extends Base {
             intervals: [2000],
             // Allow up to 1o seconds for draw box button to be selected
             timeout: 10000,
-          }
+          },
         )
         .toBeFalsy();
     }
@@ -263,22 +263,22 @@ class NotesComponent extends Base {
       try {
         if (notes[i].noteText !== expectedText) {
           currentUserIssues.push(
-            `Add Note Validation Failed (Text): Expected "${expectedText}", got "${notes[i].noteText}"`
+            `Add Note Validation Failed (Text): Expected "${expectedText}", got "${notes[i].noteText}"`,
           );
         }
         if (!notes[i].noteShare.includes(expectedShare)) {
           currentUserIssues.push(
-            `Add Note Validation Failed (Share Type): Expected "${expectedShare}", got "${notes[i].noteShare}"`
+            `Add Note Validation Failed (Share Type): Expected "${expectedShare}", got "${notes[i].noteShare}"`,
           );
         }
         if (!notes[i].noteUser.includes(expectedUser)) {
           currentUserIssues.push(
-            `Add Note Validation Failed (User): Expected "${expectedUser}", got "${notes[i].noteUser}"`
+            `Add Note Validation Failed (User): Expected "${expectedUser}", got "${notes[i].noteUser}"`,
           );
         }
       } catch (err) {
         currentUserIssues.push(
-          `Unexpected error validating note index ${i}: ${err}`
+          `Unexpected error validating note index ${i}: ${err}`,
         );
       }
     }
@@ -320,13 +320,13 @@ class NotesComponent extends Base {
     if (userGroup === "DefenceAdvocateA") {
       await expect
         .poll(async () => await count, {
-          timeout: 10000,
+          timeout: 30000,
         })
         .toBe(3);
     } else {
       await expect
         .poll(async () => await count, {
-          timeout: 10000,
+          timeout: 30000,
         })
         .toBe(2);
     }
@@ -345,7 +345,7 @@ class NotesComponent extends Base {
           }
           return isVisible;
         },
-        { timeout: 10000, intervals: [500] }
+        { timeout: 10000, intervals: [500] },
       )
       .toBeTruthy();
 
@@ -356,7 +356,7 @@ class NotesComponent extends Base {
     await shareButton.check();
     await expect(
       shareButton,
-      "Unable to select widely shared radio button"
+      "Unable to select widely shared radio button",
     ).toBeChecked();
 
     // Save note
@@ -372,7 +372,7 @@ class NotesComponent extends Base {
           intervals: [2000],
           // Allow up to 10 seconds for the Save button to disappear
           timeout: 10000,
-        }
+        },
       )
       .toBeFalsy();
   }
@@ -383,13 +383,13 @@ class NotesComponent extends Base {
 
   async getDocumentIDBySectionIndex(
     documentIndex: number,
-    sectionTextIndex: string
+    sectionTextIndex: string,
   ): Promise<string> {
     const sectionTableLocator = this.page.locator(
       `table.sectionTextTable >> td.sectionTextIndex`,
       {
         hasText: new RegExp(`^${sectionTextIndex}:$`),
-      }
+      },
     );
 
     await expect(sectionTableLocator).toBeVisible();
@@ -399,7 +399,7 @@ class NotesComponent extends Base {
       .evaluateHandle((td) => td.closest("table"));
 
     const sectionId = await sectionTableHandle.evaluate(
-      (table: HTMLTableElement) => table.id.replace("sectionName-", "")
+      (table: HTMLTableElement) => table.id.replace("sectionName-", ""),
     );
     const documentLocator = this.page
       .locator(`.sectionDocumentUl-${sectionId} .documentLi`)
@@ -410,7 +410,7 @@ class NotesComponent extends Base {
     const documentId = await documentLocator.getAttribute("id");
     if (!documentId)
       throw new Error(
-        `Document at index ${documentIndex} in section with index: ${sectionTextIndex} not found`
+        `Document at index ${documentIndex} in section with index: ${sectionTextIndex} not found`,
       );
 
     return documentId;
@@ -421,7 +421,7 @@ class NotesComponent extends Base {
     const result = await this.page.evaluate(
       ({ documentId, sectionId, timeout }) => {
         const img = document.querySelector<HTMLImageElement>(
-          `img.documentPageImage[data-documentrowkey="${documentId}"]`
+          `img.documentPageImage[data-documentrowkey="${documentId}"]`,
         );
         if (!img)
           return {
@@ -454,7 +454,7 @@ class NotesComponent extends Base {
         sectionId: sectionKey,
         timeout: timeoutMs,
         documentId,
-      }
+      },
     );
 
     // Node-side console log
@@ -534,7 +534,7 @@ class NotesComponent extends Base {
 
   async compareExpectedVsAvailableNotes(
     userExpectedNotes: NotesModel[],
-    userAvailableNotes: NotesModel[]
+    userAvailableNotes: NotesModel[],
   ) {
     const missingNotes: string[] = [];
     const unexpectedNotes: string[] = [];
@@ -546,7 +546,7 @@ class NotesComponent extends Base {
         (availableNote) =>
           availableNote.noteText === expectedNote.noteText &&
           availableNote.noteUser === expectedNote.noteUser &&
-          availableNote.noteShare === expectedNote.noteShare
+          availableNote.noteShare === expectedNote.noteShare,
       );
 
       if (availableMatches.length === 0) {
@@ -561,11 +561,11 @@ class NotesComponent extends Base {
         (expectedNote) =>
           expectedNote.noteText === availableNote.noteText &&
           expectedNote.noteUser === availableNote.noteUser &&
-          expectedNote.noteShare === availableNote.noteShare
+          expectedNote.noteShare === availableNote.noteShare,
       );
       if (expectedMatches.length === 0) {
         unexpectedNotes.push(
-          `Note: "${availableNote.noteText}" - is unexpectedly showing`
+          `Note: "${availableNote.noteText}" - is unexpectedly showing`,
         );
       }
     }

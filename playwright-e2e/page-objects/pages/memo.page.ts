@@ -9,6 +9,7 @@ class MemoPage extends Base {
   removeMemoButton: Locator;
   saveChangeMemo: Locator;
   memoHeading: Locator;
+  memoTable: Locator;
   memoTableRow1: Locator;
   memoTableRow2: Locator;
 
@@ -21,6 +22,7 @@ class MemoPage extends Base {
     this.removeMemoButton = page.getByRole("link", { name: "Remove" }).first();
     this.saveChangeMemo = page.getByRole("button", { name: "Save" });
     this.memoHeading = page.locator('div[id="content"] h3');
+    this.memoTable = page.locator(".formTable-zebra");
     this.memoTableRow1 = page.locator(
       "xpath= //table[@class='formTable-zebra']/tbody[1]/tr[2]/td[2]"
     );
