@@ -25,9 +25,8 @@ class NavigationBar {
       }),
       LogOff: page.getByRole("link", { name: "Log Off" }),
       ViewCaseListLink: page.getByRole("link", { name: "View Case List" }),
-      ApprovalRequests: page.getByRole('link', { name: 'Approval Requests' }),
-      Admin: page.getByRole('link', { name: 'Admin' })
-
+      ApprovalRequests: page.getByRole("link", { name: "Approval Requests" }),
+      Admin: page.getByRole("link", { name: "Admin" }),
     };
   }
 
@@ -37,6 +36,28 @@ class NavigationBar {
       throw new Error(`Link "${link}" does not exist in the navigation bar`);
     }
     await locator.click();
+  }
+
+  async logOff() {
+    const logOff = this.links.LogOff;
+    const logOn = this.links.LogOn;
+
+    if (!logOff) {
+      throw new Error(`Log Off link does not exist in the navigation bar`);
+    }
+
+    for (let attempt = 0; attempt < 2; attempt++) {
+      await logOff.click();
+
+      try {
+        await logOn.waitFor({ state: "visible", timeout: 10_000 });
+        return; // successfully logged off
+      } catch {
+        // retry
+      }
+    }
+
+    throw new Error(`❌ Log Off was unsuccessful`);
   }
 }
 

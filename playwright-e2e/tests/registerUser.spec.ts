@@ -24,7 +24,7 @@ import { test, expect } from "../fixtures";
 test.describe("@nightly @regression Register New user in CCDCS", () => {
   test.beforeEach(async ({ homePage }) => {
     await homePage.open();
-    await homePage.navigation.navigateTo("LogOff");
+    await homePage.navigation.logOff();
   });
 
   test("Approve/Reject New user registration", async ({
@@ -44,7 +44,7 @@ test.describe("@nightly @regression Register New user in CCDCS", () => {
     await expect(registerUserPage.registerHeading).toContainText("Register");
     const { userName, userEmail, userRole, userLocation, isSelfInviteRole } =
       await registerUserPage.submitUserRegDetails();
-    await homePage.navigation.navigateTo("LogOff");
+    await homePage.navigation.logOff();
 
     // Access Coordinator verifies email
 
@@ -52,12 +52,12 @@ test.describe("@nightly @regression Register New user in CCDCS", () => {
     await loginPage.loginAsAccessCoordinator();
     await homePage.navigation.navigateTo("Admin");
     await expect(adminPage.adminHeading).toContainText(
-      "Administration Options"
+      "Administration Options",
     );
     await adminPage.navigateToUsers();
     await userSettingsPage.searchUser(userName);
     await userSettingsPage.verifyUserEmail(userEmail);
-    await homePage.navigation.navigateTo("LogOff");
+    await homePage.navigation.logOff();
 
     //New user logs back in after email verification
 
@@ -70,9 +70,9 @@ test.describe("@nightly @regression Register New user in CCDCS", () => {
     // Self Invite user
     const handleSelfInviteFlow = async () => {
       await expect(homePage.accountMessage).toContainText(
-        "Your account has been successfully verified and is now waiting for Approval from an Access Coordinator applicable to the Location and Role you have registered for."
+        "Your account has been successfully verified and is now waiting for Approval from an Access Coordinator applicable to the Location and Role you have registered for.",
       );
-      await homePage.navigation.navigateTo("LogOff");
+      await homePage.navigation.logOff();
       await homePage.navigation.navigateTo("LogOn");
       await loginPage.loginAsAccessCoordinator();
       await homePage.navigation.navigateTo("ApprovalRequests");
@@ -82,25 +82,25 @@ test.describe("@nightly @regression Register New user in CCDCS", () => {
           await approvalRequestsPage.clickApprove(
             userEmail,
             userRole,
-            userLocation
+            userLocation,
           );
           await approveAccessRequestPage.approveUserRequest();
 
           await expect(approvalRequestsPage.returnMessage).toContainText(
-            "successfully approved!"
+            "successfully approved!",
           );
 
           await homePage.navigation.navigateTo("Admin");
           await adminPage.navigateToUsers();
           await userSettingsPage.verifyApprovalFlag(userName);
 
-          await homePage.navigation.navigateTo("LogOff");
+          await homePage.navigation.logOff();
           await homePage.navigation.navigateTo("LogOn");
           await loginPage.loginAsNewUserRegistered(userName);
           await homePage.navigation.navigateTo("ViewCaseListLink");
 
           await expect(caseSearchPage.caseSearchHeading).toHaveText(
-            "Case List"
+            "Case List",
           );
         },
 
@@ -108,25 +108,25 @@ test.describe("@nightly @regression Register New user in CCDCS", () => {
           await approvalRequestsPage.clickReject(
             userEmail,
             userRole,
-            userLocation
+            userLocation,
           );
           await rejectAccessRequestPage.rejectUserRequest();
 
           await expect(approvalRequestsPage.returnMessage).toContainText(
-            "Rejection confirmed!"
+            "Rejection confirmed!",
           );
 
           await homePage.navigation.navigateTo("Admin");
           await adminPage.navigateToUsers();
           await userSettingsPage.verifyRejectionFlag(userName);
 
-          await homePage.navigation.navigateTo("LogOff");
+          await homePage.navigation.logOff();
           await homePage.navigation.navigateTo("LogOn");
           await loginPage.loginAsNewUserRegistered(userName);
           await homePage.navigation.navigateTo("ViewCaseListLink");
 
           await expect(homePage.accountMessage).toContainText(
-            "Your account registration has been rejected. If you require access to DCS, you must re-register. If you believe your account has been incorrectly rejected then please contact CITS:"
+            "Your account registration has been rejected. If you require access to DCS, you must re-register. If you believe your account has been incorrectly rejected then please contact CITS:",
           );
         },
       };

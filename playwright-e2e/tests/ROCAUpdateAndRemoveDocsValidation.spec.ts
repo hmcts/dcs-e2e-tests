@@ -50,12 +50,12 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
         rocaPage,
         "TestCase",
         "TestURN",
-        "Defence"
+        "Defence",
       );
       sampleKey = newCase.sampleKey as [string, string][];
       newCaseName = newCase.newCaseName;
       rocaExpected = newCase.uploadedDocuments;
-    }
+    },
   );
 
   test(`Validate ROCA: Document removal in unrestricted sections`, async ({
@@ -70,7 +70,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
         section,
         "unrestrictedSectionUpload",
         "Delete",
-        config.users.hmctsAdmin.username
+        config.users.hmctsAdmin.username,
       );
       await updateDocumentsPage.removeDocument();
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
@@ -81,7 +81,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
     // Compare expected vs actual ROCA
     const deletionIssues = await rocaPage.validateROCAForUser(
       rocaExpected,
-      rocaPage.unrestrictedTable
+      rocaPage.unrestrictedTable,
     );
     // Aggragate Results
     pushTestResult({
@@ -96,8 +96,8 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
         `User ${
           config.users.hmctsAdmin.group
         } had issues deleting unrestricted document:\n${deletionIssues.join(
-          "\n"
-        )}`
+          "\n",
+        )}`,
       );
     }
   });
@@ -114,7 +114,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
       await sectionsPage.goToUpdateDocuments(key);
       const newSection = await updateDocumentsPage.moveDocument(
         sampleKey,
-        newSections
+        newSections,
       );
       await rocaPage.updateROCAModelMove(
         rocaExpected,
@@ -123,7 +123,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
         "unrestrictedSectionUpload",
         config.users.hmctsAdmin.username,
         restrictedROCAModel,
-        false
+        false,
       );
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
     }
@@ -133,13 +133,13 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
     const expectedUnrestrictedROCA = rocaExpected;
     const unrestrictedResult = await rocaPage.validateROCAForUser(
       expectedUnrestrictedROCA,
-      rocaPage.unrestrictedTable
+      rocaPage.unrestrictedTable,
     );
 
     const expectedRestrictedROCA = restrictedROCAModel;
     const restrictedResult = await rocaPage.validateROCAForUser(
       expectedRestrictedROCA,
-      rocaPage.restrictedTable
+      rocaPage.restrictedTable,
     );
     // Aggragate Results
     const moveIssues = [...unrestrictedResult, ...restrictedResult];
@@ -154,7 +154,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
       throw new Error(
         `User ${
           config.users.hmctsAdmin.group
-        } had issues moving unrestricted document:\n${moveIssues.join("\n")}`
+        } had issues moving unrestricted document:\n${moveIssues.join("\n")}`,
       );
     }
   });
@@ -171,7 +171,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
         section,
         "unrestrictedSectionUpload",
         "Update",
-        config.users.hmctsAdmin.username
+        config.users.hmctsAdmin.username,
       );
       await updateDocumentsPage.editDocumentName();
 
@@ -183,7 +183,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
     // Compare expected vs actual ROCA
     const editIssues = await rocaPage.validateROCAForUser(
       rocaExpected,
-      rocaPage.unrestrictedTable
+      rocaPage.unrestrictedTable,
     );
 
     // Aggragate Results
@@ -198,7 +198,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
       throw new Error(
         `User ${
           config.users.hmctsAdmin.group
-        } had issues editing unrestricted document:\n${editIssues.join("\n")}`
+        } had issues editing unrestricted document:\n${editIssues.join("\n")}`,
       );
     }
   });
@@ -253,12 +253,12 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
         rocaPage,
         "TestCase",
         "TestURN",
-        "Defence"
+        "Defence",
       );
       sampleKey = newCase.sampleKey as [string, string][];
       newCaseName = newCase.newCaseName;
       rocaExpected = newCase.uploadedDocuments;
-    }
+    },
   );
 
   test(`Validate document removal in restricted sections`, async ({
@@ -270,7 +270,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
     updateDocumentsPage,
     rocaPage,
   }) => {
-    await sectionsPage.navigation.navigateTo("LogOff");
+    await sectionsPage.navigation.logOff();
 
     // Remove documents in restricted sections as Defence Advocate A
     await loginAndOpenCase(
@@ -278,7 +278,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
       loginPage,
       caseSearchPage,
       config.users.defenceAdvocateA,
-      newCaseName
+      newCaseName,
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [section, key] of sampleKey) {
@@ -289,7 +289,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
         "restrictedSectionUploadDefendantOne",
         "Delete",
         config.users.defenceAdvocateA.username,
-        "One Defendant"
+        "One Defendant",
       );
       await updateDocumentsPage.removeDocument();
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
@@ -300,7 +300,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
     // Compare expected vs actual ROCA
     const deletionIssues = await rocaPage.validateROCAForUser(
       rocaExpected,
-      rocaPage.restrictedTable
+      rocaPage.restrictedTable,
     );
 
     // Aggragate Results
@@ -316,8 +316,8 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
         `User ${
           config.users.defenceAdvocateA.group
         } had issues deleting restricted document:\n${deletionIssues.join(
-          "\n"
-        )}`
+          "\n",
+        )}`,
       );
     }
   });
@@ -334,7 +334,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
     const newSections: string[] = [];
     const unrestrictedROCAModel: ROCAModel[] = [];
 
-    await sectionsPage.navigation.navigateTo("LogOff");
+    await sectionsPage.navigation.logOff();
 
     // Move documents from restricted sections to either a restricted or unrestricted section as Defence Advocate A
     await loginAndOpenCase(
@@ -342,14 +342,14 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
       loginPage,
       caseSearchPage,
       config.users.defenceAdvocateA,
-      newCaseName
+      newCaseName,
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
       const newSection = await updateDocumentsPage.moveDocument(
         sampleKey,
-        newSections
+        newSections,
       );
       await rocaPage.updateROCAModelMove(
         rocaExpected,
@@ -359,7 +359,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
         config.users.defenceAdvocateA.username,
         unrestrictedROCAModel,
         true,
-        "One Defendant"
+        "One Defendant",
       );
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
     }
@@ -369,13 +369,13 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
     const expectedRestrictedROCA = rocaExpected;
     const restrictedResult = await rocaPage.validateROCAForUser(
       expectedRestrictedROCA,
-      rocaPage.restrictedTable
+      rocaPage.restrictedTable,
     );
 
     const expectedUnrestrictedROCA = unrestrictedROCAModel;
     const unrestrictedResult = await rocaPage.validateROCAForUser(
       expectedUnrestrictedROCA,
-      rocaPage.unrestrictedTable
+      rocaPage.unrestrictedTable,
     );
 
     // Aggragate Results
@@ -391,7 +391,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
       throw new Error(
         `User ${
           config.users.defenceAdvocateA.group
-        } had issues moving restricted document:\n${moveIssues.join("\n")}`
+        } had issues moving restricted document:\n${moveIssues.join("\n")}`,
       );
     }
   });
@@ -406,7 +406,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
     updateDocumentsPage,
     rocaPage,
   }) => {
-    await sectionsPage.navigation.navigateTo("LogOff");
+    await sectionsPage.navigation.logOff();
 
     // Edit documents in restricted sections as Defence Advocate C
     await loginAndOpenCase(
@@ -414,7 +414,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
       loginPage,
       caseSearchPage,
       config.users.defenceAdvocateC,
-      newCaseName
+      newCaseName,
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [section, key] of sampleKey) {
@@ -425,7 +425,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
         "restrictedSectionUploadDefendantOne",
         "Update",
         config.users.defenceAdvocateC.username,
-        "One Defendant"
+        "One Defendant",
       );
       await updateDocumentsPage.editDocumentName();
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
@@ -436,7 +436,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
     // Compare expected vs actual ROCA
     const editIssues = await rocaPage.validateROCAForUser(
       rocaExpected,
-      rocaPage.restrictedTable
+      rocaPage.restrictedTable,
     );
 
     // Aggragate Results
@@ -451,7 +451,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
       throw new Error(
         `User ${
           config.users.defenceAdvocateC.group
-        } had issues editing restricted document:\n${editIssues.join("\n")}`
+        } had issues editing restricted document:\n${editIssues.join("\n")}`,
       );
     }
   });
