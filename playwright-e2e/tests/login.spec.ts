@@ -2,7 +2,7 @@
 import { test, expect } from "../fixtures";
 import { UserCredentials, config, invalidUsers } from "../utils";
 
-test.describe("Successful login across User Groups", () => {
+test.describe("@nightly @regression Successful login across User Groups", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
   test.beforeEach(async ({ homePage }) => {
@@ -24,7 +24,7 @@ test.describe("Successful login across User Groups", () => {
   }
 });
 
-test.describe("Invalid login attempts", () => {
+test.describe("@nightly @regression Invalid login attempts", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
   test.beforeEach(async ({ homePage }) => {
@@ -41,7 +41,7 @@ test.describe("Invalid login attempts", () => {
   }
 });
 
-test.describe("Missing login fields", () => {
+test.describe("@nightly @regression Missing login fields", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
   test.beforeEach(async ({ homePage }) => {

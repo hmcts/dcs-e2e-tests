@@ -1,5 +1,5 @@
-import { test, expect } from "../fixtures";
-import { config, pushTestResult } from "../utils";
+import { test, expect, currentUser, eligibleUsers } from "../fixtures";
+import { pushTestResult } from "../utils";
 import { createNewCaseWithUnrestrictedDocument } from "../helpers/createCase.helper";
 import { loginAndOpenCase } from "../helpers/login.helper";
 import {
@@ -7,6 +7,9 @@ import {
   runCleanupSafely,
 } from "../helpers/deleteCase.helper";
 import ReviewEvidencePage from "../page-objects/pages/Review Evidence/reviewEvidence.page";
+
+const TEST_USERS = process.env.TEST_USERS || "nightly";
+// Please update TEST_USERS=regression locally to run all users
 
 // ======================================================================
 // Test 1: Create, Delete, Edit Note
@@ -20,160 +23,161 @@ import ReviewEvidencePage from "../page-objects/pages/Review Evidence/reviewEvid
 // I want to be able to edit or remove my notes of any share type (Widely Shared, Tightly Shared, Private) on a document I have access to
 // So that I can ensure up to date information is shared, to the right parties on a document.
 
-const excludedGroups = [
-  "AccessCoordinator",
-  "Admin",
-  "DefenceAdvocateB",
-  "DefenceAdvocateC",
-];
+// -----------------------------
+// Test 1: Notes Functionality
+// -----------------------------
 
-for (const user of Object.values(config.users).filter(
-  (u) => !excludedGroups.includes(u.group),
-)) {
-  test.describe(`@notes @user:${user.group} Notes Functionality for ${user.group}`, () => {
-    let sampleKey: [string, string][];
-    let newCaseName: string;
+test.describe("@regression @nightly @notes Notes Functionality", () => {
+  // Pick users based on scope
+  const usersToTest = TEST_USERS === "nightly" ? [currentUser] : eligibleUsers;
 
-    test.beforeEach(
-      async ({
-        homePage,
-        caseSearchPage,
-        caseDetailsPage,
-        createCasePage,
-        addDefendantPage,
-        peoplePage,
-        sectionsPage,
-        sectionDocumentsPage,
-        rocaPage,
-      }) => {
-        await homePage.open();
-        await homePage.navigation.navigateTo("ViewCaseListLink");
-        await caseSearchPage.goToCreateCase();
+  for (const user of usersToTest) {
+    test.describe(`Notes Functionality for ${user.group}`, () => {
+      let sampleKey: [string, string][];
+      let newCaseName: string;
 
-        const newCase = await createNewCaseWithUnrestrictedDocument(
-          createCasePage,
+      test.beforeEach(
+        async ({
+          homePage,
+          caseSearchPage,
           caseDetailsPage,
+          createCasePage,
           addDefendantPage,
           peoplePage,
           sectionsPage,
           sectionDocumentsPage,
           rocaPage,
-          "TestCase",
-          "TestURN",
-          user.group,
-        );
+        }) => {
+          await homePage.open();
+          await homePage.navigation.navigateTo("ViewCaseListLink");
+          await caseSearchPage.goToCreateCase();
 
-        sampleKey = newCase.sampleKey as [string, string][];
-        newCaseName = newCase.newCaseName;
+          const newCase = await createNewCaseWithUnrestrictedDocument(
+            createCasePage,
+            caseDetailsPage,
+            addDefendantPage,
+            peoplePage,
+            sectionsPage,
+            sectionDocumentsPage,
+            rocaPage,
+            "TestCase",
+            "TestURN",
+            user.group
+          );
 
-        await sectionsPage.navigation.logOff();
-      },
-    );
+          sampleKey = newCase.sampleKey as [string, string][];
+          newCaseName = newCase.newCaseName;
 
-    test(`Create, Delete and Edit Notes on Document for ${user.group}`, async ({
-      homePage,
-      loginPage,
-      caseSearchPage,
-      caseDetailsPage,
-    }) => {
-      const currentUserIssues: string[] = [];
+          await sectionsPage.navigation.navigateTo("LogOff");
+        }
+      );
 
-      await loginAndOpenCase(
+      test(`Create, Delete and Edit Notes on Document for ${user.group}`, async ({
         homePage,
         loginPage,
         caseSearchPage,
-        user,
-        newCaseName,
-      );
+        caseDetailsPage,
+      }) => {
+        const currentUserIssues: string[] = [];
 
-      const popup = await caseDetailsPage.openReviewPopupAwaitPagination();
-      const reviewEvidencePage = new ReviewEvidencePage(popup);
+        await loginAndOpenCase(
+          homePage,
+          loginPage,
+          caseSearchPage,
+          user,
+          newCaseName
+        );
 
-      const sectionKey = sampleKey[0][0];
-      await reviewEvidencePage.sectionPanelLoad();
-      await reviewEvidencePage.notes.waitForHighResImageLoad(sectionKey);
-      await reviewEvidencePage.notes.openNotes();
+        const popup = await caseDetailsPage.openReviewPopupAwaitPagination();
+        const reviewEvidencePage = new ReviewEvidencePage(popup);
 
-      const types = await reviewEvidencePage.notes.addNotesForUserGroup(
-        user.group,
-        user.username,
-      );
+        const sectionKey = sampleKey[0][0];
+        await reviewEvidencePage.sectionPanelLoad();
+        await reviewEvidencePage.notes.waitForHighResImageLoad(sectionKey);
+        await reviewEvidencePage.notes.openNotes();
 
-      if (user.group === "DefenceAdvocateA") {
-        await expect
-          .poll(() => reviewEvidencePage.notes.getNotesCount(), {
-            timeout: 30000,
-          })
-          .toBe(4);
-      } else {
-        await expect
-          .poll(() => reviewEvidencePage.notes.getNotesCount(), {
-            timeout: 30000,
-          })
-          .toBe(3);
-      }
+        const types = await reviewEvidencePage.notes.addNotesForUserGroup(
+          user.group,
+          user.username
+        );
 
-      const notes = await reviewEvidencePage.notes.getAllNotes();
-      await reviewEvidencePage.notes.validateNotes(
-        currentUserIssues,
-        user,
-        types,
-        notes,
-      );
+        if (user.group === "DefenceAdvocateA") {
+          await expect
+            .poll(() => reviewEvidencePage.notes.getNotesCount(), {
+              timeout: 30000,
+            })
+            .toBe(4);
+        } else {
+          await expect
+            .poll(() => reviewEvidencePage.notes.getNotesCount(), {
+              timeout: 30000,
+            })
+            .toBe(3);
+        }
 
-      // Delete Note
-      await reviewEvidencePage.notes.deleteNote();
-      try {
-        const notesWithDeletion = await reviewEvidencePage.notes.getAllNotes();
-        expect(notesWithDeletion).toEqual(notes.slice(1));
-      } catch {
-        currentUserIssues.push(`Deletion of note failed for ${user.group}`);
-      }
+        const notes = await reviewEvidencePage.notes.getAllNotes();
+        await reviewEvidencePage.notes.validateNotes(
+          currentUserIssues,
+          user,
+          types,
+          notes
+        );
 
-      // Edit Note
-      await reviewEvidencePage.notes.editNote(user.group);
-      try {
-        await expect
-          .poll(
-            async () =>
-              await reviewEvidencePage.notes.stickyNotes
-                .last()
-                .locator(".commentText")
-                .innerText(),
-            { timeout: 10000 },
-          )
-          .toBe(`Edited note for ${user.group}`);
-      } catch {
-        currentUserIssues.push(`Edit of note failed for ${user.group}`);
-      }
+        // Delete Note
+        await reviewEvidencePage.notes.deleteNote();
+        try {
+          const notesWithDeletion =
+            await reviewEvidencePage.notes.getAllNotes();
+          expect(notesWithDeletion).toEqual(notes.slice(1));
+        } catch {
+          currentUserIssues.push(`Deletion of note failed for ${user.group}`);
+        }
 
-      pushTestResult({
-        user: user.group,
-        heading: `Verify Notes Functionality for ${user.group}`,
-        category: "Notes",
-        issues: currentUserIssues,
+        // Edit Note
+        await reviewEvidencePage.notes.editNote(user.group);
+        try {
+          await expect
+            .poll(
+              async () =>
+                await reviewEvidencePage.notes.stickyNotes
+                  .last()
+                  .locator(".commentText")
+                  .innerText(),
+              { timeout: 10000 }
+            )
+            .toBe(`Edited note for ${user.group}`);
+        } catch {
+          currentUserIssues.push(`Edit of note failed for ${user.group}`);
+        }
+
+        pushTestResult({
+          user: user.group,
+          heading: `Verify Notes Functionality for ${user.group}`,
+          category: "Notes",
+          issues: currentUserIssues,
+        });
+
+        if (currentUserIssues.length > 0) {
+          throw new Error(
+            `User ${user.group} experienced issues:\n${currentUserIssues.join(
+              "\n"
+            )}`
+          );
+        }
       });
 
-      if (currentUserIssues.length > 0) {
-        throw new Error(
-          `User ${user.group} experienced issues:\n${currentUserIssues.join(
-            "\n",
-          )}`,
-        );
-      }
-    });
+      test.afterEach(async () => {
+        if (!newCaseName) return;
 
-    test.afterEach(async () => {
-      if (!newCaseName) return;
-
-      await runCleanupSafely(async () => {
-        console.log(`Attempting to delete test case: ${newCaseName}`);
-        await deleteCaseByName(newCaseName, 180_000);
-        console.log(`Cleanup completed for ${newCaseName}`);
-      }, 180_000);
+        await runCleanupSafely(async () => {
+          console.log(`Attempting to delete test case: ${newCaseName}`);
+          await deleteCaseByName(newCaseName, 180_000);
+          console.log(`Cleanup completed for ${newCaseName}`);
+        }, 180_000);
+      });
     });
-  });
-}
+  }
+});
 
 // // ============================================================
 // // Test 2: Notes Access Permissions
@@ -183,18 +187,16 @@ for (const user of Object.values(config.users).filter(
 // // I want be able to see a list of the correct available Notes for an existing case as per my user permissions
 // // So I don't get exposed to information outside of my remit that could impact the case integrity
 
-test.describe("Notes Permissions & Access", () => {
+test.describe("@nightly @regression Notes Permissions & Access", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
   test.beforeEach(async ({ homePage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("LogOn");
   });
 
-  const excludedGroups = ["AccessCoordinator", "Admin"];
+  const usersToTest = TEST_USERS === "nightly" ? [currentUser] : eligibleUsers;
 
-  for (const user of Object.values(config.users).filter(
-    (user) => !excludedGroups.includes(user.group),
-  )) {
+  for (const user of usersToTest) {
     test(`Verify access to Notes for: ${user.group}`, async ({
       loginPage,
       homePage,

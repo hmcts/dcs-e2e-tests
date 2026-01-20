@@ -15,7 +15,7 @@ import {
 // When I upload a PTPH form into the DCS platform
 // This should be accurately displayed on the virtual PTPH form for the relevant case
 
-test.describe("PTPH Form Rendering / Photosnaps @ptph", () => {
+test.describe("@nightly @regression PTPH Form Rendering / Photosnaps @ptph", () => {
   let newCaseUrn: string;
   let newCaseName: string;
 

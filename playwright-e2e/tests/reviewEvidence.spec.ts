@@ -1,6 +1,9 @@
-import { test, expect } from "../fixtures";
+import { test, expect, currentUser, eligibleUsers } from "../fixtures";
 import ReviewEvidencePage from "../page-objects/pages/Review Evidence/reviewEvidence.page";
-import { config, pushTestResult } from "../utils";
+import { pushTestResult } from "../utils";
+
+const TEST_USERS = process.env.TEST_USERS || "nightly";
+// Please update TEST_USERS=regression locally to run all users
 
 // ============================================================
 // Test 1: Sections & Documents Availability
@@ -10,23 +13,16 @@ import { config, pushTestResult } from "../utils";
 // I want to be able to access the Review Evidence Page
 // And I should be able to see a list of the correct available Sections and Documents in the Index for an existing case
 
-test.describe("Sections and Documents availability", () => {
+test.describe("@nightly @regression Sections and Documents availability", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
   test.beforeEach(async ({ homePage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("LogOn");
   });
 
-  const excludedGroups = [
-    "AccessCoordinator",
-    "DefenceAdvocateB",
-    "DefenceAdvocateC",
-    "Admin",
-  ];
+  const usersToTest = TEST_USERS === "nightly" ? [currentUser] : eligibleUsers;
 
-  for (const user of Object.values(config.users).filter(
-    (user) => !excludedGroups.includes(user.group)
-  )) {
+  for (const user of usersToTest) {
     test(`Verify Sections & Documents in Navigation Panel for: ${user.group}`, async ({
       loginPage,
       homePage,
@@ -99,23 +95,16 @@ test.describe("Sections and Documents availability", () => {
 // I want to be able to click onto an available document in the Index
 // And this document should render correctly on the page
 
-test.describe("Document rendering / photosnaps", () => {
+test.describe("@regression Document rendering / photosnaps", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
   test.beforeEach(async ({ homePage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("LogOn");
   });
 
-  const excludedGroups = [
-    "AccessCoordinator",
-    "DefenceAdvocateB",
-    "DefenceAdvocateC",
-    "Admin",
-  ];
+  const usersToTest = TEST_USERS === "nightly" ? [currentUser] : eligibleUsers;
 
-  for (const user of Object.values(config.users).filter(
-    (user) => !excludedGroups.includes(user.group)
-  )) {
+  for (const user of usersToTest) {
     test(`Render a sample of documents for: ${user.group}`, async ({
       loginPage,
       homePage,

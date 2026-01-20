@@ -17,7 +17,6 @@ import { test, expect } from "../fixtures";
 // @cps.gov.uk - CPS Administrator and CPS Prosecutor
 // For "Invitation Only Roles" - Defence Advocate, Fee Paid Judge, Outside Prosecuting Advocate.
 // @pspb.cjsm.co.uk - Defence Advocate, Fee Paid Judge, Outside Prosecuting Advocate
-
 // If the User has selected an Invitation Only Role,the account is flagged as “Approved” upon email verification.
 // If the User has selected a Self-Inviting Role, post email verification, an Access Coordinator goes to an Approvals screen and either “Approve” or “Reject” the request.
 

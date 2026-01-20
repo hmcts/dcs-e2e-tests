@@ -1,7 +1,7 @@
 import { test, expect } from "../fixtures";
 import { config } from "../utils";
 
-test.describe("Create & Update New Case in CCDCS", () => {
+test.describe("@regression @nightly Create & Update New Case in CCDCS", () => {
   test.beforeEach(async ({ homePage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");

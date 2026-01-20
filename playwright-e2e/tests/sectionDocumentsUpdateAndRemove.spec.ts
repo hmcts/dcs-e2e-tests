@@ -19,7 +19,7 @@ import { verifyDocumentMove } from "../helpers/sectionDocuments.helper";
 // I want to be able to update or remove a document in an unrestricted section
 // So that only relevant documents are available in the correct sections for further review for relevant parties
 
-test.describe("Unrestricted Document Update and Removal Tests @cleanup", () => {
+test.describe("@nightly @regression Unrestricted Document Update and Removal Tests @cleanup", () => {
   let sampleKey: [string, string][];
   let newCaseName: string;
   const unrestrictedRemoveResults: string[] = [];
@@ -200,7 +200,7 @@ test.describe("Unrestricted Document Update and Removal Tests @cleanup", () => {
 // I want to be able to update or remove a document in an restricted section
 // So that only relevant documents are available in the correct sections for further review for relevant parties
 
-test.describe("Restricted Document Update and Removal Tests @cleanup", () => {
+test.describe("@nightly @regression Restricted Document Update and Removal Tests @cleanup", () => {
   let sampleKey: [string, string][];
   let newCaseName: string;
   const restrictedRemoveResults: string[] = [];

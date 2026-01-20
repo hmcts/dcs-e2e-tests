@@ -9,7 +9,7 @@ import {
   runCleanupSafely,
 } from "../helpers/deleteCase.helper";
 
-test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cleanup", () => {
+test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted and Unrestricted) @cleanup", () => {
   let newCaseName: string;
 
   test.beforeEach(

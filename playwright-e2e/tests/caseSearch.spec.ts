@@ -1,7 +1,7 @@
 import { test, expect } from "../fixtures";
 import ReviewEvidencePage from "../page-objects/pages/Review Evidence/reviewEvidence.page";
 
-test.describe("Search Auto Case 1 (Documents Testing) and navigate into case", () => {
+test.describe("@regression @nightly Search Auto Case 1 (Documents Testing) and navigate into case", () => {
   test.beforeEach(async ({ homePage, caseSearchPage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");

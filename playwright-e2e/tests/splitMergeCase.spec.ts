@@ -31,7 +31,21 @@ import { getRandomSectionKey } from "../utils";
 // Any access permissions applied to documents in sections with defence access restrictions will remain in place on the new merged case.
 // Only users of role HMCTS Admin have access to the Merge function.
 
-test.describe("Split & Merge Case Functionality", () => {
+// On the Merge Cases screen:
+// The top left section of the screen will display details about the current case, namely the case name, URN and Crest case numbers.
+// It will also list the defendants attached to this case.
+// The top right section of the screen will display proposed details for the new merged case.
+// 1. The New Case Name will default to the existing case name so will likely need to be amended to include the names of the additional defendants.
+// 2. The New Case URN will default to the existing URN with (M) added on the end. Amend as necessary.
+// 3. Search for the cases to be merged by typing in the Find cases to merge box.
+//    You can search by Case Name, URN or Crest Case Number. Results will be filtered to cases at the same courthouse as the current case.
+// 4. As you type a drop-down box will auto-populate with a list of matching cases.
+//    Click on a case to add it to the list of cases to be merged.
+// 5. If a case is added to the list in error, it can be removed with the Remove from Merge button.
+// 6. When all the cases to be merged have been added to the list, confirm the New Case Name and New Case URN and then click on Merge cases button.
+// A status bar will display detailing the progress of the merge. Once completed you will be taken to the new merged case.
+
+test.describe("@regression Split & Merge Case Functionality", () => {
   let newCaseName: string;
   const hmctsAdminUser = config.users.hmctsAdmin;
   const defenceAdvocateAUser = config.users.defenceAdvocateA;
@@ -62,7 +76,7 @@ test.describe("Split & Merge Case Functionality", () => {
     },
   );
 
-  test(`@split Split Case as HMCTS Admin`, async ({
+  test(`Split & Merge Cases by HMCTS Admin`, async ({
     sectionsPage,
     createNewSectionPage,
     sectionDocumentsPage,

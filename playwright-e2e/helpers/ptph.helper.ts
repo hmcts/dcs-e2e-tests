@@ -38,7 +38,7 @@ export async function getPayloadStatus(page, caseUrn: string) {
         if (block.includes("Success")) return "Success";
         if (block.includes("Failed")) return "Failed";
 
-        return null; // still in Started/Processing
+        return null; // still in Started/Processing stage
       },
       { intervals: [1000], timeout: 120000 }
     )
