@@ -82,10 +82,10 @@ test.describe("Split & Merge Case Functionality", () => {
         peoplePage,
         "TestCase",
         "TestURN",
-        "Defence"
+        "Defence",
       );
       newCaseName = newCase.newCaseName;
-    }
+    },
   );
 
   test(`@split Split & Merge Cases by HMCTS Admin`, async ({
@@ -109,9 +109,8 @@ test.describe("Split & Merge Case Functionality", () => {
     await memoPage.addMemo(hmctsAdminUser.group);
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     const unrestrictedSections = sections.unrestricted;
-    const unrestrictedSectionKeys = await sectionsPage.getSectionKeys(
-      unrestrictedSections
-    );
+    const unrestrictedSectionKeys =
+      await sectionsPage.getSectionKeys(unrestrictedSections);
     const sampleEntries = Object.entries(unrestrictedSectionKeys)
       .sort(() => Math.random() - 0.5)
       .slice(0, 1);
@@ -119,10 +118,10 @@ test.describe("Split & Merge Case Functionality", () => {
     for (const [section, key] of sampleEntries) {
       await sectionsPage.uploadUnrestrictedSectionDocument(
         key,
-        "unrestrictedSectionUpload"
+        "unrestrictedSectionUpload",
       );
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
-      await sectionsPage.navigation.navigateTo("LogOff");
+      await sectionsPage.navigation.logOff();
 
       // Add memo, new section & documents to restricted section as Defence Advocate A
       const defenceAdvocateAUser = config.users.defenceAdvocateA;
@@ -131,7 +130,7 @@ test.describe("Split & Merge Case Functionality", () => {
         loginPage,
         caseSearchPage,
         defenceAdvocateAUser,
-        newCaseName
+        newCaseName,
       );
       await caseDetailsPage.caseNavigation.navigateTo("Memos");
       await memoPage.addMemo(defenceAdvocateAUser.group);
@@ -139,9 +138,8 @@ test.describe("Split & Merge Case Functionality", () => {
       await sectionsPage.gotoCreateNewSection();
       await createNewSectionPage.createPrivateSection("Defence A", "PD1");
       const restrictedSectionsA = sections.restricted;
-      const restrictedSectionKeysA = await sectionsPage.getSectionKeys(
-        restrictedSectionsA
-      );
+      const restrictedSectionKeysA =
+        await sectionsPage.getSectionKeys(restrictedSectionsA);
       const sampleEntriesA = Object.entries(restrictedSectionKeysA)
         .sort(() => Math.random() - 0.5)
         .slice(0, 1);
@@ -150,10 +148,10 @@ test.describe("Split & Merge Case Functionality", () => {
         await sectionsPage.goToUploadDocuments(sectionKey);
         await uploadDocumentPage.uploadRestrictedSectionDocument(
           "One, Defendant",
-          "restrictedSectionUploadDefendantOne"
+          "restrictedSectionUploadDefendantOne",
         );
         await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
-        await sectionsPage.navigation.navigateTo("LogOff");
+        await sectionsPage.navigation.logOff();
 
         // Add memo, new section & documents to restricted section as Defence Advocate B
         const defenceAdvocateBUser = config.users.defenceAdvocateB;
@@ -162,7 +160,7 @@ test.describe("Split & Merge Case Functionality", () => {
           loginPage,
           caseSearchPage,
           defenceAdvocateBUser,
-          newCaseName
+          newCaseName,
         );
         await caseDetailsPage.caseNavigation.navigateTo("Memos");
         await memoPage.addMemo(defenceAdvocateBUser.group);
@@ -170,9 +168,8 @@ test.describe("Split & Merge Case Functionality", () => {
         await sectionsPage.gotoCreateNewSection();
         await createNewSectionPage.createPrivateSection("Defence B", "PD2");
         const restrictedSectionsB = sections.restricted;
-        const restrictedSectionKeysB = await sectionsPage.getSectionKeys(
-          restrictedSectionsB
-        );
+        const restrictedSectionKeysB =
+          await sectionsPage.getSectionKeys(restrictedSectionsB);
         const sampleEntriesB = Object.entries(restrictedSectionKeysB)
           .sort(() => Math.random() - 0.5)
           .slice(0, 1);
@@ -180,10 +177,10 @@ test.describe("Split & Merge Case Functionality", () => {
           await sectionsPage.goToUploadDocuments(sectionKey);
           await uploadDocumentPage.uploadRestrictedSectionDocument(
             "Two, Defendant",
-            "restrictedSectionUploadDefendantTwo"
+            "restrictedSectionUploadDefendantTwo",
           );
           await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
-          await sectionsPage.navigation.navigateTo("LogOff");
+          await sectionsPage.navigation.logOff();
 
           // Split a case between two Defendants by HMCTS Admin
           await loginAndOpenCase(
@@ -191,7 +188,7 @@ test.describe("Split & Merge Case Functionality", () => {
             loginPage,
             caseSearchPage,
             hmctsAdminUser,
-            newCaseName
+            newCaseName,
           );
           await sectionsPage.caseNavigation.navigateTo("Split");
           await splitCasePage.splitACase(newCaseName);
@@ -199,7 +196,7 @@ test.describe("Split & Merge Case Functionality", () => {
             timeout: 20_000,
           });
           await splitCasePage.waitForSplitCaseCompletion();
-          await splitCasePage.navigation.navigateTo("LogOff");
+          await splitCasePage.navigation.logOff();
 
           // Split Case Validation - Memo, new Section, Index Documents & ROCA for Defence A
           await loginAndOpenCase(
@@ -207,30 +204,29 @@ test.describe("Split & Merge Case Functionality", () => {
             loginPage,
             caseSearchPage,
             defenceAdvocateAUser,
-            `${newCaseName}one`
+            `${newCaseName}one`,
           );
           await caseDetailsPage.caseNavigation.navigateTo("Memos");
           await expect(memoPage.memoTableRow1).toHaveText(
-            "DefenceAdvocateA memo test textbox directly available"
+            "DefenceAdvocateA memo test textbox directly available",
           );
           await caseDetailsPage.caseNavigation.navigateTo("Index");
           const documentList = await indexPage.getIndexDocuments();
           expect(documentList.length).toBeGreaterThan(0);
           await indexPage.validateIndexDocument(
             "unrestrictedSectionUpload",
-            section
+            section,
           );
           await indexPage.validateIndexDocument(
             "restrictedSectionUploadDefendantOne",
-            sectionA
+            sectionA,
           );
           await indexPage.validateNoAccessToRestrictedIndexDocument(
-            "restrictedSectionUploadDefendantTwo"
+            "restrictedSectionUploadDefendantTwo",
           );
           const expectedSectionsA = ["PD1"];
-          const foundSectionsA = await indexPage.validateSections(
-            expectedSectionsA
-          );
+          const foundSectionsA =
+            await indexPage.validateSections(expectedSectionsA);
           expect(foundSectionsA).toEqual(expectedSectionsA);
           await expect(indexPage.pd2SectionLocator).not.toBeVisible({
             timeout: 10_000,
@@ -241,7 +237,7 @@ test.describe("Split & Merge Case Functionality", () => {
           await expect(rocaPage.unrestrDocRoca).toBeVisible();
           await expect(rocaPage.defARestrDocRoca).toBeVisible();
           await expect(rocaPage.defBRestrDocRoca).toBeHidden();
-          await rocaPage.navigation.navigateTo("LogOff");
+          await rocaPage.navigation.logOff();
 
           // Split Case Validation - Memo, new Section, Index Documents & ROCA for Defence B
           await loginAndOpenCase(
@@ -249,30 +245,29 @@ test.describe("Split & Merge Case Functionality", () => {
             loginPage,
             caseSearchPage,
             defenceAdvocateBUser,
-            `${newCaseName}two`
+            `${newCaseName}two`,
           );
           await caseDetailsPage.caseNavigation.navigateTo("Memos");
           await expect(memoPage.memoTableRow1).toHaveText(
-            "DefenceAdvocateB memo test textbox directly available"
+            "DefenceAdvocateB memo test textbox directly available",
           );
           await caseDetailsPage.caseNavigation.navigateTo("Index");
           const documentList2 = await indexPage.getIndexDocuments();
           expect(documentList2.length).toBeGreaterThan(0);
           await indexPage.validateIndexDocument(
             "unrestrictedSectionUpload",
-            section
+            section,
           );
           await indexPage.validateIndexDocument(
             "restrictedSectionUploadDefendantTwo",
-            sectionB
+            sectionB,
           );
           await indexPage.validateNoAccessToRestrictedIndexDocument(
-            "restrictedSectionUploadDefendantOne"
+            "restrictedSectionUploadDefendantOne",
           );
           const expectedSectionsB = ["PD2"];
-          const foundSectionsB = await indexPage.validateSections(
-            expectedSectionsB
-          );
+          const foundSectionsB =
+            await indexPage.validateSections(expectedSectionsB);
           expect(foundSectionsB).toEqual(expectedSectionsB);
           await expect(indexPage.pd1SectionLocator).not.toBeVisible({
             timeout: 10_000,
@@ -283,7 +278,7 @@ test.describe("Split & Merge Case Functionality", () => {
           await expect(rocaPage.unrestrDocRoca).toBeVisible();
           await expect(rocaPage.defBRestrDocRoca).toBeVisible();
           await expect(rocaPage.defARestrDocRoca).toBeHidden();
-          await rocaPage.navigation.navigateTo("LogOff");
+          await rocaPage.navigation.logOff();
 
           // Merge two cases by HMCTS Admin
           await loginAndOpenCase(
@@ -291,18 +286,18 @@ test.describe("Split & Merge Case Functionality", () => {
             loginPage,
             caseSearchPage,
             hmctsAdminUser,
-            `${newCaseName}one`
+            `${newCaseName}one`,
           );
           await sectionsPage.caseNavigation.navigateTo("Merge");
           await mergeCasePage.mergeCases(
             `${newCaseName}one`,
-            `${newCaseName}two`
+            `${newCaseName}two`,
           );
           await expect(mergeCasePage.progressBar).toContainText("Preparing", {
             timeout: 20_000,
           });
           await mergeCasePage.waitForMergeCasesCompletion();
-          await mergeCasePage.navigation.navigateTo("LogOff");
+          await mergeCasePage.navigation.logOff();
 
           // Merged Case Validation - Memo, new Section, Index Documents & ROCA for Defence A
           await loginAndOpenCase(
@@ -310,30 +305,29 @@ test.describe("Split & Merge Case Functionality", () => {
             loginPage,
             caseSearchPage,
             defenceAdvocateAUser,
-            `${newCaseName}one(M)`
+            `${newCaseName}one(M)`,
           );
           await caseDetailsPage.caseNavigation.navigateTo("Memos");
           await expect(memoPage.memoTableRow1).toHaveText(
-            "DefenceAdvocateA memo test textbox directly available"
+            "DefenceAdvocateA memo test textbox directly available",
           );
           await caseDetailsPage.caseNavigation.navigateTo("Index");
           const mergedDocumentList1 = await indexPage.getIndexDocuments();
           expect(mergedDocumentList1.length).toBeGreaterThan(0);
           await indexPage.validateIndexDocument(
             "unrestrictedSectionUpload",
-            section
+            section,
           );
           await indexPage.validateIndexDocument(
             "restrictedSectionUploadDefendantOne",
-            sectionA
+            sectionA,
           );
           await indexPage.validateNoAccessToRestrictedIndexDocument(
-            "restrictedSectionUploadDefendantTwo"
+            "restrictedSectionUploadDefendantTwo",
           );
           const expectedSections = ["PD1"];
-          const foundSections = await indexPage.validateSections(
-            expectedSections
-          );
+          const foundSections =
+            await indexPage.validateSections(expectedSections);
           expect(foundSections).toEqual(expectedSections);
           await expect(indexPage.pd2SectionLocator).not.toBeVisible({
             timeout: 10_000,
@@ -344,7 +338,7 @@ test.describe("Split & Merge Case Functionality", () => {
           await expect(rocaPage.unrestrDocRoca).toBeVisible();
           await expect(rocaPage.defARestrDocRoca).toBeVisible();
           await expect(rocaPage.defBRestrDocRoca).toBeHidden();
-          await rocaPage.navigation.navigateTo("LogOff");
+          await rocaPage.navigation.logOff();
         }
       }
     }

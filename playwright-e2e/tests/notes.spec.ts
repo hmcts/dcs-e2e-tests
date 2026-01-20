@@ -28,7 +28,7 @@ const excludedGroups = [
 ];
 
 for (const user of Object.values(config.users).filter(
-  (u) => !excludedGroups.includes(u.group)
+  (u) => !excludedGroups.includes(u.group),
 )) {
   test.describe(`@notes @user:${user.group} Notes Functionality for ${user.group}`, () => {
     let sampleKey: [string, string][];
@@ -60,14 +60,14 @@ for (const user of Object.values(config.users).filter(
           rocaPage,
           "TestCase",
           "TestURN",
-          user.group
+          user.group,
         );
 
         sampleKey = newCase.sampleKey as [string, string][];
         newCaseName = newCase.newCaseName;
 
-        await sectionsPage.navigation.navigateTo("LogOff");
-      }
+        await sectionsPage.navigation.logOff();
+      },
     );
 
     test(`Create, Delete and Edit Notes on Document for ${user.group}`, async ({
@@ -83,7 +83,7 @@ for (const user of Object.values(config.users).filter(
         loginPage,
         caseSearchPage,
         user,
-        newCaseName
+        newCaseName,
       );
 
       const popup = await caseDetailsPage.openReviewPopupAwaitPagination();
@@ -96,7 +96,7 @@ for (const user of Object.values(config.users).filter(
 
       const types = await reviewEvidencePage.notes.addNotesForUserGroup(
         user.group,
-        user.username
+        user.username,
       );
 
       if (user.group === "DefenceAdvocateA") {
@@ -118,7 +118,7 @@ for (const user of Object.values(config.users).filter(
         currentUserIssues,
         user,
         types,
-        notes
+        notes,
       );
 
       // Delete Note
@@ -140,7 +140,7 @@ for (const user of Object.values(config.users).filter(
                 .last()
                 .locator(".commentText")
                 .innerText(),
-            { timeout: 10000 }
+            { timeout: 10000 },
           )
           .toBe(`Edited note for ${user.group}`);
       } catch {
@@ -157,8 +157,8 @@ for (const user of Object.values(config.users).filter(
       if (currentUserIssues.length > 0) {
         throw new Error(
           `User ${user.group} experienced issues:\n${currentUserIssues.join(
-            "\n"
-          )}`
+            "\n",
+          )}`,
         );
       }
     });
@@ -193,7 +193,7 @@ test.describe("Notes Permissions & Access", () => {
   const excludedGroups = ["AccessCoordinator", "Admin"];
 
   for (const user of Object.values(config.users).filter(
-    (user) => !excludedGroups.includes(user.group)
+    (user) => !excludedGroups.includes(user.group),
   )) {
     test(`Verify access to Notes for: ${user.group}`, async ({
       loginPage,
@@ -217,13 +217,13 @@ test.describe("Notes Permissions & Access", () => {
           async () => {
             return await reviewEvidencePage.notes.getNotesCount();
           },
-          { timeout: 20000 }
+          { timeout: 20000 },
         )
         .toBeGreaterThan(0);
 
       // Filter expected documents based on User Group
       const expectedNotes = await reviewEvidencePage.notes.filterNotesByUser(
-        user.group
+        user.group,
       );
 
       // Get all available Notes for User
@@ -233,7 +233,7 @@ test.describe("Notes Permissions & Access", () => {
       const { missingNotes, unexpectedNotes } =
         await reviewEvidencePage.notes.compareExpectedVsAvailableNotes(
           expectedNotes,
-          availableNotes
+          availableNotes,
         );
 
       // If there are any issues, push to currentUserIssues
@@ -252,7 +252,7 @@ test.describe("Notes Permissions & Access", () => {
         throw new Error(
           `User ${
             user.group
-          } has missing/unexpected Notes:\n${currentUserIssues.join("\n")}`
+          } has missing/unexpected Notes:\n${currentUserIssues.join("\n")}`,
         );
       }
     });

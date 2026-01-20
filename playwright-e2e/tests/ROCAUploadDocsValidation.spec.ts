@@ -33,10 +33,10 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
         peoplePage,
         "TestCase",
         "TestURN",
-        "Defence"
+        "Defence",
       );
       newCaseName = newCase.newCaseName;
-    }
+    },
   );
   test(`Validate ROCA for unrestricted document uploads`, async ({
     sectionsPage,
@@ -47,7 +47,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
   }) => {
     await peoplePage.caseNavigation.navigateTo("Sections");
     const unrestrictedSectionKeys = await sectionsPage.getSectionKeys(
-      sections.unrestricted
+      sections.unrestricted,
     );
 
     const uploadedDocuments: ROCAModel[] = [];
@@ -58,7 +58,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
     for (const [sectionIndex, sectionKey] of sampleEntries) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadUnrestrictedDocument(
-        "unrestrictedSectionUpload"
+        "unrestrictedSectionUpload",
       );
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
       await rocaPage.createROCAModelRecord(
@@ -66,7 +66,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
         sectionIndex,
         "unrestrictedSectionUpload",
         "Create",
-        config.users.hmctsAdmin.username
+        config.users.hmctsAdmin.username,
       );
     }
 
@@ -76,13 +76,13 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
     // Compare expected vs actual ROCA
     const expectedROCA = uploadedDocuments;
     const availableROCA = await rocaPage.getDocumentsFromROCATable(
-      rocaPage.unrestrictedTable
+      rocaPage.unrestrictedTable,
     );
 
     const { missingDocuments, unexpectedDocuments } =
       await rocaPage.compareExpectedVsAvailableROCA(
         expectedROCA,
-        availableROCA
+        availableROCA,
       );
 
     // Aggragate Results
@@ -99,8 +99,8 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
         `User ${
           config.users.hmctsAdmin.group
         } had issues uploading unrestricted documents:\n${uploadIssues.join(
-          "\n"
-        )}`
+          "\n",
+        )}`,
       );
     }
   });
@@ -119,7 +119,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
     test.setTimeout(720000);
     await peoplePage.caseNavigation.navigateTo("Sections");
     const restrictedSectionKeys = await sectionsPage.getSectionKeys(
-      sections.restricted
+      sections.restricted,
     );
 
     const uploadedDocuments: ROCAModel[] = [];
@@ -127,7 +127,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
     const sampleEntries = Object.entries(restrictedSectionKeys)
       .sort(() => Math.random() - 0.5)
       .slice(0, 3);
-    await peoplePage.navigation.navigateTo("LogOff");
+    await peoplePage.navigation.logOff();
 
     // Upload documents to restricted section as Defence Advocate A
     await loginAndOpenCase(
@@ -135,14 +135,14 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
       loginPage,
       caseSearchPage,
       config.users.defenceAdvocateA,
-      newCaseName
+      newCaseName,
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [sectionIndex, sectionKey] of sampleEntries) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadRestrictedSectionDocument(
         "One, Defendant",
-        "restrictedSectionUploadDefendantOne"
+        "restrictedSectionUploadDefendantOne",
       );
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
       await rocaPage.createROCAModelRecord(
@@ -151,10 +151,10 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
         "restrictedSectionUploadDefendantOne",
         "Create",
         config.users.defenceAdvocateA.username,
-        "One Defendant"
+        "One Defendant",
       );
     }
-    await sectionsPage.navigation.navigateTo("LogOff");
+    await sectionsPage.navigation.logOff();
 
     // Upload documents to restricted section as Defence Advocate B and validate ROCA
     await loginAndOpenCase(
@@ -162,14 +162,14 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
       loginPage,
       caseSearchPage,
       config.users.defenceAdvocateB,
-      newCaseName
+      newCaseName,
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [sectionIndex, sectionKey] of sampleEntries) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadRestrictedSectionDocument(
         "Two, Defendant",
-        "restrictedSectionUploadDefendantTwo"
+        "restrictedSectionUploadDefendantTwo",
       );
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
       await rocaPage.createROCAModelRecord(
@@ -178,22 +178,22 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
         "restrictedSectionUploadDefendantTwo",
         "Create",
         config.users.defenceAdvocateB.username,
-        "Two Defendant"
+        "Two Defendant",
       );
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
     await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
 
     const expectedROCADefenceB = uploadedDocuments.filter((document) =>
-      document.defendants!.includes("Two Defendant")
+      document.defendants!.includes("Two Defendant"),
     );
 
     const issuesB = await rocaPage.validateROCAForUser(
       expectedROCADefenceB,
-      rocaPage.restrictedTable
+      rocaPage.restrictedTable,
     );
 
-    await sectionsPage.navigation.navigateTo("LogOff");
+    await sectionsPage.navigation.logOff();
 
     // Validate ROCA as Defence Advocate A
     await loginAndOpenCase(
@@ -201,20 +201,20 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
       loginPage,
       caseSearchPage,
       config.users.defenceAdvocateA,
-      newCaseName
+      newCaseName,
     );
     await caseDetailsPage.caseNavigation.navigateTo("ROCA");
     await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
 
     const expectedROCADefenceA = uploadedDocuments.filter((document) =>
-      document.defendants!.includes("One Defendant")
+      document.defendants!.includes("One Defendant"),
     );
     const issuesA = await rocaPage.validateROCAForUser(
       expectedROCADefenceA,
-      rocaPage.restrictedTable
+      rocaPage.restrictedTable,
     );
 
-    await sectionsPage.navigation.navigateTo("LogOff");
+    await sectionsPage.navigation.logOff();
 
     // Upload restricted document and validate ROCA as Defence Advocate C
     await loginAndOpenCase(
@@ -222,7 +222,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
       loginPage,
       caseSearchPage,
       config.users.defenceAdvocateC,
-      newCaseName
+      newCaseName,
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [sectionIndex, sectionKey] of sampleEntries) {
@@ -230,7 +230,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
       await uploadDocumentPage.uploadRestrictedSectionDocument(
         "Two, Defendant",
         "restrictedSectionUploadD1&D2",
-        "One, Defendant"
+        "One, Defendant",
       );
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
       await rocaPage.createROCAModelRecord(
@@ -239,7 +239,7 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
         "restrictedSectionUploadD1&D2",
         "Create",
         config.users.defenceAdvocateC.username,
-        "One Defendant, Two Defendant"
+        "One Defendant, Two Defendant",
       );
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
@@ -249,11 +249,11 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
       (document) =>
         document.defendants!.includes("One Defendant") ||
         document.defendants!.includes("Two Defendant") ||
-        document.defendants!.includes("One Defendant, Two Defendant")
+        document.defendants!.includes("One Defendant, Two Defendant"),
     );
     const issuesC = await rocaPage.validateROCAForUser(
       expectedROCADefenceC,
-      rocaPage.restrictedTable
+      rocaPage.restrictedTable,
     );
     // Aggragate Results
     const uploadIssues = [...issuesA, ...issuesB, ...issuesC];
@@ -267,8 +267,8 @@ test.describe("ROCA: Document Audit Validation (Restricted and Unrestricted) @cl
     if (uploadIssues.length > 0) {
       throw new Error(
         `Defence Users had issues uploading and accessing restricted documents:\n${uploadIssues.join(
-          "\n"
-        )}`
+          "\n",
+        )}`,
       );
     }
   });
