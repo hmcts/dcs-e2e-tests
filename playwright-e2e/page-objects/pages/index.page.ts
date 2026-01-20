@@ -230,22 +230,24 @@ class IndexPage extends Base {
     await expect(contentsTable).not.toContainText(`${filename}:`);
   }
 
-  async validateSections(sections: string[]): Promise<string[]> {
-    const foundSections: string[] = [];
-    await this.page.waitForTimeout(90_000);
-
+  async validateSections(sections: string[]) {
     for (const section of sections) {
       const cellLocator = this.page.getByRole("cell", {
         name: `${section}:`,
         exact: true,
       });
-      const isVisible = await cellLocator.isVisible({ timeout: 5000 });
-
-      if (isVisible) {
-        foundSections.push(section);
-      }
+      await expect(cellLocator).toBeVisible();
     }
-    return foundSections;
+  }
+
+  async validateSectionsMissing(sections: string[]) {
+    for (const section of sections) {
+      const cellLocator = this.page.getByRole("cell", {
+        name: `${section}:`,
+        exact: true,
+      });
+      await expect(cellLocator).toBeHidden();
+    }
   }
 }
 export default IndexPage;
