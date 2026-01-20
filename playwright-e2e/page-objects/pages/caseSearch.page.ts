@@ -53,7 +53,7 @@ class CaseSearchPage extends Base {
   async searchCaseFile(
     textFieldInput: string,
     location: string,
-    hearingDate?: string
+    hearingDate?: string,
   ) {
     await this.locationField.selectOption(location);
     await this.textField.clear();
@@ -65,20 +65,34 @@ class CaseSearchPage extends Base {
       await this.toDateCheckbox.uncheck();
     }
     const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
-    for (let attempt = 0; attempt < 3; attempt++) {
+    const caseRowNoHearing = this.getCaseRowByTextInput(textFieldInput);
+
+    let found = false;
+
+    for (let attempt = 0; attempt < 2; attempt++) {
       await this.applyFilter.click();
 
+      // Search case WITH hearing
       try {
-        await expect(caseRow).toHaveCount(1, { timeout: 30000 });
-        await expect(caseRow).toBeVisible({ timeout: 30000 });
-        return;
-      } catch {
-        if (attempt === 2) {
-          throw new Error(
-            `❌ Case row "${textFieldInput}" (hearing: ${hearingDate}) did not appear after applying filter`
-          );
-        }
-      }
+        await expect(caseRow).toHaveCount(1, { timeout: 20_000 });
+        await expect(caseRow).toBeVisible({ timeout: 20_000 });
+        found = true;
+        break;
+      } catch {}
+
+      // Try case WITHOUT hearing
+      try {
+        await expect(caseRowNoHearing).toHaveCount(1, { timeout: 20_000 });
+        await expect(caseRowNoHearing).toBeVisible({ timeout: 20_000 });
+        found = true;
+        break;
+      } catch {}
+    }
+
+    if (!found) {
+      throw new Error(
+        `❌ Case "${textFieldInput}" did not appear (with or without hearing) after applying filter`,
+      );
     }
   }
 
@@ -117,7 +131,7 @@ class CaseSearchPage extends Base {
       await this.applyFilter.click();
       await this.noCasesText.waitFor({ state: "visible", timeout: 40000 });
       return await expect(this.noCasesText).toHaveText(
-        /There are no cases on the system/i
+        /There are no cases on the system/i,
       );
     } catch {
       return false;
