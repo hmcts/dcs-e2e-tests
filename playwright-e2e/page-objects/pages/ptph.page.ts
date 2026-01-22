@@ -2,6 +2,12 @@ import { Locator } from "@playwright/test";
 import { Base } from "../base";
 import { expect } from "../../fixtures";
 
+/**
+ * Represents the PTPH (Plea and Trial Preparation Hearing) form page.
+ * This Page Object provides locators and methods to interact with and validate
+ * the various sections of the PTPH form, which is crucial for tests
+ * involving case progression and trial preparation.
+ */
 class PTPHPage extends Base {
   ptphForm: Locator;
   // Form Sections
@@ -66,6 +72,10 @@ class PTPHPage extends Base {
     );
   }
 
+  /**
+   * Waits for the PTPH form to be fully loaded and visible on the page,
+   * specifically ensuring that the page loader is no longer visible.
+   */
   async ptphFormLoad() {
     await expect
       .poll(
@@ -82,6 +92,10 @@ class PTPHPage extends Base {
       .toBe(true);
   }
 
+  /**
+   * Returns an array of objects, each representing a major section of the PTPH form.
+   * Each object contains the section's name (for identification) and its Playwright Locator.
+   */
   async ptphFormSections() {
     return [
       { name: "prosecution-contacts", locator: this.prosecutionContacts },

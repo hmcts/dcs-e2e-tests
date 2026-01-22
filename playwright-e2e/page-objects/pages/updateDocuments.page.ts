@@ -3,6 +3,11 @@ import { Base } from "../base";
 import { waitUntilClickable } from "../../utils";
 import { expect } from "../../fixtures";
 
+/**
+ * Represents the "Update All Documents" page, allowing users to perform bulk actions
+ * on documents within a section. This Page Object provides functionalities to remove,
+ * move to another section, or edit the title of existing documents.
+ */
 class UpdateDocumentsPage extends Base {
   updateHeading: Locator;
   removeBtn: Locator;
@@ -33,6 +38,10 @@ class UpdateDocumentsPage extends Base {
     this.loadingIndicator = this.page.getByRole("img", { name: "working" });
   }
 
+  /**
+   * Removes a document from the section.
+   * Clicks the "Remove" button and accepts the confirmation dialog.
+   */
   async removeDocument() {
     // Poll until the remove document button is interactable
     await waitUntilClickable(this.removeBtn);
@@ -47,6 +56,11 @@ class UpdateDocumentsPage extends Base {
     }
   }
 
+  /**
+   * Moves a document to a new, randomly selected section.
+   * This method ensures the new section is not one of the already used or specified new sections.
+   * @returns The name of the randomly selected new section.
+   */
   async moveDocument(sectionKeys: [string, string][], newSections: string[]) {
     const availableSections = ["A", "B", "C", "D", "E"].filter(
       (section) =>
@@ -75,6 +89,10 @@ class UpdateDocumentsPage extends Base {
     return randomSection;
   }
 
+  /**
+   * Edits the title of a document.
+   * Fills the `documentTitle` text area with "TestEdit" and waits for any loading indicators to disappear.
+   */
   async editDocumentName() {
     await this.documentTitle.focus();
     await this.documentTitle.fill("TestEdit");

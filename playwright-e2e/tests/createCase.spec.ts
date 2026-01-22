@@ -18,7 +18,7 @@ test.describe("@regression @nightly Create & Update New Case in CCDCS", () => {
     await caseSearchPage.goToCreateCase();
     const { newCaseName, newCaseUrn } = await createCasePage.createNewCase(
       "TestCase",
-      "TestURN"
+      "TestURN",
     );
     await expect(caseDetailsPage.caseNameHeading).toContainText(newCaseName);
 
@@ -32,7 +32,7 @@ test.describe("@regression @nightly Create & Update New Case in CCDCS", () => {
       await addDefendantPage.addDefendant(
         defDetail.surName,
         defDetail.dobMonth,
-        newCaseUrn
+        newCaseUrn,
       );
     }
 
@@ -40,7 +40,7 @@ test.describe("@regression @nightly Create & Update New Case in CCDCS", () => {
     await expect(caseDetailsPage.nameDefTwo).toBeVisible();
     await caseDetailsPage.goToChangeCaseDetails();
     await changeCaseDetailsPage.changeCaseDetails();
-    await expect(caseDetailsPage.verifyAdditionalNotes).toBeVisible();
+    await expect(caseDetailsPage.additionalNotes).toBeVisible();
 
     // Add Defence Lawyers
     await caseDetailsPage.caseNavigation.navigateTo("People");
@@ -62,21 +62,21 @@ test.describe("@regression @nightly Create & Update New Case in CCDCS", () => {
     for (const defenceDetail of defenceUserDetails) {
       await peoplePage.addUser(
         defenceDetail.username,
-        defenceDetail?.defendants
+        defenceDetail?.defendants,
       );
     }
     await expect(peoplePage.pageTitle).toBeVisible({ timeout: 40_000 });
     await peoplePage.confirmUserAccess(
       config.users.defenceAdvocateA.username,
-      "Defence"
+      "Defence",
     );
     await peoplePage.confirmUserAccess(
       config.users.defenceAdvocateB.username,
-      "Defence"
+      "Defence",
     );
     await peoplePage.confirmUserAccess(
       config.users.defenceAdvocateC.username,
-      "Defence"
+      "Defence",
     );
   });
 });

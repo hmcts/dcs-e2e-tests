@@ -1,10 +1,49 @@
+/**
+ * Navigation link models
+ * ----------------------
+ * This file defines the expected navigation links and destinations that appear
+ * throughout the Platform UI.
+ *
+ * These models are used by E2E tests to validate:
+ *  - the presence of navigation links
+ *  - correct routing when links are clicked
+ *  - page titles and URLs after navigation
+ *
+ * Links are grouped by context:
+ *  - External links (always visible, open outside the platform)
+ *  - Internal platform links when logged out
+ *  - Internal platform links when logged in
+ *  - Case-level navigation links (require a case to be open)
+ *
+ * URLs are intentionally defined as partial matches in some cases where:
+ *  - query parameters are dynamic (e.g. caseKey)
+ */
+
 import { config } from "../utils";
 
-export const externalLinks: {
+/**
+ * Represents a standard navigation link with a name, expected title, and URL.
+ */
+export interface NavLink {
+  /** The name of the link, used to locate it in the UI. */
   name: string;
+  /** The expected page title after clicking the link. */
   expectedTitle: string;
+  /** The expected URL (can be a partial match). */
   expectedUrl: string;
-}[] = [
+}
+
+/**
+ * Represents a navigation link within a case, with a name and URL.
+ */
+export interface CaseLink {
+  /** The name of the link, used to locate it in the UI. */
+  name: string;
+  /** The expected URL (can be a partial match). */
+  expectedUrl: string;
+}
+
+export const externalLinks: NavLink[] = [
   {
     name: "Accessibility",
     expectedTitle: "CCDCS",
@@ -18,11 +57,7 @@ export const externalLinks: {
   },
 ];
 
-export const internalLinksLoggedOut: {
-  name: string;
-  expectedTitle: string;
-  expectedUrl: string;
-}[] = [
+export const internalLinksLoggedOut: NavLink[] = [
   {
     name: "Home",
     expectedTitle: "CCDCS",
@@ -45,11 +80,7 @@ export const internalLinksLoggedOut: {
   },
 ];
 
-export const internalLinksLoggedIn: {
-  name: string;
-  expectedTitle: string;
-  expectedUrl: string;
-}[] = [
+export const internalLinksLoggedIn: NavLink[] = [
   {
     name: "AccountDetails",
     expectedTitle: "My Details",
@@ -70,17 +101,14 @@ export const internalLinksLoggedIn: {
     expectedTitle: "Approval Requests",
     expectedUrl: `${config.urls.base}Home/ApprovalRequest`,
   },
-    {
+  {
     name: "Admin",
     expectedTitle: "Administration Options",
     expectedUrl: `${config.urls.base}Admin`,
   },
 ];
 
-export const caseLinks: {
-  name: string;
-  expectedUrl: string;
-}[] = [
+export const caseLinks: CaseLink[] = [
   {
     name: "CaseHome",
     expectedUrl: `${config.urls.base}Case/Details?caseKey=`,

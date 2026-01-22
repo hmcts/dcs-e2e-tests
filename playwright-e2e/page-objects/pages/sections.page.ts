@@ -6,6 +6,11 @@ import { DocumentModel, documents } from "../../data/documentModel";
 import UploadDocumentPage from "./uploadDocument.page";
 import { expect } from "@playwright/test";
 
+/**
+ * Represents the "Sections" page within a case, which lists all case sections.
+ * This Page Object provides functionalities to manage and interact with case sections,
+ * including viewing documents, uploading new documents, and navigating to section-specific actions.
+ */
 class SectionsPage extends Base {
   readonly page: Page;
   readonly sectionDocumentsPage: SectionDocumentsPage;
@@ -22,6 +27,9 @@ class SectionsPage extends Base {
     this.createSectionLink = page.getByRole("link", { name: "Create New Section" }).first();
   }
 
+  /**
+   * Returns the total number of section rows displayed in the sections table.
+   */
   async rowCount(): Promise<number> {
     const sectionRows = this.page.locator(
       "table.formTable-zebra tbody > tr:not(:first-child)"
@@ -29,6 +37,9 @@ class SectionsPage extends Base {
     return await sectionRows.count();
   }
 
+  /**
+   * Retrieves the title of a section given its row index in the table.
+   */
   async getSectionTitle(rowIndex: number): Promise<string> {
     const row = this.page
       .locator("table.formTable-zebra tbody > tr:not(:first-child)")
@@ -38,6 +49,10 @@ class SectionsPage extends Base {
     return title.trim();
   }
 
+  /**
+   * Retrieves the unique ID (key) of a section given its row index.
+   * Extracts the key from the "View Documents" link's href attribute.
+   */
   async getSectionId(rowIndex: number): Promise<string> {
     const row = this.page
       .locator("table.formTable-zebra tbody > tr:not(:first-child)")
@@ -50,6 +65,9 @@ class SectionsPage extends Base {
     return match ? match[1] : "";
   }
 
+  /**
+   * Navigates to the documents page for a specific section using its row index.
+   */
   async goToViewDocuments(rowIndex: number) {
     const row = this.page
       .locator("table.formTable-zebra tbody tr:not(:first-child)")
@@ -61,6 +79,9 @@ class SectionsPage extends Base {
     await viewDocsButton.click();
   }
 
+  /**
+   * Navigates to the documents page for a specific section using its unique section key.
+   */
   async goToViewDocumentsByKey(sectionKey: string) {
     const row = this.page.locator(`tr:has(a[href*="${sectionKey}"])`);
     const viewDocsButton = row.locator(
@@ -69,6 +90,10 @@ class SectionsPage extends Base {
     await viewDocsButton.click();
   }
 
+  /**
+   * Navigates to the documents page for a specific section using its letter designation.
+   * @param sectionLetter - The letter designation of the section (e.g., "A", "B").
+   */
   async goToViewDocumentsBySectionLetter(sectionLetter: string) {
     const row = this.page.locator(
       `tr:has(td:nth-child(2):text-is("${sectionLetter}"))`
@@ -79,12 +104,18 @@ class SectionsPage extends Base {
     await viewDocsButton.click();
   }
 
+  /**
+   * Navigates to the document upload page for a specific section using the section key.
+   */
   async goToUploadDocuments(sectionKey: string) {
     const row = this.page.locator(`tr:has(a[href*="${sectionKey}"])`);
     const uploadButton = row.getByRole("link", { name: "Upload Document(s)" });
     await uploadButton.click();
   }
 
+  /**
+   * Navigates to the "Update All Documents" page for a specific section using the section key.
+   */
   async goToUpdateDocuments(sectionKey: string) {
     const row = this.page.locator(`tr:has(a[href*="${sectionKey}"])`);
     const updateButton = row.getByRole("link", {
@@ -93,6 +124,11 @@ class SectionsPage extends Base {
     await updateButton.click();
   }
 
+  /**
+   * Retrieves all section and document details by iterating through all sections
+   * and then fetching their respective documents.
+   * @returns An array of `DocumentModel` objects for all documents across all sections.
+   */
   async getSectionAndDocumentDetails(): Promise<DocumentModel[]> {
     const sectionCount = await this.rowCount();
     const sectionDocuments: DocumentModel[] = [];
@@ -113,6 +149,11 @@ class SectionsPage extends Base {
     return sectionDocuments;
   }
 
+  /**
+   * Retrieves a sample of section and document details from a random selection of sections.
+   * @param [sampleSize=6] - The number of random sections to sample.
+   * @returns An array of `DocumentModel` objects for documents from the sampled sections.
+   */
   async getSectionsAndDocumentsSample(
     sampleSize = 6
   ): Promise<DocumentModel[]> {
@@ -143,13 +184,25 @@ class SectionsPage extends Base {
     return sectionDocuments;
   }
 
-  async filterDocumentsByUser(user: string) {
+  /**
+   * Filters the global list of documents (`../../data/documentModel.ts`)
+   * to find those accessible by a specific user role.
+   * @returns An array of `DocumentModel` objects accessible by the specified user.
+   */
+  filterDocumentsByUser(user: string) {
     const filteredDocuments = documents.filter((document) =>
       document.roles?.includes(user)
     );
     return filteredDocuments;
   }
 
+  /**
+   * Compares a user's expected sections and documents access against those actually found in the UI.
+   * Identifies and reports any missing expected documents or unexpected extra documents.
+   * @param userExpectedDocuments - Documents expected to be visible for the user.
+   * @param userAvailableDocuments - Documents actually found for the user.
+   * @returns An object containing arrays of descriptions for missing and unexpected documents.
+   */
   async compareExpectedVsAvailableSectionsAndDocuments(
     userExpectedDocuments: DocumentModel[],
     userAvailableDocuments: DocumentModel[]
@@ -191,6 +244,13 @@ class SectionsPage extends Base {
     return { missingDocuments, unexpectedDocuments };
   }
 
+  /**
+   * Compares a user's expected sections and documents against a sample of those
+   * actually found in the UI, focusing on unexpected documents.
+   * @param userExpectedDocuments - Documents expected to be visible for the user.
+   * @param userAvailableDocuments - Documents actually found for the user (sample).
+   * @returns An array of strings describing any unexpected documents found.
+   */
   async compareExpectedVsAvailableSectionsAndDocumentsSample(
     userExpectedDocuments: DocumentModel[],
     userAvailableDocuments: DocumentModel[]
@@ -215,6 +275,10 @@ class SectionsPage extends Base {
     return unexpectedDocuments;
   }
 
+  /**
+   * Retrieves the unique keys for a list of specified sections.
+   * @returns An object mapping section names to their keys.
+   */
   async getSectionKeys(sections: string[]) {
     const sectionKeys: Record<string, string> = {};
     await expect(async () => {
@@ -241,6 +305,9 @@ class SectionsPage extends Base {
     return sectionKeys;
   }
 
+  /**
+   * Uploads an unrestricted document to a specified section and validates its visibility.
+   */
   async uploadAndValidateUnrestrictedSectionDocument(
     key: string,
     filename: string,
@@ -262,6 +329,9 @@ class SectionsPage extends Base {
     }
   }
 
+  /**
+   * Uploads an unrestricted document to a specified section without validation.
+   */
   async uploadUnrestrictedSectionDocument(
     key: string,
     filename: string
@@ -270,7 +340,9 @@ class SectionsPage extends Base {
     await this.uploadDocumentPage.uploadUnrestrictedDocument(filename);
   }
 
-
+  /**
+   * Uploads a restricted document to a specified section, associating it with a defendant.
+   */
   async uploadRestrictedSectionDocument(
     key: string,
     filename: string,
@@ -283,6 +355,9 @@ class SectionsPage extends Base {
     );
   }
 
+  /**
+   * Clicks the "Create New Section" link to navigate to the section creation page.
+   */
   async gotoCreateNewSection(){
     await this.createSectionLink.click({timeout:15000});
   }

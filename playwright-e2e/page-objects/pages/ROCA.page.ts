@@ -4,6 +4,13 @@ import { ROCAModel } from "../../data/ROCAModel";
 import { expect } from "../../fixtures";
 import { sections } from "../../utils";
 
+/**
+ * Represents the "Record of Case Activity" (ROCA) page, which logs actions
+ * performed on cases and documents. This Page Object provides locators and
+ * methods to interact with ROCA tables, create and update ROCA model records,
+ * retrieve documents from ROCA tables, and compare/validate expected vs. actual
+ * ROCA entries.
+ */
 class ROCAPage extends Base {
   unrestrictedTable: Locator;
   restrictedTable: Locator;
@@ -24,6 +31,12 @@ class ROCAPage extends Base {
     this.defBRestrDocRoca = page.getByText('Name: restrictedSectionUploadDefendantTwo', { exact: true })
   }
 
+  /**
+   * Creates and adds a new ROCA model record to an array of uploaded documents.
+   * This is used to build a list of expected ROCA entries for validation.
+   * @param uploadedDocuments - The array to which the new ROCA record will be added.
+   * @returns The updated array of ROCA model records.
+   */
   async createROCAModelRecord(
     uploadedDocuments: ROCAModel[],
     sectionIndex: string,
@@ -53,6 +66,12 @@ class ROCAPage extends Base {
     return uploadedDocuments;
   }
 
+  /**
+   * Updates an existing ROCA model record or adds a new one for update/delete actions.
+   * Finds a document by section index and name, then records an update or delete action.
+   * @param uploadedDocuments - The array of ROCA records to update.
+   * @returns The updated array of ROCA model records.
+   */
   async updateROCAModel(
     uploadedDocuments: ROCAModel[],
     sectionIndex: string,
@@ -97,6 +116,11 @@ class ROCAPage extends Base {
     return uploadedDocuments;
   }
 
+  /**
+   * Updates the ROCA model to reflect a document move between sections.
+   * Records a "Delete" action for the original location and a "Create" action
+   * for the new location, adjusting defendant associations based on restriction.
+   */
   async updateROCAModelMove(
     uploadedDocuments: ROCAModel[],
     sectionIndex: string,
@@ -162,6 +186,12 @@ class ROCAPage extends Base {
     }
   }
 
+  /**
+   * Retrieves all ROCA entries from a specified ROCA table locator.
+   * Parses the table rows to extract document details, action, username, and defendant information.
+   * @param tableLocator - The Playwright Locator for the ROCA table (e.g., unrestrictedTable or restrictedTable).
+   * @returns An array of `ROCAModel` objects representing the entries in the table.
+   */
   async getDocumentsFromROCATable(tableLocator: Locator): Promise<ROCAModel[]> {
     const docs: ROCAModel[] = [];
     const rows = tableLocator.locator("tbody tr");
@@ -218,8 +248,13 @@ class ROCAPage extends Base {
     return docs;
   }
 
-  // Document Comparison
-
+  /**
+   * Compares a list of expected ROCA entries against actual entries found in the UI.
+   * Identifies and reports any missing expected documents or unexpected extra documents.
+   * @param expectedDocs - An array of `ROCAModel` objects representing the expected ROCA entries.
+   * @param actualDocs - An array of `ROCAModel` objects representing the actual ROCA entries from the UI.
+   * @returns An object containing arrays of descriptions for missing and unexpected documents.
+   */
   async compareExpectedVsAvailableROCA(
     expectedDocs: ROCAModel[],
     actualDocs: ROCAModel[]
@@ -280,6 +315,10 @@ class ROCAPage extends Base {
     return { missingDocuments, unexpectedDocuments };
   }
 
+  /**
+   * Validates the ROCA tables against a list of expected ROCA entries for a specific user.
+   * @returns An array of strings describing any discrepancies found during validation.
+   */
   async validateROCAForUser(expectedROCA: ROCAModel[], tableLocator: Locator) {
     await expect(tableLocator).toBeVisible();
 
@@ -291,6 +330,10 @@ class ROCAPage extends Base {
     return [...missingDocuments, ...unexpectedDocuments];
   }
   
+  /**
+   * Waits for both the unrestricted and restricted ROCA tables to be visible,
+   * indicating that the ROCA page content has fully loaded.
+   */
   async waitForRocaTablesToLoad(){
     await this.unrestrictedTable.waitFor({ state: 'visible', timeout: 40000 });
     await this.restrictedTable.waitFor({ state: 'visible', timeout: 40000 });

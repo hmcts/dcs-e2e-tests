@@ -1,8 +1,13 @@
 import { expect,Locator } from "@playwright/test";
 import { Base } from "../base";
 
+/**
+ * Represents the "Register User" page, where new users can create an account.
+ * This Page Object provides locators and methods to fill out the registration form,
+ * including personal details, contact information, role, location, and passwords.
+ * It also includes logic for generating unique usernames and selecting random options.
+ */
 class RegisterUserPage extends Base {
-
   registerHeading: Locator;
   title: Locator;
   firstName: Locator;
@@ -34,6 +39,13 @@ constructor(page) {
     this.saveRegisterForm = page.locator('#saveRegisterForm')
 }
 
+/**
+ * Fills out and submits the user registration form with generated or selected details.
+ * This method includes logic for generating a unique username, selecting a random
+ * email domain (based on self-invite roles), a random role (excluding specified labels),
+ * and a random location from a permitted list.
+ * @returns {Promise<{userName: string, userEmail: string, userRole: string, userLocation: string, isSelfInviteRole: boolean}>} An object containing the generated user details.
+ */
 async submitUserRegDetails() {
     await this.title.fill("Mr");
     await this.firstName.fill("User");
@@ -78,6 +90,10 @@ async submitUserRegDetails() {
     return {userName, userEmail, userRole, userLocation, isSelfInviteRole};
 }
 
+/**
+ * Generates a unique username by appending a random four-digit number to "user".
+ * @returns {string} A unique username string (e.g., "user1234").
+ */
 async generateUserName (){
     // Generate a random username part (e.g., 'user1000' to 'user9999')
     const randomNumber = Math.floor(Math.random() * 9000) + 1000;
@@ -85,6 +101,12 @@ async generateUserName (){
     return userName;
 }
 
+/**
+ * Constructs a random email address using the given username and a randomly selected domain from the provided list.
+ * @param {string} userName - The base username for the email address.
+ * @param {string[]} domains - An array of valid email domains to choose from.
+ * @returns {string} A randomly generated email address.
+ */
 async selectEmail(userName : string, domains : string[]) {   
     const randomIndex = Math.floor(Math.random() * domains.length);
     const randomDomain = domains[randomIndex];
@@ -92,6 +114,10 @@ async selectEmail(userName : string, domains : string[]) {
     return randomEmail;
 }
 
+/**
+ * Selects a random role from the role dropdown, excluding specified labels.
+ * @returns {Promise<string>} The randomly selected valid role label.
+ */
 async selectRandomRoleExcludingMultiple(
     labelsToExclude: string[]): Promise<string> {
     const roles = await this.role.locator('option').allTextContents();
@@ -107,6 +133,11 @@ async selectRandomRoleExcludingMultiple(
     return randomRole;
 }
 
+/**
+ * Selects a random location from the location dropdown, constrained by a list of allowed labels.
+ * @param {string[]} allowedLabels - An array of location labels that are permitted for selection.
+ * @returns {Promise<string>} The randomly selected valid location label.
+ */
 async selectRandomLocationFromSpecificList(
     allowedLabels: string[]): Promise<string> { 
     const locations = await this.location.locator('option').allTextContents();

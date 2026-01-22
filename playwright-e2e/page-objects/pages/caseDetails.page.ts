@@ -5,14 +5,20 @@ import { Page } from "@playwright/test";
 import { waitUntilClickable } from "../../utils";
 import { Dialog } from "@playwright/test";
 
+/**
+ * Represents the Case Details page, displaying information about a specific case.
+ * This Page Object provides locators and methods for interacting with case data,
+ * managing defendants, changing case details, and accessing review functionalities.
+ */
+
 class CaseDetailsPage extends Base {
   caseNameHeading: Locator;
   caseDetailsHeading: Locator;
   addDefButton: Locator;
-  changeCaseButton: Locator;
+  changeCaseDetailsBtn: Locator;
   nameDefOne: Locator;
   nameDefTwo: Locator;
-  verifyAdditionalNotes: Locator;
+  additionalNotes: Locator;
   removeCaseBtn: Locator;
 
   constructor(page) {
@@ -20,7 +26,7 @@ class CaseDetailsPage extends Base {
     this.caseNameHeading = page.locator(".heading-medium");
     this.caseDetailsHeading = page.locator("legend.heading-small");
     this.addDefButton = page.getByRole("link", { name: "Add Defendant" });
-    this.changeCaseButton = page
+    this.changeCaseDetailsBtn = page
       .getByRole("link", { name: "Change Case Details" })
       .first();
     this.nameDefOne = page.getByRole("cell", {
@@ -31,20 +37,31 @@ class CaseDetailsPage extends Base {
       name: "Defendant Two",
       exact: true,
     });
-    this.verifyAdditionalNotes = page.getByRole("cell", {
+    this.additionalNotes = page.getByRole("cell", {
       name: "Test additional notes",
     });
     this.removeCaseBtn = page.getByRole("link", { name: "Remove Case" });
   }
 
+  /**
+   * Clicks the "Add Defendant" button to navigate to the Add Defendant page.
+   */
   async goToAddDefendant() {
     await this.addDefButton.click();
   }
 
+  /**
+   * Clicks the "Change Case Details" button to navigate to the Change Case Details page.
+   */
   async goToChangeCaseDetails() {
-    await this.changeCaseButton.click();
+    await this.changeCaseDetailsBtn.click();
   }
 
+  /**
+   * Initiates the process to remove a case, handling confirmation dialogs.
+   * This method includes robust polling and dialog handling due to UI flakiness.
+   * @param {number} timeoutMs - Maximum time to wait for the removal process to complete.
+   */
   async removeCase(timeoutMs = 60000) {
     await expect
       .poll(
@@ -57,7 +74,10 @@ class CaseDetailsPage extends Base {
               dialog
                 .accept()
                 .catch((err) =>
-                  console.warn("⚠️ Failed to accept case deletion dialog:", err)
+                  console.warn(
+                    "⚠️ Failed to accept case deletion dialog:",
+                    err,
+                  ),
                 );
             };
             this.page.on("dialog", dialogHandler);
@@ -86,11 +106,16 @@ class CaseDetailsPage extends Base {
         {
           timeout: timeoutMs,
           intervals: [500, 1000, 1500],
-        }
+        },
       )
       .toBe(true);
   }
 
+  /**
+   * Attempts to open the Review popup for the current case.
+   * Handles existing popups and checks the state of the new popup.
+   * @returns {Promise<Page | null>} A Promise that resolves to the Playwright Page object of the popup if successful and ready, otherwise null.
+   */
   async tryOpenReviewPopup(): Promise<Page | null> {
     let popupPage: Page | null = null;
 
@@ -120,26 +145,28 @@ class CaseDetailsPage extends Base {
 
           const isPaginationPopup =
             bodyText.includes(
-              "There are no documents in the paginated bundle"
+              "There are no documents in the paginated bundle",
             ) ||
             bodyText.includes(
-              "The initial pagination for this bundle is underway"
+              "The initial pagination for this bundle is underway",
             );
 
           if (isPaginationPopup) return "wrong";
 
           const panel = document.querySelector(
-            "#bundleIndexDiv"
+            "#bundleIndexDiv",
           ) as HTMLElement | null;
 
           if (panel && panel.offsetParent !== null) return "ready";
 
           return "loading";
-        }
+        },
       );
 
       if (status === "wrong") {
-        await popupPage.close().catch(() => {});
+        if (popupPage && !popupPage.isClosed()) {
+          await popupPage.close().catch(() => {});
+        }
         return null;
       }
 
@@ -157,6 +184,13 @@ class CaseDetailsPage extends Base {
     }
   }
 
+  /**
+   * Opens the Review popup and waits for its content to be fully paginated and ready.
+   * This method repeatedly calls `tryOpenReviewPopup` until the popup is ready or a timeout occurs.
+   * @param {number} maxWaitMs - Maximum time to wait for the Review popup to become ready.
+   * @returns {Promise<Page>} A Promise that resolves to the Playwright Page object of the ready popup.
+   * @throws {Error} If the Review popup is not ready within the specified timeout.
+   */
   async openReviewPopupAwaitPagination(maxWaitMs = 90000): Promise<Page> {
     const start = Date.now();
     let popup: Page | null = null;
@@ -171,7 +205,7 @@ class CaseDetailsPage extends Base {
     }
 
     throw new Error(
-      `Unable to open Review popup with correct content after ${maxWaitMs}ms`
+      `Unable to open Review popup with correct content after ${maxWaitMs}ms`,
     );
   }
 

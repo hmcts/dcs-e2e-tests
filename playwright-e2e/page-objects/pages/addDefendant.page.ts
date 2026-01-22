@@ -1,6 +1,12 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../base";
 
+/**
+ * Represents the "Add Defendant" page in the application.
+ * This Page Object provides locators and methods to interact with the defendant
+ * creation form, allowing tests to add new defendants to a case.
+ */
+
 class AddDefendantPage extends Base {
   addDefHeading: Locator;
   dOBDay: Locator;

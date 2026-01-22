@@ -1,3 +1,20 @@
+/**
+ * PTPH form ingestion helpers
+ * ---------------------------
+ * These helpers support uploading and validating PTPH forms via the
+ * platform's payload endpoints rather than standard UI flows.
+ *
+ * They are used to:
+ *  - simulate external PTPH document ingestion
+ *  - validate asynchronous processing behaviour
+ *  - ensure ingestion success before dependent tests proceed
+ *
+ * NOTE:
+ * These helpers intentionally bypass normal case navigation and operate
+ * directly against upload/status endpoints due to time limitations of
+ * UI actions to achieve the same.
+ */
+
 import { expect } from "../fixtures";
 import { BrowserContext } from "@playwright/test";
 import { config } from "../utils";
@@ -40,13 +57,13 @@ export async function getPayloadStatus(page, caseUrn: string) {
 
         return null; // still in Started/Processing stage
       },
-      { intervals: [1000], timeout: 120000 }
+      { intervals: [1000], timeout: 120000 },
     )
     .toMatch(/Success|Failed/);
 
   if (!block?.includes("Success")) {
     throw new Error(
-      `PTPH form upload failed for URN ${caseUrn}. Status block:\n ${block}`
+      `PTPH form upload failed for URN ${caseUrn}. Status block:\n ${block}`,
     );
   }
 

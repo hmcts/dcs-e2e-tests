@@ -1,3 +1,14 @@
+/**
+ * Playwright Page Object Fixtures
+ * -------------------------------
+ * This file defines Playwright fixtures for all Page Objects in the E2E test suite.
+ * These fixtures provide instantiated instances of Page Objects to individual tests,
+ * promoting reusability and simplifying test setup.
+ *
+ * Each fixture is a function that receives a Playwright `page` object and
+ * returns an instance of a specific Page Object. This allows tests to
+ * access page-specific elements and methods without manual re-instantiation.
+ */
 import HomePage from "./home.page";
 import CaseSearchPage from "./caseSearch.page";
 import CaseDetailsPage from "./caseDetails.page";
@@ -28,6 +39,11 @@ import UpdateDocumentsPage from "./updateDocuments.page";
 import IndexPage from "./index.page";
 import PTPHPage from "./ptph.page";
 
+/**
+ * Interface defining the types of all available Page Object fixtures.
+ * Each property corresponds to an instantiated Page Object class, making
+ * them type-safe and easily discoverable in tests.
+ */
 export interface PageFixtures {
   homePage: HomePage;
   caseSearchPage: CaseSearchPage;
@@ -60,6 +76,12 @@ export interface PageFixtures {
   ptphPage: PTPHPage;
 }
 
+/**
+ * Playwright fixtures for Page Objects.
+ * Each fixture provides an instance of a Page Object, making it available
+ * to tests without manual instantiation. The `use` function passes the
+ * instantiated page object to the test function.
+ */
 export const pageFixtures = {
   homePage: async ({ page }, use) => {
     await use(new HomePage(page));

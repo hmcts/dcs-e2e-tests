@@ -1,9 +1,39 @@
+/**
+ * DocumentModel
+ * --------------
+ * This model represents a document.
+ *
+ * It is used by E2E tests to validate that:
+ *  - the correct documents appear under the correct section headings
+ *  - document numbering and naming is consistent across pages
+ *  - role-based access control is enforced correctly
+ *
+ * The DocumentModel is reused across multiple pages, including:
+ *  - Review Evidence
+ *  - Sections
+ *  - Index
+ *
+ * Each entry in the `documents` array represents a single expected document (or the
+ * explicit absence of a document) across users for the existing case 'Auto Case1 - DO NOT AMEND'.
+ * This case allows us to test document visiblity on a large complex case of varied permissions.
+ *
+ * Expected absence of document visibility in a restricted section is modelled here using
+ * "No available document" so we can assert that restricted users do NOT see documents
+ * they should not have access to.
+ */
+
 export interface DocumentModel {
+  /** The title of the section the document belongs to. */
   sectionTitle: string;
+  /** The document number within the section. */
   documentNumber: string;
+  /** The name of the document. */
   documentName: string;
+  /** The ID of the section, optional. */
   sectionId?: string;
+  /** The ID of the document, optional. */
   documentId?: string;
+  /** The roles that have access to the document, optional. */
   roles?: string[];
 }
 

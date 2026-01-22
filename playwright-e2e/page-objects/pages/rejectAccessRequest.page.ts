@@ -1,6 +1,11 @@
 import { Locator, expect } from "@playwright/test";
 import { Base } from "../base";
 
+/**
+ * Represents the "Reject Access Request" confirmation page.
+ * This Page Object provides locators and methods to confirm the rejection
+ * of a user's access request.
+ */
 class RejectAccessRequestPage extends Base {
   confirmButton: Locator;
   rejectRequestHeading: Locator;

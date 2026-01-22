@@ -1,6 +1,12 @@
 import { Locator, expect } from "@playwright/test";
 import { Base } from "../base";
 
+/**
+ * Represents the "Split Case" page, enabling the division of an existing case
+ * with multiple defendants into multiple new cases. This Page Object provides locators and methods to
+ * configure the split, define new case names/URNs, assign defendants to new cases,
+ * and initiate the split operation.
+ */
 class SplitCasePage extends Base {
   splitHeading: Locator;
   noOfCasesTextBox: Locator;
@@ -41,9 +47,16 @@ class SplitCasePage extends Base {
     this.progressBar = page.locator(".progress-bar");
   }
 
-  async splitCase(caseName: string) {
-    await this.noOfCasesTextBox.fill("2");
-    await expect(this.updateButton).toBeEnabled();
+
+/**
+ * Performs the actions to split an existing case into two new cases.
+ * Fills the number of new cases, updates the form, sets new case names,
+ * assigns defendants based on their visibility, and clicks the split button.
+ * @param caseName - The base name for the new cases (e.g., "OriginalCase" becomes "OriginalCaseone", "OriginalCasetwo").
+ */
+async splitACase(caseName: string){
+    await this.noOfCasesTextBox.fill('2')
+    await expect (this.updateButton).toBeEnabled();
     await Promise.all([
       await expect(this.caseNameTable).toBeVisible(),
       await this.updateButton.click(),
