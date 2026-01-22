@@ -98,16 +98,16 @@ test.describe("@regression Split & Merge Case Functionality", () => {
 
     const sampleKey = await getRandomSectionKey(
       sectionsPage,
-      sections.unrestricted
+      sections.unrestricted,
     );
     for (const [section, sectionKey] of sampleKey) {
       await sectionsPage.uploadAndValidateUnrestrictedSectionDocument(
         sectionKey,
         "unrestrictedSectionUpload",
-        section
+        section,
       );
       await sectionDocumentsPage.navigation.navigateTo("LogOff");
-      
+
       // Add a memo, new private section & restricted document as Defence Advocate A
       await loginAndOpenCase(
         homePage,
@@ -123,13 +123,13 @@ test.describe("@regression Split & Merge Case Functionality", () => {
       await createNewSectionPage.createPrivateSection("Defence A", "PD1");
       const sampleEntriesA = await getRandomSectionKey(
         sectionsPage,
-        sections.restricted
+        sections.restricted,
       );
       for (const [sectionA, sectionKeyA] of sampleEntriesA) {
         await sectionsPage.uploadRestrictedSectionDocument(
           sectionKeyA,
           "restrictedSectionUploadDefendantOne",
-          "One, Defendant"
+          "One, Defendant",
         );
         await sectionDocumentsPage.navigation.navigateTo("LogOff");
 
@@ -149,13 +149,13 @@ test.describe("@regression Split & Merge Case Functionality", () => {
         await createNewSectionPage.createPrivateSection("Defence B", "PD2");
         const sampleEntriesB = await getRandomSectionKey(
           sectionsPage,
-          sections.restricted
+          sections.restricted,
         );
         for (const [sectionB, sectionKeyB] of sampleEntriesB) {
           await sectionsPage.uploadRestrictedSectionDocument(
             sectionKeyB,
             "restrictedSectionUploadDefendantTwo",
-            "Two, Defendant"
+            "Two, Defendant",
           );
           await sectionDocumentsPage.navigation.navigateTo("LogOff");
 
@@ -168,7 +168,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
             newCaseName,
           );
           await sectionsPage.caseNavigation.navigateTo("Split");
-          await splitCasePage.splitCase(newCaseName);
+          await splitCasePage.splitACase(newCaseName);
           await caseDetailsPage.confirmCaseSplit();
           await splitCasePage.navigation.navigateTo("LogOff");
 
@@ -182,13 +182,13 @@ test.describe("@regression Split & Merge Case Functionality", () => {
           );
           await caseDetailsPage.caseNavigation.navigateTo("Memos");
           await expect(memoPage.memoTable).toContainText(
-            "DefenceAdvocateA memo test textbox directly available"
+            "DefenceAdvocateA memo test textbox directly available",
           );
           await expect(memoPage.memoTable).not.toContainText(
-            "HMCTSAdmin memo test textbox directly available"
+            "HMCTSAdmin memo test textbox directly available",
           );
           await expect(memoPage.memoTable).not.toContainText(
-            "DefenceAdvocateB memo test textbox directly available"
+            "DefenceAdvocateB memo test textbox directly available",
           );
           await caseDetailsPage.caseNavigation.navigateTo("Index");
           const documentListA = await indexPage.getIndexDocuments();
@@ -224,13 +224,13 @@ test.describe("@regression Split & Merge Case Functionality", () => {
           );
           await caseDetailsPage.caseNavigation.navigateTo("Memos");
           await expect(memoPage.memoTable).toContainText(
-            "DefenceAdvocateB memo test textbox directly available"
+            "DefenceAdvocateB memo test textbox directly available",
           );
           await expect(memoPage.memoTable).not.toContainText(
-            "HMCTSAdmin memo test textbox directly available"
+            "HMCTSAdmin memo test textbox directly available",
           );
           await expect(memoPage.memoTable).not.toContainText(
-            "DefenceAdvocateA memo test textbox directly available"
+            "DefenceAdvocateA memo test textbox directly available",
           );
           await caseDetailsPage.caseNavigation.navigateTo("Index");
           const documentListB = await indexPage.getIndexDocuments();
@@ -281,13 +281,13 @@ test.describe("@regression Split & Merge Case Functionality", () => {
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     const sampleKey = await getRandomSectionKey(
       sectionsPage,
-      sections.unrestricted
+      sections.unrestricted,
     );
     for (const [section, sectionKey] of sampleKey) {
       await sectionsPage.uploadAndValidateUnrestrictedSectionDocument(
         sectionKey,
         "unrestrictedSectionUpload",
-        section
+        section,
       );
       await sectionDocumentsPage.navigation.navigateTo("LogOff");
 
@@ -297,7 +297,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
         loginPage,
         caseSearchPage,
         defenceAdvocateAUser,
-        newCaseName
+        newCaseName,
       );
       await caseDetailsPage.caseNavigation.navigateTo("Memos");
       await memoPage.addMemo(defenceAdvocateAUser.group);
@@ -306,13 +306,13 @@ test.describe("@regression Split & Merge Case Functionality", () => {
       await createNewSectionPage.createPrivateSection("Defence A", "PD1");
       const sampleEntriesA = await getRandomSectionKey(
         sectionsPage,
-        sections.restricted
+        sections.restricted,
       );
       for (const [sectionA, sectionKeyA] of sampleEntriesA) {
         await sectionsPage.uploadRestrictedSectionDocument(
           sectionKeyA,
           "restrictedSectionUploadDefendantOne",
-          "One, Defendant"
+          "One, Defendant",
         );
         await sectionDocumentsPage.navigation.navigateTo("LogOff");
 
@@ -323,7 +323,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
           loginPage,
           caseSearchPage,
           defenceAdvocateBUser,
-          newCaseName
+          newCaseName,
         );
         await caseDetailsPage.caseNavigation.navigateTo("Memos");
         await memoPage.addMemo(defenceAdvocateBUser.group);
@@ -332,13 +332,13 @@ test.describe("@regression Split & Merge Case Functionality", () => {
         await createNewSectionPage.createPrivateSection("Defence B", "PD2");
         const sampleEntriesB = await getRandomSectionKey(
           sectionsPage,
-          sections.restricted
+          sections.restricted,
         );
         for (const [sectionB, sectionKeyB] of sampleEntriesB) {
           await sectionsPage.uploadRestrictedSectionDocument(
             sectionKeyB,
             "restrictedSectionUploadDefendantTwo",
-            "Two, Defendant"
+            "Two, Defendant",
           );
           await sectionDocumentsPage.navigation.navigateTo("LogOff");
 
@@ -348,10 +348,10 @@ test.describe("@regression Split & Merge Case Functionality", () => {
             loginPage,
             caseSearchPage,
             hmctsAdminUser,
-            newCaseName
+            newCaseName,
           );
           await sectionsPage.caseNavigation.navigateTo("Split");
-          await splitCasePage.splitCase(newCaseName);
+          await splitCasePage.splitACase(newCaseName);
           await caseDetailsPage.confirmCaseSplit();
 
           // Merge two cases by HMCTS Admin
@@ -360,7 +360,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
           await caseDetailsPage.caseNavigation.navigateTo("Merge");
           await mergeCasePage.mergeCases(
             `${newCaseName}One`,
-            `${newCaseName}Two`
+            `${newCaseName}Two`,
           );
           await caseDetailsPage.confirmCaseMerge();
           await mergeCasePage.navigation.navigateTo("LogOff");
@@ -371,17 +371,17 @@ test.describe("@regression Split & Merge Case Functionality", () => {
             loginPage,
             caseSearchPage,
             defenceAdvocateAUser,
-            `${newCaseName}One(M)`
+            `${newCaseName}One(M)`,
           );
           await caseDetailsPage.caseNavigation.navigateTo("Memos");
           await expect(memoPage.memoTable).toContainText(
-            "DefenceAdvocateA memo test textbox directly available"
+            "DefenceAdvocateA memo test textbox directly available",
           );
           await expect(memoPage.memoTable).not.toContainText(
-            "HMCTSAdmin memo test textbox directly available"
+            "HMCTSAdmin memo test textbox directly available",
           );
           await expect(memoPage.memoTable).not.toContainText(
-            "DefenceAdvocateB memo test textbox directly available"
+            "DefenceAdvocateB memo test textbox directly available",
           );
           await caseDetailsPage.caseNavigation.navigateTo("Index");
           const documentListA = await indexPage.getIndexDocuments();
@@ -413,31 +413,31 @@ test.describe("@regression Split & Merge Case Functionality", () => {
             loginPage,
             caseSearchPage,
             defenceAdvocateBUser,
-            `${newCaseName}One(M)`
+            `${newCaseName}One(M)`,
           );
           await caseDetailsPage.caseNavigation.navigateTo("Memos");
           await expect(memoPage.memoTable).toContainText(
-            "DefenceAdvocateB memo test textbox directly available"
+            "DefenceAdvocateB memo test textbox directly available",
           );
           await expect(memoPage.memoTable).not.toContainText(
-            "HMCTSAdmin memo test textbox directly available"
+            "HMCTSAdmin memo test textbox directly available",
           );
           await expect(memoPage.memoTable).not.toContainText(
-            "DefenceAdvocateA memo test textbox directly available"
+            "DefenceAdvocateA memo test textbox directly available",
           );
           await caseDetailsPage.caseNavigation.navigateTo("Index");
           const documentListB = await indexPage.getIndexDocuments();
           expect(documentListB.length).toBeGreaterThan(0);
           await indexPage.validateIndexDocument(
             "unrestrictedSectionUpload",
-            section
+            section,
           );
           await indexPage.validateIndexDocument(
             "restrictedSectionUploadDefendantTwo",
-            sectionB
+            sectionB,
           );
           await indexPage.validateNoAccessToRestrictedIndexDocument(
-            "restrictedSectionUploadDefendantOne"
+            "restrictedSectionUploadDefendantOne",
           );
           await indexPage.validateSections(["PD2"]);
           await indexPage.validateSectionsMissing(["PD1"]);

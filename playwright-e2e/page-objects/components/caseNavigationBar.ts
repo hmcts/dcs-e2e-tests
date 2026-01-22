@@ -2,8 +2,17 @@ import { Page, Locator } from "@playwright/test";
 
 type NavLink = string;
 
+/**
+ * Represents the case-specific navigation bar accessible when viewing an open case.
+ * This component provides methods to interact with various links related to a case,
+ * such as "Case Home", "Review", "Index", etc.
+ */
 class CaseNavigationBar {
   page: Page;
+  /**
+   * A map of navigation link names to their respective Playwright Locators.
+   * This allows for easy access and interaction with specific navigation items.
+   */
   links: Record<NavLink, Locator>;
 
   constructor(page: Page) {
@@ -34,6 +43,10 @@ class CaseNavigationBar {
     };
   }
 
+  /**
+   * Navigates to a specific link within the case navigation bar.
+   * @param {NavLink} link - The name of the link to navigate to (e.g., "CaseHome", "Review").
+   */
   async navigateTo(link: NavLink) {
     const locator = this.links[link];
     if (!locator) {

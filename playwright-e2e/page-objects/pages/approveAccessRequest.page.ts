@@ -1,6 +1,11 @@
 import { Locator, expect } from "@playwright/test";
 import { Base } from "../base";
 
+/**
+ * Represents the "Approve Access Request" confirmation page.
+ * This Page Object provides locators and methods to confirm the approval
+ * of a user's access request.
+ */
 class ApproveAccessRequestPage extends Base {
   confirmButton: Locator;
   approveRequestHeading: Locator;
@@ -11,6 +16,9 @@ class ApproveAccessRequestPage extends Base {
     this.approveRequestHeading = page.locator("div#content h2");
   }
 
+  /**
+   * Confirms the approval of a user's access request.
+   */
   async approveUserRequest() {
     await expect(this.approveRequestHeading).toHaveText(
       "Approve Access Request"

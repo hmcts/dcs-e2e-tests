@@ -30,58 +30,51 @@ test.describe("@nightly @regression Sections and Documents availability", () => 
     }) => {
       const currentUserIssues: string[] = [];
 
-      try {
-        await loginPage.login(user);
-        await homePage.navigation.navigateTo("ViewCaseListLink");
-        await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
-        const [popup] = await Promise.all([
-          caseSearchPage.page.waitForEvent("popup"),
-          caseSearchPage.goToReviewEvidence("01AD111111"),
-        ]);
+      await loginPage.login(user);
+      await homePage.navigation.navigateTo("ViewCaseListLink");
+      await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
+      const [popup] = await Promise.all([
+        caseSearchPage.page.waitForEvent("popup"),
+        caseSearchPage.goToReviewEvidence("01AD111111"),
+      ]);
 
-        const reviewEvidencePage = new ReviewEvidencePage(popup);
+      const reviewEvidencePage = new ReviewEvidencePage(popup);
 
-        // Filter expected documents based on User Group
-        const expectedDocuments =
-          await reviewEvidencePage.filterDocumentsByUser(user.group);
+      // Filter expected documents based on User Group
+      const expectedDocuments =
+        await reviewEvidencePage.filterDocumentsByUser(user.group);
 
-        // Get all available documents from Index for User
-        const availableDocuments = await reviewEvidencePage.getDocuments(
-          user.group
+      // Get all available documents from Index for User
+      const availableDocuments = await reviewEvidencePage.getDocuments(
+        user.group
+      );
+
+      // Compare expected vs available sections and documents for User
+      const { missingDocuments, unexpectedDocuments } =
+        await reviewEvidencePage.compareExpectedVsAvailableSectionsAndDocuments(
+          expectedDocuments,
+          availableDocuments
         );
 
-        // Compare expected vs available sections and documents for User
-        const { missingDocuments, unexpectedDocuments } =
-          await reviewEvidencePage.compareExpectedVsAvailableSectionsAndDocuments(
-            expectedDocuments,
-            availableDocuments
-          );
+      // If there are any section or document issues, push to currentUserIssues
+      currentUserIssues.push(...missingDocuments, ...unexpectedDocuments);
 
-        // If there are any section or document issues, push to currentUserIssues
-        currentUserIssues.push(...missingDocuments, ...unexpectedDocuments);
-      } catch (error: unknown) {
-        console.error(
-          `Error assessing document availability for ${user.group}:`,
-          error
+      //Aggragate results across users
+      pushTestResult({
+        user: user.group,
+        heading: `Verify Sections & Documents for ${user.group}`,
+        category: "Sections",
+        issues: currentUserIssues,
+      });
+      // Fail the test if any issues were found
+      if (currentUserIssues.length > 0) {
+        throw new Error(
+          `User ${
+            user.group
+          } has missing/unexpected documents:\n${currentUserIssues.join(
+            "\n"
+          )}`
         );
-      } finally {
-        //Aggragate results across users
-        pushTestResult({
-          user: user.group,
-          heading: `Verify Sections & Documents for ${user.group}`,
-          category: "Sections",
-          issues: currentUserIssues,
-        });
-        // Fail the test if any issues were found
-        if (currentUserIssues.length > 0) {
-          throw new Error(
-            `User ${
-              user.group
-            } has missing/unexpected documents:\n${currentUserIssues.join(
-              "\n"
-            )}`
-          );
-        }
       }
     });
   }
@@ -112,95 +105,87 @@ test.describe("@regression Document rendering / photosnaps", () => {
     }) => {
       const currentUserIssues: string[] = [];
 
-      try {
-        await loginPage.login(user);
-        await homePage.navigation.navigateTo("ViewCaseListLink");
-        await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
-        const [popup] = await Promise.all([
-          caseSearchPage.page.waitForEvent("popup"),
-          caseSearchPage.goToReviewEvidence("01AD111111"),
-        ]);
+      await loginPage.login(user);
+      await homePage.navigation.navigateTo("ViewCaseListLink");
+      await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
+      const [popup] = await Promise.all([
+        caseSearchPage.page.waitForEvent("popup"),
+        caseSearchPage.goToReviewEvidence("01AD111111"),
+      ]);
 
-        const reviewEvidencePage = new ReviewEvidencePage(popup);
+      const reviewEvidencePage = new ReviewEvidencePage(popup);
 
-        // Get all Documents by user
-        const availableDocuments = await reviewEvidencePage.getDocuments(
-          user.group
-        );
-        const filteredDocuments = availableDocuments.filter(
-          (doc) => doc.documentName !== "No available document: name"
-        );
+      // Get all Documents by user
+      const availableDocuments = await reviewEvidencePage.getDocuments(
+        user.group
+      );
+      const filteredDocuments = availableDocuments.filter(
+        (doc) => doc.documentName !== "No available document: name"
+      );
 
-        // Get document count
-        const documentCount = filteredDocuments.length;
-        expect(documentCount).toBeGreaterThan(0);
+      // Get document count
+      const documentCount = filteredDocuments.length;
+      expect(documentCount).toBeGreaterThan(0);
 
-        // Pick up to 5 random documents to test
-        const sampleDocs = filteredDocuments
-          .sort(() => Math.random() - 0.5)
-          .slice(0, Math.min(5, documentCount));
+      // Pick up to 5 random documents to test
+      const sampleDocs = filteredDocuments
+        .sort(() => Math.random() - 0.5)
+        .slice(0, Math.min(5, documentCount));
 
-        // Loop through to click sample of document links and ensure that the document is rendering correctly via Playwright Photosnaps
-        for (const [index, doc] of sampleDocs.entries()) {
-          try {
-            const documentLink = reviewEvidencePage.page.locator(
-              `[id='${doc.documentId}']`
-            );
+      // Loop through to click sample of document links and ensure that the document is rendering correctly via Playwright Photosnaps
+      for (const [index, doc] of sampleDocs.entries()) {
+        try {
+          const documentLink = reviewEvidencePage.page.locator(
+            `[id='${doc.documentId}']`
+          );
 
-            await documentLink.click();
-            await reviewEvidencePage.page.evaluate(() => window.scrollTo(0, 0));
+          await documentLink.click();
+          await reviewEvidencePage.page.evaluate(() => window.scrollTo(0, 0));
 
-            // Wait for the high-resolution image to be loaded
-            await reviewEvidencePage.waitForHighResImageLoad(
-              doc.documentId ?? "",
-              doc.documentName,
-              user.group,
-              index,
-              doc.sectionTitle,
-              sampleDocs.length
-            );
+          // Wait for the high-resolution image to be loaded
+          await reviewEvidencePage.waitForHighResImageLoad(
+            doc.documentId ?? "",
+            doc.documentName,
+            user.group,
+            index,
+            doc.sectionTitle,
+            sampleDocs.length
+          );
 
-            // Target document image for screenshot
-            const documentImage = await reviewEvidencePage.getImageLocator(
-              doc.documentId ?? ""
-            );
+          // Target document image for screenshot
+          const documentImage = await reviewEvidencePage.getImageLocator(
+            doc.documentId ?? ""
+          );
 
-            // Prepare standardised screenshot name
-            const screenshotName = await reviewEvidencePage.standardiseFileName(
-              reviewEvidencePage.page.locator(`[id='${doc.documentId}']`)
-            );
-            // Take and compare screenshot to expected document image
+          // Prepare standardised screenshot name
+          const screenshotName = await reviewEvidencePage.standardiseFileName(
+            reviewEvidencePage.page.locator(`[id='${doc.documentId}']`)
+          );
+          // Take and compare screenshot to expected document image
 
-            await expect(documentImage).toHaveScreenshot(screenshotName, {
-              maxDiffPixelRatio: 0.01,
-            });
-          } catch {
-            currentUserIssues.push(
-              `Screenshot mismatch for "${doc.documentName}" in section "${doc.sectionTitle}"`
-            );
-          }
-        }
-      } catch (error: unknown) {
-        console.error(
-          `Error during document rendering for ${user.group}:`,
-          error
-        );
-      } finally {
-        //Aggragate results across users
-        pushTestResult({
-          user: user.group,
-          heading: `Verify Document Rendering for ${user.group}`,
-          category: "Sections",
-          issues: currentUserIssues,
-        });
-        // Fail the test if any issues were found
-        if (currentUserIssues.length > 0) {
-          throw new Error(
-            `User ${
-              user.group
-            } has document mismatches:\n${currentUserIssues.join("\n")}`
+          await expect(documentImage).toHaveScreenshot(screenshotName, {
+            maxDiffPixelRatio: 0.01,
+          });
+        } catch {
+          currentUserIssues.push(
+            `Screenshot mismatch for "${doc.documentName}" in section "${doc.sectionTitle}"`
           );
         }
+      }
+      //Aggragate results across users
+      pushTestResult({
+        user: user.group,
+        heading: `Verify Document Rendering for ${user.group}`,
+        category: "Sections",
+        issues: currentUserIssues,
+      });
+      // Fail the test if any issues were found
+      if (currentUserIssues.length > 0) {
+        throw new Error(
+          `User ${
+            user.group
+          } has document mismatches:\n${currentUserIssues.join("\n")}`
+        );
       }
     });
   }

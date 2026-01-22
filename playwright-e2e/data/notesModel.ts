@@ -1,8 +1,31 @@
+/**
+ * Notes test model
+ * ----------------
+ * This model represents a document note (via Review Evidence).
+ *
+ * It is used in E2E tests to validate:
+ *  - who created the note
+ *  - how it is shared (Private / Tightly Shared / Widely Shared)
+ *  - which user roles should be able to view it
+ *
+ * Each entry in the `notes` array represents a single note for the
+ * existing case 'Auto Case1 - DO NOT AMEND'.This case allows us to
+ * test note visiblity and access on a large complex case covering
+ *  - all supported roles
+ *  - all supported share types
+ *  - cross-role visibility scenarios
+ */
+
 export interface NotesModel {
+  /** The unique identifier for the note, which is optional as it may not be required in all contexts. */
   noteKey?: string;
+  /** The text content of the note, which is a required field. */
   noteText: string;
+  /** The user who created the note, a required field. */
   noteUser: string;
+  /** The sharing status of the note (e.g., 'Private', 'Tightly Shared', 'Widely Shared'), which is a required field. */
   noteShare: string;
+  /** An optional array of user roles that have permission to view the note. */
   roles?: string[];
 }
 

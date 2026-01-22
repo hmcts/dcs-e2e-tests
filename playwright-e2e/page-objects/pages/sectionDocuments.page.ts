@@ -9,6 +9,12 @@ interface DocumentCheck {
   shouldBeVisible: boolean;
 }
 
+/**
+ * Represents the page displaying documents within a specific section of a case.
+ * This Page Object provides functionalities to load the section documents table,
+ * verify document presence, handle restricted document access, and navigate
+ * to document upload.
+ */
 class SectionDocumentsPage extends Base {
   readonly viewDocumentPage: ViewDocumentPage;
   sectionDocumentsLoader: Locator;
@@ -23,6 +29,9 @@ class SectionDocumentsPage extends Base {
     this.sectionsTable = page.locator(".formTable-zebra");
   }
 
+  /**
+   * Waits for the section documents table to load, ensuring the loader is no longer visible.
+   */
   async sectionTableLoad() {
     await expect
       .poll(
@@ -39,6 +48,10 @@ class SectionDocumentsPage extends Base {
       .toBe(true);
   }
 
+  /**
+   * Verifies that a document has been successfully removed from a section.
+   * @returns A string message if removal verification fails, otherwise void.
+   */
   async verifyDocumentRemoval(user, section) {
     await this.sectionTableLoad();
     await this.page
@@ -54,6 +67,10 @@ class SectionDocumentsPage extends Base {
     }
   }
 
+  /**
+   * Retrieves a list of documents present in the current section's table.
+   * @returns An array of `DocumentModel` objects representing the documents in the section.
+   */
   async getSectionDocuments(
     sectionId: string,
     sectionName: string
@@ -101,6 +118,10 @@ class SectionDocumentsPage extends Base {
     return documents;
   }
 
+  /**
+   * Verifies that all documents listed in the section table can be opened in a popup
+   * and that the popup URL is correct.
+   */
   async verifyAllSectionDocumentsLoad() {
     await this.sectionTableLoad();
     const rows = this.page.locator(
@@ -129,6 +150,11 @@ class SectionDocumentsPage extends Base {
     }
   }
 
+  /**
+   * Validates the visibility of restricted documents after an upload, based on
+   * a list of expected documents and their visibility status.
+   * @returns A string describing validation issues if any are found
+   */
   async validateRestrictedSectionDocumentUpload(
     section: string,
     user: string,
@@ -166,6 +192,9 @@ class SectionDocumentsPage extends Base {
     }
   }
 
+  /**
+   * Validates the presence of an unrestricted document within a specific section.
+   */
   async validateUnrestrictedSectionDocument(filename, section) {
     await this.sectionTableLoad();
     await expect(
@@ -185,6 +214,9 @@ class SectionDocumentsPage extends Base {
     }
   }
 
+  /**
+   * Validates the presence of a single restricted document within a specific section.
+   */
   async validateSingleRestrictedSectionDocument(filename, section) {
     await this.sectionTableLoad();
     await expect(
@@ -204,6 +236,9 @@ class SectionDocumentsPage extends Base {
     }
   }
 
+  /**
+   * Clicks the "Upload Document(s)" button to navigate to the document upload page.
+   */
   async goToUploadDocuments() {
     const uploadButton = this.page.getByRole("link", {
       name: "Upload Document(s)",

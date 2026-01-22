@@ -4,6 +4,13 @@ import { Base } from "../../base";
 import { DocumentModel, documents } from "../../../data/documentModel";
 import NotesComponent from "./notesComponent";
 
+/**
+ * Represents the "Review Evidence" page, which is a core part of the application
+ * for viewing and interacting with case documents. This Page Object
+ * provides extensive functionalities for loading and validating sections and documents,
+ * managing document Notes via the integrated `NotesComponent`, and verifying access controls.
+ */
+
 class ReviewEvidencePage extends Base {
   readonly sectionPanel: Locator;
   documentTextName: Locator;
@@ -20,8 +27,15 @@ class ReviewEvidencePage extends Base {
     this.caseName = page.locator(".caseName");
   }
 
+  // ======================================================================
   // Review Evidence Index: Section Methods
+  // ======================================================================
 
+  /**
+   * Waits for the section panel to load and become visible, specifically ensuring
+   * that all "Please wait..." loaders within the panel have disappeared.
+   * @param {number} [timeout=70000] - The maximum time to wait for the panel to load (in milliseconds).
+   */
   async sectionPanelLoad(timeout = 70000) {
     const sectionPanel = this.page.locator("#bundleIndexDiv");
     await expect(sectionPanel).toBeVisible();
@@ -32,72 +46,17 @@ class ReviewEvidencePage extends Base {
         if (!panel) return false;
 
         return Array.from(
-          panel.querySelectorAll('img[alt="Please wait ..."]')
+          panel.querySelectorAll('img[alt="Please wait ..."]'),
         ).every((img) => (img as HTMLElement).offsetParent === null); // cast to HTMLElement
       },
       "#bundleIndexDiv",
-      { timeout }
+      { timeout },
     );
   }
 
-  // async waitForPanelToStabilise(timeout = 90000) {
-  //   const start = Date.now();
-  //   const pollingInterval = 300;
-
-  //   while (Date.now() - start < timeout) {
-  //     // Are any loaders visible
-  //     const loadersVisible = await this.page
-  //       .locator('img[alt="Please wait ..."]:visible')
-  //       .count();
-
-  //     // Any connectivity warning
-  //     const connectivityVisible = await this.page
-  //       .locator(".noInternetWarning:visible")
-  //       .count();
-
-  //     if (loadersVisible > 0 || connectivityVisible > 0) {
-  //       // Still waiting for everything to settle
-  //       await this.page.waitForTimeout(pollingInterval);
-  //       continue;
-  //     }
-
-  //     // Check stability
-  //     await this.page.waitForTimeout(500);
-
-  //     const stillLoaders = await this.page
-  //       .locator('img[alt="Please wait ..."]:visible')
-  //       .count();
-  //     const stillConnectivity = await this.page
-  //       .locator(".noInternetWarning:visible")
-  //       .count();
-
-  //     if (stillLoaders === 0 && stillConnectivity === 0) {
-  //       return; // Stable!
-  //     }
-  //   }
-
-  //   throw new Error("❌ Section panel did not stabilise in time");
-  // }
-
-  // async waitUntilFullyLoaded(sectionKey: string, timeout = 120000) {
-  //   const start = Date.now();
-
-  //   // 1 — Wait for section panel visibility
-  //   const sectionPanel = this.page.locator("#bundleIndexDiv");
-  //   await expect(sectionPanel).toBeVisible({ timeout });
-
-  //   // 2 — Stabilise loaders & connectivity warnings
-  //   await this.waitForPanelToStabilise(timeout);
-
-  //   // 3 — Wait for high-res image
-  //   await this.notes.waitForHighResImageLoad(sectionKey, timeout);
-
-  //   // 4 — Final safety check
-  //   await this.waitForPanelToStabilise(5000);
-
-  //   console.log(`✔ Review Evidence fully loaded in ${Date.now() - start} ms`);
-  // }
-
+  /**
+   * Retrieves the total number of sections displayed in the section panel.
+   */
   async getSectionsCount(): Promise<number> {
     await this.sections.first().waitFor({ state: "visible" });
     const count = await this.sectionPanel.locator(".sectionLi").count();
@@ -107,19 +66,25 @@ class ReviewEvidencePage extends Base {
     return count;
   }
 
+  /**
+   * Retrieves the unique key of a section given its 0-based index in the panel.
+   */
   async getSectionID(sectionIndex: number): Promise<string> {
     const section = this.sectionPanel.locator(".sectionLi").nth(sectionIndex);
     const sectionId = await section.getAttribute("id");
 
     if (!sectionId) {
       throw new Error(
-        `Section at index ${sectionIndex} does not have an id attribute`
+        `Section at index ${sectionIndex} does not have an id attribute`,
       );
     }
 
     return sectionId;
   }
 
+  /**
+   * Retrieves the display name of a section given its unique key.
+   */
   async getSectionName(sectionId: string): Promise<string> {
     const fullTitle = await this.page
       .locator(`#sectionName-${sectionId} .sectionTextName`)
@@ -133,8 +98,13 @@ class ReviewEvidencePage extends Base {
     return sectionName.trim();
   }
 
+  // ======================================================================
   // Review Evidence Index: Document Methods
+  // ======================================================================
 
+  /**
+   * Retrieves the number of documents within a specific section using the section key.
+   */
   async getDocumentCountPerSection(sectionId: string): Promise<number> {
     const sectionDocumentCount = await this.page
       .locator(`.sectionDocumentUl-${sectionId} > li`)
@@ -142,9 +112,12 @@ class ReviewEvidencePage extends Base {
     return sectionDocumentCount;
   }
 
+  /**
+   * Retrieves the document number for a specific document within a section.
+   */
   async getDocumentNumber(
     documentIndex: number,
-    sectionId: string
+    sectionId: string,
   ): Promise<string> {
     const numberLocator = this.page
       .locator(`.sectionDocumentUl-${sectionId} .docTextIndex`)
@@ -152,16 +125,19 @@ class ReviewEvidencePage extends Base {
     const locatorText = await numberLocator.innerText();
     if (!locatorText) {
       throw new Error(
-        `No document number available for document index: ${documentIndex} of section ID: ${sectionId}`
+        `No document number available for document index: ${documentIndex} of section ID: ${sectionId}`,
       );
     }
     const documentNumber = locatorText.charAt(0);
     return documentNumber;
   }
 
+  /**
+   * Retrieves the document name for a specific document within a section.
+   */
   async getDocumentName(
     documentIndex: number,
-    sectionId: string
+    sectionId: string,
   ): Promise<string> {
     const name = await this.page
       .locator(`.sectionDocumentUl-${sectionId} .docTextName`)
@@ -169,7 +145,7 @@ class ReviewEvidencePage extends Base {
       .innerText();
     if (!name) {
       throw new Error(
-        `No document name available for document index: ${documentIndex} of Section ID: ${sectionId}`
+        `No document name available for document index: ${documentIndex} of Section ID: ${sectionId}`,
       );
     }
     // Remove any trailing "(...)" from the name
@@ -179,9 +155,12 @@ class ReviewEvidencePage extends Base {
     return cleanName.trim();
   }
 
+  /**
+   * Retrieves the unique document key for a specific document within a section.
+   */
   async getDocumentID(
     documentIndex: number,
-    sectionId: string
+    sectionId: string,
   ): Promise<string> {
     const documentId = await this.page
       .locator(`.sectionDocumentUl-${sectionId} .documentLi`)
@@ -189,11 +168,16 @@ class ReviewEvidencePage extends Base {
       .getAttribute("id");
     if (!documentId)
       throw new Error(
-        `Document at index ${documentIndex} in section ID: ${sectionId} not found`
+        `Document at index ${documentIndex} in section ID: ${sectionId} not found`,
       );
     return documentId;
   }
 
+  /**
+   * Gathers all documents visible in the Review Evidence panel for a given user.
+   * Iterates through all sections and their documents to create a list of `DocumentModel` objects.
+   * @returns {Promise<DocumentModel[]>} An array of `DocumentModel` objects representing all visible documents.
+   */
   async getDocuments(user: string): Promise<DocumentModel[]> {
     const documents: DocumentModel[] = [];
 
@@ -221,11 +205,11 @@ class ReviewEvidencePage extends Base {
         ) {
           const documentName = await this.getDocumentName(
             documentIndex,
-            sectionId
+            sectionId,
           );
           const documentNumber = await this.getDocumentNumber(
             documentIndex,
-            sectionId
+            sectionId,
           );
           const documentId = await this.getDocumentID(documentIndex, sectionId);
 
@@ -244,16 +228,29 @@ class ReviewEvidencePage extends Base {
     return documents;
   }
 
+  /**
+   * Filters the global list of documents (`../../../data/documentModel.ts`)
+   * to find those accessible by a specific user role.
+   * @returns {DocumentModel[]} An array of `DocumentModel` objects accessible by the specified user.
+   */
   async filterDocumentsByUser(user: string) {
     const filteredDocuments = documents.filter((document) =>
-      document.roles?.includes(user)
+      document.roles?.includes(user),
     );
     return filteredDocuments;
   }
 
+  /**
+   * Compares a list of expected documents for a user against documents actually found in the UI.
+   * Identifies and reports any missing expected documents or unexpected extra documents.
+   * @param {DocumentModel[]} userExpectedDocuments - An array of `DocumentModel` objects expected to be visible for the user.
+   * @param {DocumentModel[]} userAvailableDocuments - An array of `DocumentModel` objects actually found for the user in the UI.
+   * @returns {{missingDocuments: string[], unexpectedDocuments: string[]}} An object containing arrays of descriptions for missing
+   * and unexpected documents.
+   */
   async compareExpectedVsAvailableSectionsAndDocuments(
     userExpectedDocuments: DocumentModel[],
-    userAvailableDocuments: DocumentModel[]
+    userAvailableDocuments: DocumentModel[],
   ) {
     const missingDocuments: string[] = [];
     const unexpectedDocuments: string[] = [];
@@ -265,11 +262,11 @@ class ReviewEvidencePage extends Base {
         (availableDocument) =>
           availableDocument.sectionTitle === expectedDocument.sectionTitle &&
           availableDocument.documentName === expectedDocument.documentName &&
-          availableDocument.documentNumber === expectedDocument.documentNumber
+          availableDocument.documentNumber === expectedDocument.documentNumber,
       );
       if (availableMatches.length === 0) {
         missingDocuments.push(
-          `Section Title: ${expectedDocument.sectionTitle}, Document Name: ${expectedDocument.documentName} - is missing`
+          `Section Title: ${expectedDocument.sectionTitle}, Document Name: ${expectedDocument.documentName} - is missing`,
         );
       }
     }
@@ -281,19 +278,27 @@ class ReviewEvidencePage extends Base {
         (expectedDocument) =>
           expectedDocument.sectionTitle === availableDocument.sectionTitle &&
           expectedDocument.documentName === availableDocument.documentName &&
-          expectedDocument.documentNumber === availableDocument.documentNumber
+          expectedDocument.documentNumber === availableDocument.documentNumber,
       );
       if (expectedMatches.length === 0) {
         unexpectedDocuments.push(
-          `Section Title: ${availableDocument.sectionTitle}, Document Name: ${availableDocument.documentName} - is unexpectedly showing`
+          `Section Title: ${availableDocument.sectionTitle}, Document Name: ${availableDocument.documentName} - is unexpectedly showing`,
         );
       }
     }
     return { missingDocuments, unexpectedDocuments };
   }
 
-  // Document render methods
+  // ======================================================================
+  // Review Evidence Index: Document Render Methods
+  // ======================================================================
 
+  /**
+   * Standardizes a document's file name for screenshot comparison purposes.
+   * Removes leading numbers/symbols and converts to a lowercase, underscore-separated format.
+   * @param {Locator} documentLink - The Playwright Locator for the document link.
+   * @returns {Promise<string>} The standardized file name appended with "_page1.png".
+   */
   async standardiseFileName(documentLink: Locator): Promise<string> {
     const nameLocator = documentLink.locator(".docTextName");
     const name = await nameLocator.innerText();
@@ -303,11 +308,20 @@ class ReviewEvidencePage extends Base {
     return screenshotName;
   }
 
+  /**
+   * Retrieves the Locator for a document's image element.
+   * @returns {Locator} A Playwright Locator for the image associated with the document.
+   */
   getImageLocator(docId: string): Locator {
     const image = this.page.locator(`#canvas-${docId}-1`);
     return image;
   }
 
+  /**
+   * Waits for the high-resolution image of a document to load in the viewer - critical before
+   * snapshots can be taken.
+   * This method uses `page.evaluate` to listen for the image's `load` event.
+   */
   async waitForHighResImageLoad(
     docId: string,
     docName: string,
@@ -315,7 +329,7 @@ class ReviewEvidencePage extends Base {
     index: number,
     sectionTitle: string,
     sampleSize: number,
-    timeoutMs = 45000
+    timeoutMs = 45000,
   ) {
     const result = await this.page.evaluate(
       ({
@@ -328,7 +342,7 @@ class ReviewEvidencePage extends Base {
         timeout,
       }) => {
         const img = document.querySelector<HTMLImageElement>(
-          `img.documentPageImage[data-documentrowkey="${documentId}"]`
+          `img.documentPageImage[data-documentrowkey="${documentId}"]`,
         );
         if (!img)
           return {
@@ -371,7 +385,7 @@ class ReviewEvidencePage extends Base {
         sectionTitle: sectionTitle,
         sampleSize: sampleSize,
         timeout: timeoutMs,
-      }
+      },
     );
 
     // Node-side console log

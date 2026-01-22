@@ -1,9 +1,28 @@
+/**
+ * Case creation helpers
+ * ---------------------
+ * These helpers are responsible for creating fully-formed test cases via the UI,
+ * including:
+ *  - case creation
+ *  - defendant setup
+ *  - role-based user access
+ *  - optional document upload and ROCA validation
+ *
+ * UI flows are used rather than direct data seeding as API endpoints don't exist
+ * to support this.
+ */
+
 import { config } from "../utils";
 import { expect } from "../fixtures";
 import { sections } from "../utils";
 import { ROCAModel } from "../data/ROCAModel";
 import { getRandomSectionKey } from "../utils";
 
+/**
+ * Mapping of user roles to the defendants they should be associated with
+ * when added to a case. This configuration helps in setting up specific
+ * access control scenarios for different test users.
+ */
 const userRoleConfig = {
   DefenceAdvocateA: { defendants: ["Defendant One"] },
   DefenceAdvocateB: { defendants: ["Defendant Two"] },
@@ -15,6 +34,11 @@ const userRoleConfig = {
   CPSProsecutor: {},
 };
 
+/**
+ * Preset user groups that comprise multiple roles.
+ * This object is used to easily select a collection of users for a test case,
+ * simplifying the process of assigning multiple user types for complex scenarios.
+ */
 const groupPreset = {
   Defence: [
     "defenceAdvocateA",
@@ -24,10 +48,19 @@ const groupPreset = {
   ],
 };
 
+/**
+ * Resolves users or user group into an array of user accounts to
+ * be added to a test case
+ *
+ * Behaviour:
+ *  - Accepts either a single user role or a group preset
+ *  - Excludes the HMCTS admin as they created the case
+ *  - Always ensures an admin user is present for cleanup and deletion
+ */
 export function getUserDetails(input: string) {
   // Find key in config.users ignoring case
   const userKey = Object.keys(config.users).find(
-    (key) => key.toLowerCase() === input.toLowerCase()
+    (key) => key.toLowerCase() === input.toLowerCase(),
   );
 
   let userGroups: string[];
@@ -47,7 +80,7 @@ export function getUserDetails(input: string) {
       if (!user) return null;
 
       const roleKey = Object.keys(userRoleConfig).find(
-        (key) => key.toLowerCase() === group.toLowerCase()
+        (key) => key.toLowerCase() === group.toLowerCase(),
       );
       const role = roleKey ? userRoleConfig[roleKey] : {};
 
@@ -66,6 +99,12 @@ export function getUserDetails(input: string) {
   return userDetails;
 }
 
+/**
+ * Creates a new case via the UI, adds defendants, and assigns user access.
+ * This is the foundational setup helper used by most E2E tests.
+ * Returns the generated case name and URN for use in subsequent steps.
+ */
+
 export async function createNewCaseWithDefendantsAndUsers(
   createCasePage,
   caseDetailsPage,
@@ -74,8 +113,8 @@ export async function createNewCaseWithDefendantsAndUsers(
   caseName: string,
   caseUrn: string,
   users: string,
-  numberDefendants: string = "Two",
-  prosecutedBy?: string
+  numberDefendants: "One" | "Two" = "Two",
+  prosecutedBy?: string,
 ) {
   let newCaseName: string;
   let newCaseUrn: string;
@@ -83,12 +122,12 @@ export async function createNewCaseWithDefendantsAndUsers(
     ({ newCaseName, newCaseUrn } = await createCasePage.createNewCase(
       caseName,
       caseUrn,
-      prosecutedBy
+      prosecutedBy,
     ));
   } else {
     ({ newCaseName, newCaseUrn } = await createCasePage.createNewCase(
       caseName,
-      caseUrn
+      caseUrn,
     ));
   }
 
@@ -112,7 +151,7 @@ export async function createNewCaseWithDefendantsAndUsers(
     await addDefendantPage.addDefendant(
       defDetail.surName,
       defDetail.dobMonth,
-      newCaseUrn
+      newCaseUrn,
     );
   }
 
@@ -129,6 +168,12 @@ export async function createNewCaseWithDefendantsAndUsers(
   return { newCaseName, newCaseUrn };
 }
 
+/**
+ * Creates a new case with at least one unrestricted document uploaded
+ * to a randomly selected unrestricted section.
+ *
+ * Also records the expected ROCA entries for later verification.
+ */
 export async function createNewCaseWithUnrestrictedDocument(
   createCasePage,
   caseDetailsPage,
@@ -139,7 +184,7 @@ export async function createNewCaseWithUnrestrictedDocument(
   rocaPage,
   caseName: string,
   caseUrn: string,
-  users
+  users,
 ) {
   const { newCaseName, newCaseUrn } = await createNewCaseWithDefendantsAndUsers(
     createCasePage,
@@ -148,19 +193,19 @@ export async function createNewCaseWithUnrestrictedDocument(
     peoplePage,
     caseName,
     caseUrn,
-    users
+    users,
   );
   const uploadedDocuments: ROCAModel[] = [];
   await peoplePage.caseNavigation.navigateTo("Sections");
   const sampleKey = await getRandomSectionKey(
     sectionsPage,
-    sections.unrestricted
+    sections.unrestricted,
   );
   for (const [sectionIndex, sectionKey] of sampleKey) {
     await sectionsPage.uploadAndValidateUnrestrictedSectionDocument(
       sectionKey,
       "unrestrictedSectionUpload",
-      sectionIndex
+      sectionIndex,
     );
     await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     await rocaPage.createROCAModelRecord(
@@ -168,13 +213,22 @@ export async function createNewCaseWithUnrestrictedDocument(
       sectionIndex,
       "unrestrictedSectionUpload",
       "Create",
-      config.users.hmctsAdmin.username
+      config.users.hmctsAdmin.username,
     );
   }
 
   return { newCaseName, newCaseUrn, sampleKey, uploadedDocuments };
 }
 
+/**
+ * Creates a new case with at least one restricted document uploaded
+ * to a randomly selected restricted section.
+ *
+ * Document access is scoped to a specific defendant to enable
+ * representation-based visibility testing.
+ *
+ * Also records the expected ROCA entries for later verification.
+ */
 export async function createNewCaseWithRestrictedDocument(
   createCasePage,
   caseDetailsPage,
@@ -185,7 +239,7 @@ export async function createNewCaseWithRestrictedDocument(
   rocaPage,
   caseName: string,
   caseUrn: string,
-  users
+  users,
 ) {
   const { newCaseName, newCaseUrn } = await createNewCaseWithDefendantsAndUsers(
     createCasePage,
@@ -194,19 +248,19 @@ export async function createNewCaseWithRestrictedDocument(
     peoplePage,
     caseName,
     caseUrn,
-    users
+    users,
   );
   const uploadedDocuments: ROCAModel[] = [];
   await peoplePage.caseNavigation.navigateTo("Sections");
   const sampleKey = await getRandomSectionKey(
     sectionsPage,
-    sections.restricted
+    sections.restricted,
   );
   for (const [sectionIndex, key] of sampleKey) {
     await sectionsPage.uploadRestrictedSectionDocument(
       key,
       "restrictedSectionUploadDefendantOne",
-      "One, Defendant"
+      "One, Defendant",
     );
     await rocaPage.createROCAModelRecord(
       uploadedDocuments,
@@ -214,7 +268,7 @@ export async function createNewCaseWithRestrictedDocument(
       "restrictedSectionUploadDefendantOne",
       "Create",
       config.users.hmctsAdmin.username,
-      "One Defendant"
+      "One Defendant",
     );
     await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
   }

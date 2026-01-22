@@ -2,11 +2,16 @@ import { Locator } from "@playwright/test";
 import { Base } from "../base";
 import { expect } from "../../fixtures";
 
+/**
+ * Represents the Case Search page, allowing users to find and interact with cases.
+ * This Page Object provides locators and methods for searching cases,
+ * applying filters, and navigating to case-specific actions like creating,
+ * updating, or reviewing cases.
+ */
 class CaseSearchPage extends Base {
   caseSearchHeading: Locator;
   createCaseButton: Locator;
   textField: Locator;
-  viewCaseListLink: Locator;
   locationField: Locator;
   applyFilter: Locator;
   clearFilter: Locator;
@@ -23,7 +28,6 @@ class CaseSearchPage extends Base {
     this.caseSearchHeading = page.locator(".heading-medium");
     this.createCaseButton = page.getByRole("link", { name: "Create a Case" });
     this.textField = page.locator("#searchText");
-    this.viewCaseListLink = page.getByRole("link", { name: "View Case List" });
     this.locationField = page.locator("#locationSelect");
     this.applyFilter = page.getByRole("link", { name: "Apply Filter" });
     this.clearFilter = page.getByRole("link", { name: "Clear Filter" });
@@ -40,6 +44,11 @@ class CaseSearchPage extends Base {
     this.noCasesText = page.locator("#caseListDiv > h4");
   }
 
+  /**
+   * Retrieves the locator for a specific case row in the search results table
+   * based on a text input (e.g., case name or URN) and an optional hearing date.
+   * @returns {Locator} A Playwright Locator for the matching case row.
+   */
   getCaseRowByTextInput(textFieldInput: string, hearingDate?: string) {
     let selector = `tr:has(td.tableText:has-text("${textFieldInput}"))`;
 
@@ -50,6 +59,10 @@ class CaseSearchPage extends Base {
     return this.page.locator(selector);
   }
 
+  /**
+   * Searches for a case using the provided text input, location, and optional hearing date.
+   * Applies filters and includes retry logic to handle potential UI delays.
+   */
   async searchCaseFile(
     textFieldInput: string,
     location: string,
@@ -96,11 +109,18 @@ class CaseSearchPage extends Base {
     }
   }
 
+  /**
+   * Clicks the "Create a Case" button to navigate to the case creation page.
+   */
   async goToCreateCase() {
     await this.createCaseButton.click();
   }
 
-  async goToUpdateCase(textFieldInput, hearingDate?) {
+  /**
+   * Navigates to the "Update Case" page for a specific case.
+   * @returns {Promise<boolean>} Resolves to true if navigation is successful.
+   */
+  async goToUpdateCase(textFieldInput: string, hearingDate?: string) {
     const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
     const updateBtn = caseRow.getByRole("link", { name: "Update Case" });
     await expect(updateBtn).toBeVisible({ timeout: 5000 });
@@ -108,7 +128,10 @@ class CaseSearchPage extends Base {
     return true;
   }
 
-  async goToReviewEvidence(textFieldInput, hearingDate?) {
+  /**
+   * Navigates to the "Review Evidence" page for a specific case.
+   */
+  async goToReviewEvidence(textFieldInput: string, hearingDate?: string) {
     const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
     const reviewEvidenceBtn = caseRow.getByRole("link", {
       name: "Review Evidence",
@@ -117,7 +140,10 @@ class CaseSearchPage extends Base {
     return reviewEvidenceBtn.click();
   }
 
-  async goToUpdateFrontPage(textFieldInput, hearingDate?) {
+  /**
+   * Navigates to the "Update Front Page" for a specific case.
+   */
+  async goToUpdateFrontPage(textFieldInput: string, hearingDate?: string) {
     const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
     const updateFrntPageBtn = caseRow.getByRole("link", {
       name: "Update Front Page",
@@ -126,6 +152,11 @@ class CaseSearchPage extends Base {
     await updateFrntPageBtn.click();
   }
 
+  /**
+   * Confirms the deletion of a case by verifying the "no cases" text is displayed.
+   * Includes retry logic to account for potential UI delays after deletion.
+   * @returns {Promise<boolean>} Resolves to true if case deletion is confirmed, otherwise false.
+   */
   async confirmCaseDeletion() {
     try {
       await this.applyFilter.click();

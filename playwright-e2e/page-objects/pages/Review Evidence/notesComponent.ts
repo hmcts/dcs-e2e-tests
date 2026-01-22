@@ -4,6 +4,15 @@ import { NotesModel } from "../../../data/notesModel";
 import { expect } from "../../../fixtures";
 import { notes } from "../../../data/notesModel";
 
+/**
+ * This NotesComponent Page Object represents th Notes panel on the Review Evidence page,
+ * encapsulating all functionalities for creating, managing, and validating user-generated
+ * notes within the application's 'Review Evidence' section. It provides a structured interface
+ * for interacting with UI elements like the notes panel, drawing tools, note editor dialogs,
+ * sharing options, and sticky notes. This component is crucial for tests verifying annotation
+ * features, user collaboration, and role-based access control for sensitive note content.
+ */
+
 class NotesComponent extends Base {
   topMenu: Locator;
   notesMenuLink: Locator;
@@ -36,9 +45,12 @@ class NotesComponent extends Base {
     this.stickyNotes = page.locator("#StickyNotes .stickyNote");
   }
 
-  // ---------------------------
-  // Open notes
-  // ---------------------------
+  /**
+   * the openNotes method activates the notes panel and
+   * drawing tool. It navigates UI clicks (Annotations link, Add Page Note button) and uses retry logic to ensure the drawing tool highlights
+   * or activates correctly, allowing reliable subsequent annotation actions.
+   */
+
   async openNotes() {
     await expect(this.notesMenuLink).toBeVisible();
     await this.notesMenuLink.click();
@@ -61,8 +73,14 @@ class NotesComponent extends Base {
   }
 
   // ---------------------------
-  // Draw note
+  // Add note
   // ---------------------------
+
+  /**
+   * Locates the document canvas and calculates its on-screen
+   * position and dimensions.
+   * @returns a bounding box object ({ x, y, width, height })
+   */
 
   async getCanvasBoundingBox() {
     const canvas = this.page.locator("canvas.documentPageCanvas").first();
@@ -75,6 +93,14 @@ class NotesComponent extends Base {
     }
     return box;
   }
+  /**
+   * Simulates a user dragging a rectangle on the document canvas
+   * to define the area for a new note.
+   * @param canvasOffsetX: Horizontal drag start, relative to canvas.
+   * @param canvasOffsetY: Vertical drag start, relative to canvas.
+   * @param dragWidth (optional, default: 100): Note rectangle width.
+   * @param dragHeight (optional, default: 40): Note rectangle height.
+   */
 
   async dragCreateNote(
     canvasOffsetX: number,
@@ -95,7 +121,11 @@ class NotesComponent extends Base {
     await this.page.mouse.move(endX, endY, { steps: 10 }); // smooth drag
     await this.page.mouse.up();
   }
-
+  /**
+   * Attempts to click the "Save" button within the note editor until the editor
+   * dialog is no longer visible, accounting for known potential UI processing
+   * delays.
+   */
   async clickSaveUntilEditorCloses(timeoutMs = 30000) {
     const start = Date.now();
 
@@ -117,9 +147,16 @@ class NotesComponent extends Base {
 
     throw new Error("Save did not close editor within timeout");
   }
-  // ---------------------------
-  // Add a single note
-  // ---------------------------
+
+  /**
+   * Orchestrates the full process of creating and saving a single note on a document,
+   * from drawing its area to specifying its content and sharing permissions.
+   * @param type The desired sharing category for the note
+   * @param userGroup The group of the user creating the note
+   * @param username The specific username of the note creator
+   * @param canvasX The X-coordinate on the canvas to start drawing
+   * @param canvasY The Y-coordinate on the canvas to start drawing
+   */
   async addnote(
     type: string,
     userGroup: string,
@@ -170,29 +207,15 @@ class NotesComponent extends Base {
 
     // Save note
     await this.clickSaveUntilEditorCloses();
-    // await expect
-    //   .poll(
-    //     async () => {
-    //       if (!(await this.activeEditor.isVisible().catch(() => false))) {
-    //         return false;
-    //       }
-    //       const buttonStillVisible = await this.saveNote.isVisible();
-    //       if (buttonStillVisible) await this.saveNote.click();
-    //       return buttonStillVisible;
-    //     },
-    //     {
-    //       // Allow 2s delay before retrying
-    //       intervals: [2000],
-    //       // Allow up to 10 seconds for the Save button to disappear
-    //       timeout: 10000,
-    //     }
-    //   )
-    //   .toBeFalsy();
   }
 
-  // ---------------------------
-  // Add notes for all user groups
-  // ---------------------------
+  /**
+   * Adds a series of pre-defined notes to a document, simulating different sharing types across user groups
+   * @param startY Starting vertical coordinate for the first note.
+   * @param yStep Vertical increment between notes.
+   * @param canvasX Fixed horizontal coordinate for notes.
+   * @returns {Promise<string[]>} An array of strings representing the sharing types of added notes.
+   */
   async addNotesForUserGroup(
     userGroup: string,
     username: string,
@@ -251,7 +274,14 @@ class NotesComponent extends Base {
     return types;
   }
 
-  // Validate Notes Added
+  /**
+   * Compares a list of actual notes extracted from the UI against a set of expected
+   * note details, identifying and reporting any discrepancies in content or sharing settings.
+   * @param currentUserIssues - An array to collect validation issues.
+   * @param user - The user object containing group and username for comparison.
+   * @param types - An array of expected note sharing types.
+   * @param notes - An array of UI `NotesModel` objects to validate.
+   */
   async validateNotes(currentUserIssues, user, types, notes) {
     for (let i = 0; i < notes.length; i++) {
       const expectedText = `${types[i]} note for ${user.group} ${user.username}`;
@@ -285,9 +315,13 @@ class NotesComponent extends Base {
   }
 
   // ---------------------------
-  // Delete note
+  // Updating Notes
   // ---------------------------
 
+  /**
+   * Simulates a user deleting the first available sticky note on the document viewer,
+   * confirming the action through a dialog and verifying the updated note count.
+   */
   async deleteNote() {
     const count = await this.stickyNotes.count();
     expect(count).toBeGreaterThan(0);
@@ -312,9 +346,11 @@ class NotesComponent extends Base {
       .toBe(count - 1);
   }
 
-  // ---------------------------
-  // Edit note
-  // ---------------------------
+  /**
+   * Simulates editing the last visible sticky note by changing its content and
+   * updating its sharing type, including validations for note count changes based
+   * on user group.
+   */
   async editNote(userGroup) {
     const count = await this.getNotesCount();
     if (userGroup === "DefenceAdvocateA") {
@@ -378,9 +414,13 @@ class NotesComponent extends Base {
   }
 
   // ---------------------------
-  // Wait for page load
+  // Wait for page/document load
   // ---------------------------
 
+  /**
+   * Retrieves the unique identifier (key) of a specific document within a given section
+   * of the document viewer, enabling targeted interaction with that document.
+   */
   async getDocumentIDBySectionIndex(
     documentIndex: number,
     sectionTextIndex: string,
@@ -415,7 +455,10 @@ class NotesComponent extends Base {
 
     return documentId;
   }
-
+  /**
+   * Ensures that a document's high-resolution image has completely loaded in the viewer before
+   * proceeding, which is critical for annotation.
+   */
   async waitForHighResImageLoad(sectionKey, timeoutMs = 45000) {
     const documentId = await this.getDocumentIDBySectionIndex(0, sectionKey);
     const result = await this.page.evaluate(
@@ -466,7 +509,7 @@ class NotesComponent extends Base {
   }
 
   // ---------------------------
-  // Note Table Methods
+  // Notes Table Methods
   // ---------------------------
   async getNotesCount(): Promise<number> {
     return await this.stickyNotes.count();
@@ -491,7 +534,13 @@ class NotesComponent extends Base {
       .innerText();
   }
 
-  // === Extract details for one note ===
+  /**
+   * Extracts all relevant information (key, text, user, and sharing type) for a
+   * specific sticky note, handling cases where a single sticky note element might
+   * contain multiple comments.
+   * @returns {Promise<NotesModel[]>} A promise that resolves to an array of NotesModel
+   * objects, each representing a comment associated with the specified sticky note.
+   */
   async getNoteDetails(row: number): Promise<NotesModel[]> {
     const note = this.stickyNotes.nth(row);
     const comments = note.locator(".stickyComment");
@@ -515,7 +564,10 @@ class NotesComponent extends Base {
     return noteModels;
   }
 
-  // === Get all notes ===
+  /**
+   * Consolidates all currently visible sticky notes on the document viewer into a single,
+   * comprehensive list of their detailed properties.
+   */
   async getAllNotes(): Promise<NotesModel[]> {
     const count = await this.getNotesCount();
     const notes: NotesModel[] = [];
@@ -527,11 +579,24 @@ class NotesComponent extends Base {
     return notes;
   }
 
+  /**
+   * Filters the global list of notes (`../../../data/notesModel.ts`)
+   * to find those accessible by a specific user role.
+   * @returns {NotesModel[]} An array of `NotesModel` objects accessible by the specified user.
+   */
   async filterNotesByUser(user: string) {
     const filteredNotes = notes.filter((note) => note.roles?.includes(user));
     return filteredNotes;
   }
 
+  /**
+   * Compares a list of expected notes for a user against notes actually found in the UI.
+   * Identifies and reports any missing expected notes or unexpected extra notes.
+   * @param {NotesModel[]} userExpectedNotes - An array of `NotesModel` objects expected to be visible for the user.
+   * @param {NotesModel[]} userAvailableNotes - An array of `NotesModel` objects actually found for the user in the UI.
+   * @returns {{missingNotes: string[], unexpectedNotes: string[]}} An object containing arrays of descriptions for missing
+   * and unexpected notes.
+   */
   async compareExpectedVsAvailableNotes(
     userExpectedNotes: NotesModel[],
     userAvailableNotes: NotesModel[],

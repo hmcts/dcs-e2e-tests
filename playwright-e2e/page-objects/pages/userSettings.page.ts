@@ -2,6 +2,12 @@ import { Locator } from "@playwright/test";
 import { Base } from "../base";
 import { expect } from "../../fixtures";
 
+/**
+ * Represents the "User Settings" or "People List" page in the application,
+ * used by administrators to manage user accounts. This Page Object provides
+ * locators and methods for searching users, verifying their details,
+ * and checking access-related flags (email verification, approval, rejection).
+ */
 class UserSettingsPage extends Base {
   userSettingsHeading: Locator;
   searchText: Locator;
@@ -18,6 +24,11 @@ class UserSettingsPage extends Base {
     this.userResultsTable = page.locator(".formTable-zebra");
   }
 
+  /**
+   * Waits for the users table to load by monitoring the visibility of a loader.
+   * This method polls until the loader disappears and remains hidden for a specified duration,
+   * addressing noted intermittent re-appearance of the loader.
+   */
   async usersTableLoad(minStableMs = 2000) {
     const loaders = this.userResultsContainer.locator(
       'img[alt="Please wait ..."]'
@@ -43,6 +54,10 @@ class UserSettingsPage extends Base {
       .toBe(true);
   }
 
+  /**
+   * Searches for a specific user by their username in the user settings table.
+   * Applies the filter and waits for the table to load.
+   */
   async searchUser(userName: string) {
     await this.searchText.clear();
     await this.searchText.fill(userName);
@@ -51,6 +66,11 @@ class UserSettingsPage extends Base {
     await expect(this.userResultsTable).toBeVisible({ timeout: 30000 });
   }
 
+  /**
+   * Verifies that a user's email has been verified.
+   * Searches for the user by email, clicks "Change" on their row, and checks
+   * for a "Y" (Yes) in the verified flag column.
+   */
   async verifyUserEmail(userEmail) {
     const row = this.page.locator("tr", {
       has: this.page.locator("td", { hasText: `${userEmail}` }),
@@ -62,6 +82,10 @@ class UserSettingsPage extends Base {
     expect(verifiedFlag).toContain("Y");
   }
 
+  /**
+   * Verifies that a user's access request has been approved.
+   * Searches for the user by username and checks for a "Y" (Yes) in the approval flag column.
+   */
   async verifyApprovalFlag(userName: string) {
     await expect(this.userSettingsHeading).toContainText("People List");
     await this.searchUser(userName);
@@ -72,6 +96,10 @@ class UserSettingsPage extends Base {
     await expect(approval).toContainText("Y");
   }
 
+  /**
+   * Verifies that a user's access request has been rejected.
+   * Searches for the user by username and checks for a "Y" (Yes) in the rejection flag column.
+   */
   async verifyRejectionFlag(userName: string) {
     await expect(this.userSettingsHeading).toContainText("People List");
     await this.searchUser(userName);
