@@ -1,3 +1,5 @@
+import { config } from "../utils";
+import { Page, Locator } from "playwright-core";
 /**
  * Navigation link models
  * ----------------------
@@ -19,28 +21,27 @@
  *  - query parameters are dynamic (e.g. caseKey)
  */
 
-import { config } from "../utils";
-
 /**
- * Represents a standard navigation link with a name, expected title, and URL.
+ * Represents a standard navigation link with a name, expected page title, and URL.
  */
+
 export interface NavLink {
-  /** The name of the link, used to locate it in the UI. */
   name: string;
-  /** The expected page title after clicking the link. */
   expectedTitle: string;
-  /** The expected URL (can be a partial match). */
   expectedUrl: string;
 }
 
 /**
- * Represents a navigation link within a case, with a name and URL.
+ * Represents a navigation link within a case, with a name, URL, mode (to account for
+ * popups) and a page identifier.
  */
+export type CaseLinkMode = "same-page" | "popup";
+
 export interface CaseLink {
-  /** The name of the link, used to locate it in the UI. */
   name: string;
-  /** The expected URL (can be a partial match). */
   expectedUrl: string;
+  pageIdentifier: (page: Page) => Locator;
+  mode: CaseLinkMode;
 }
 
 export const externalLinks: NavLink[] = [
@@ -111,82 +112,140 @@ export const internalLinksLoggedIn: NavLink[] = [
 export const caseLinks: CaseLink[] = [
   {
     name: "CaseHome",
-    expectedUrl: `${config.urls.base}Case/Details?caseKey=`,
+    expectedUrl: `${config.urls.base}Case/Details`,
+    pageIdentifier: (page: Page) =>
+      page.locator(".heading-small", { hasText: "Case Details" }),
+    mode: "same-page",
   },
   {
     name: "Review",
     expectedUrl: `${config.urls.base}Case/Review3/`,
+    pageIdentifier: (page: Page) =>
+      page.locator("#rmiAnnotations", { hasText: " Notes" }),
+    mode: "popup",
   },
   {
     name: "Index",
-    expectedUrl: `${config.urls.base}Case/FullIndex?caseKey=`,
+    expectedUrl: `${config.urls.base}Case/FullIndex`,
+    pageIdentifier: (page: Page) => page.locator("h3", { hasText: " Content" }),
+    mode: "same-page",
   },
   {
     name: "Sections",
-    expectedUrl: `${config.urls.base}Section?caseKey=`,
+    expectedUrl: `${config.urls.base}Section`,
+    pageIdentifier: (page: Page) =>
+      page.locator("h3", { hasText: " Sections" }),
+    mode: "same-page",
   },
   {
     name: "People",
-    expectedUrl: `${config.urls.base}Person?caseKey=`,
+    expectedUrl: `${config.urls.base}Person`,
+    pageIdentifier: (page: Page) =>
+      page.locator("h3", { hasText: "People Index" }),
+    mode: "same-page",
   },
   {
     name: "Access",
-    expectedUrl: `${config.urls.base}CaseAccess/Index/`,
+    expectedUrl: `${config.urls.base}CaseAccess/Index`,
+    pageIdentifier: (page: Page) =>
+      page.locator(".heading-medium", { hasText: "Case Access" }),
+    mode: "same-page",
   },
   {
     name: "Bundle",
-    expectedUrl: `${config.urls.base}Case/CompleteBundle?caseKey=`,
+    expectedUrl: `${config.urls.base}Case/CompleteBundle`,
+    pageIdentifier: (page: Page) =>
+      page.locator("h3", { hasText: "Case Bundle" }),
+    mode: "same-page",
   },
   {
     name: "Search",
-    expectedUrl: `${config.urls.base}Case/Search?caseKey=`,
+    expectedUrl: `${config.urls.base}Case/Search`,
+    pageIdentifier: (page: Page) => page.locator("h3", { hasText: " Search" }),
+    mode: "same-page",
   },
   {
     name: "Memos",
-    expectedUrl: `${config.urls.base}Comment/Create?caseKey=`,
+    expectedUrl: `${config.urls.base}Comment/Create`,
+    pageIdentifier: (page: Page) =>
+      page.locator("h3", { hasText: " Add a Memorandum" }),
+    mode: "same-page",
   },
   {
     name: "Notes",
-    expectedUrl: `${config.urls.base}Case/Notes?caseKey=`,
+    expectedUrl: `${config.urls.base}Case/Notes`,
+    pageIdentifier: (page: Page) =>
+      page.locator(".heading-medium", { hasText: " View Notes" }),
+    mode: "same-page",
   },
   {
     name: "Hyperlinks",
-    expectedUrl: `${config.urls.base}Case/Hyperlinks?caseKey=`,
+    expectedUrl: `${config.urls.base}Case/Hyperlinks`,
+    pageIdentifier: (page: Page) =>
+      page.locator("h2", { hasText: " View Hyperlinks" }),
+    mode: "same-page",
   },
   {
     name: "Ingest",
-    expectedUrl: `${config.urls.base}Case/UpdateCaseFromFile/`,
+    expectedUrl: `${config.urls.base}Case/UpdateCaseFromFile`,
+    pageIdentifier: (page: Page) =>
+      page.locator("legend", { hasText: "Ingest Composite File" }),
+    mode: "same-page",
   },
   {
     name: "LinkedCases",
-    expectedUrl: `${config.urls.base}Case/CaseGroup/`,
+    expectedUrl: `${config.urls.base}Case/CaseGroup`,
+    pageIdentifier: (page: Page) =>
+      page.locator("h3", { hasText: " Linked Cases" }),
+    mode: "same-page",
   },
   {
     name: "ShownToJury",
-    expectedUrl: `${config.urls.base}Case/ShownToJury/`,
+    expectedUrl: `${config.urls.base}Case/ShownToJury`,
+    pageIdentifier: (page: Page) =>
+      page.locator("h2", { hasText: " Pages Shown to the Jury" }),
+    mode: "same-page",
   },
   {
     name: "ROCA",
-    expectedUrl: `${config.urls.base}Case/Roca/`,
+    expectedUrl: `${config.urls.base}Case/Roca`,
+    pageIdentifier: (page: Page) =>
+      page.locator("h2", { hasText: "Record of Case Activity" }),
+    mode: "same-page",
   },
   {
     name: "LAA",
-    expectedUrl: `${config.urls.base}Case/LegalAidAgency/`,
+    expectedUrl: `${config.urls.base}Case/LegalAidAgency`,
+    pageIdentifier: (page: Page) =>
+      page.locator("h2", { hasText: "LAA Report" }),
+    mode: "same-page",
   },
   {
     name: "PTPH",
-    expectedUrl: `${config.urls.base}OnlineForms/Index2/`,
+    expectedUrl: `${config.urls.base}OnlineForms/Index2`,
+    pageIdentifier: (page: Page) =>
+      page.locator("h1", { hasText: "Plea & Trial Preparation Hearing Form" }),
+    mode: "same-page",
   },
   {
     name: "Indictment",
-    expectedUrl: `${config.urls.base}Case/Indictment?caseKey=`,
+    expectedUrl: `${config.urls.base}Case/Indictment`,
+    pageIdentifier: (page: Page) =>
+      page.locator(".heading-medium", { hasText: "Message" }),
+    mode: "same-page",
   },
   {
     name: "Split",
-    expectedUrl: `${config.urls.base}Case/Split?caseKey=`,
+    expectedUrl: `${config.urls.base}Case/Split`,
+    pageIdentifier: (page: Page) =>
+      page.locator(".heading-small", { hasText: "Split Cases" }),
+    mode: "same-page",
   },
   {
     name: "Merge",
-    expectedUrl: `${config.urls.base}Case/Merge?caseKey=`,
+    expectedUrl: `${config.urls.base}Case/Merge`,
+    pageIdentifier: (page: Page) =>
+      page.locator(".heading-small", { hasText: "Merge Cases" }),
+    mode: "same-page",
   },
 ];
