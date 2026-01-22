@@ -34,6 +34,7 @@ test.describe("@regression @nightly Case navigation links", () => {
   }) => {
     for (const link of caseLinks) {
       await assertNavigation[link.mode]({ page, caseDetailsPage }, link);
+      console.log(`Successful navigation to ${link.name} page`);
     }
   });
 });

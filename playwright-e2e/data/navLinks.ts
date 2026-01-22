@@ -88,11 +88,6 @@ export const internalLinksLoggedIn: NavLink[] = [
     expectedUrl: `${config.urls.base}Person/Details?personKey=`,
   },
   {
-    name: "LogOff",
-    expectedTitle: "CCDCS",
-    expectedUrl: `${config.urls.base}`,
-  },
-  {
     name: "ViewCaseListLink",
     expectedTitle: "Case List",
     expectedUrl: `${config.urls.base}Case/CaseIndex`,
@@ -104,8 +99,13 @@ export const internalLinksLoggedIn: NavLink[] = [
   },
   {
     name: "Admin",
-    expectedTitle: "Administration Options",
+    expectedTitle: "Case List",
     expectedUrl: `${config.urls.base}Admin`,
+  },
+  {
+    name: "LogOff",
+    expectedTitle: "CCDCS",
+    expectedUrl: `${config.urls.base}`,
   },
 ];
 

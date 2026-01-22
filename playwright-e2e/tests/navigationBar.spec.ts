@@ -4,26 +4,34 @@ import {
   internalLinksLoggedOut,
   externalLinks,
 } from "../data/navLinks";
+import { config } from "../utils";
 
-test.describe("@nightly @regression Internal navigation links Logged Out", () => {
+test.describe("@nightly @regression Internal navigation links logged out", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
-  for (const link of internalLinksLoggedOut) {
-    test(`Navigate to ${link.name}`, async ({ page, homePage }) => {
+  test(`Navigate to available internal links while logged out`, async ({
+    page,
+    homePage,
+  }) => {
+    for (const link of internalLinksLoggedOut) {
       await homePage.open();
       await homePage.navigation.navigateTo(link.name);
       await expect(page).toHaveTitle(link.expectedTitle);
       expect(page.url().toLowerCase()).toContain(
-        link.expectedUrl.toLowerCase()
+        link.expectedUrl.toLowerCase(),
       );
-    });
-  }
+      console.log(`Successful navigation to ${link.name}`);
+    }
+  });
 });
 
 // External links do not change based on user session, so testing can occur in either state
 test.describe("@nightly @regression External navigation links", () => {
-  for (const link of externalLinks) {
-    test(`Navigate to ${link.name}`, async ({ page, homePage }) => {
-      await homePage.open();
+  test(`Navigate to available links external to the platform`, async ({
+    page,
+    homePage,
+  }) => {
+    await homePage.open();
+    for (const link of externalLinks) {
       await homePage.navigation.navigateTo(link.name);
       const [newPage] = await Promise.all([
         page.waitForEvent("popup"),
@@ -32,21 +40,26 @@ test.describe("@nightly @regression External navigation links", () => {
       await expect(newPage).toHaveURL(link.expectedUrl);
       await newPage.close();
       await expect(page).toHaveTitle(link.expectedTitle);
-    });
-  }
+      console.log(`Successful navigation to ${link.name}`);
+    }
+  });
 });
 
-const excludedLinksForAdmin = ["ApprovalRequests", "Admin"];
-
 test.describe("@nightly @regression Internal navigation links Logged In", () => {
-  for (const link of internalLinksLoggedIn.filter(
-    (l) => !excludedLinksForAdmin.includes(l.name)
-  )) {
-    test(`Navigate to ${link.name}`, async ({ page, homePage }) => {
-      await homePage.open();
+  test(`Navigate to available internal links while logged in`, async ({
+    page,
+    homePage,
+    loginPage,
+  }) => {
+    await homePage.open();
+    await homePage.navigation.navigateTo("LogOff");
+    await homePage.navigation.navigateTo("LogOn");
+    await loginPage.login(config.users.accessCoordinator);
+    for (const link of internalLinksLoggedIn) {
       await homePage.navigation.navigateTo(link.name);
       await expect(page).toHaveTitle(link.expectedTitle);
       expect(page.url()).toContain(link.expectedUrl);
-    });
-  }
+      console.log(`Successful navigation to ${link.name}`);
+    }
+  });
 });
