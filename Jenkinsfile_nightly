@@ -1,7 +1,7 @@
 #!groovy
 
 properties([
-  pipelineTriggers([cron('H 16 * * 1-5')]),
+  pipelineTriggers([cron('H 17 * * 1-5')]),
   disableConcurrentBuilds(),
   durabilityHint('MAX_SURVIVABILITY'),
   parameters([
