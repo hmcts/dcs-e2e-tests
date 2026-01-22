@@ -69,16 +69,16 @@ class CreateCasePage extends Base {
   async createNewCase(
     caseName: string,
     caseUrn: string,
-    prosecutedBy?: string
-  ): {newCaseName: string, newCaseUrn: string} {
+    prosecutedBy?: string,
+  ): Promise<{ newCaseName: string; newCaseUrn: string }> {
     const { newCaseName, newCaseUrn } = await this.generateCaseNameAndUrn(
       caseName,
-      caseUrn
+      caseUrn,
     );
     await this.caseName.fill(newCaseName.toString());
     await this.caseUrn.fill(newCaseUrn.toString());
     const label = await this.selectRandomOptionFromDropdown(
-      this.dropdownCaseProsecutedBy
+      this.dropdownCaseProsecutedBy,
     );
     if (prosecutedBy) {
       await this.dropdownCaseProsecutedBy.selectOption({ label: prosecutedBy });
