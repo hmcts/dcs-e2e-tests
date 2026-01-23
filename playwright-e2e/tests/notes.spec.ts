@@ -8,27 +8,48 @@ import {
 } from "../helpers/deleteCase.helper";
 import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page";
 
+/**
+ * Notes Feature – End-to-End Validation
+ * ------------------------------------
+ *
+ * This test suite validates the Notes functionality on case documents,
+ * covering both:
+ *
+ * 1) Notes lifecycle behaviour (create, edit, delete)
+ * 2) Notes visibility and access control across user roles
+ *
+ * The tests are intentionally data-driven and role-aware, ensuring:
+ *  - Notes of all share types (Widely Shared, Tightly Shared, Private)
+ *    behave correctly
+ *  - Users only see Notes they are permitted to see
+ *  - Changes are isolated per user and per case
+ *
+ * Tests dynamically create and clean up cases to ensure isolation
+ * and avoid reliance on shared state.
+ *
+ * TEST_USERS env variable:
+ *  - nightly     → current user only (fast feedback)
+ *  - regression  → all eligible users (full coverage)
+ */
+
 const TEST_USERS = process.env.TEST_USERS || "nightly";
 // Please update TEST_USERS=regression locally to run all users
 
-// ======================================================================
-// Test 1: Create, Delete, Edit Note
-// ======================================================================
-
+// ----------------------------------------------
+// Test 1: Notes Lifecycle (Create, Edit, Delete)
+// ----------------------------------------------
+//
 // As any user
-// I want to be able to add a note of any share type (Widely Shared, Tightly Shared, Private) on a document I have access to
-// So that I can share information with relevant parties for a specific document
-
+// I want to add notes of any share type on a document I can access
+// So that I can communicate relevant information to appropriate parties
+//
 // As any user
-// I want to be able to edit or remove my notes of any share type (Widely Shared, Tightly Shared, Private) on a document I have access to
-// So that I can ensure up to date information is shared, to the right parties on a document.
+// I want to edit or remove my own notes
+// So that shared information remains accurate and current
 
-// -----------------------------
-// Test 1: Notes Functionality
-// -----------------------------
-
-test.describe("@regression @nightly @notes Notes Functionality", () => {
-  // Pick users based on scope
+test.describe("@regression @nightly @notes Notes Lifecycle", () => {
+  // Select users dynamically based on execution scope
+  // Nightly runs are intentionally limited for speed
   const usersToTest = TEST_USERS === "nightly" ? [currentUser] : eligibleUsers;
 
   for (const user of usersToTest) {
@@ -68,6 +89,8 @@ test.describe("@regression @nightly @notes Notes Functionality", () => {
           sampleKey = newCase.sampleKey as [string, string][];
           newCaseName = newCase.newCaseName;
 
+          // Log out after case setup so each test can log in
+          // as the target user and validate role-specific behaviour
           await sectionsPage.navigation.navigateTo("LogOff");
         },
       );
@@ -101,6 +124,8 @@ test.describe("@regression @nightly @notes Notes Functionality", () => {
           user.username,
         );
 
+        // DefenceAdvocateA receives an additional tightly shared note
+        // due to representation-based visibility rules
         if (user.group === "DefenceAdvocateA") {
           await expect
             .poll(() => reviewEvidencePage.notes.getNotesCount(), {
@@ -130,6 +155,8 @@ test.describe("@regression @nightly @notes Notes Functionality", () => {
             await reviewEvidencePage.notes.getAllNotes();
           expect(notesWithDeletion).toEqual(notes.slice(1));
         } catch {
+          // Collect all validation issues before failing
+          // to provide comprehensive feedback per user role
           currentUserIssues.push(`Deletion of note failed for ${user.group}`);
         }
 
@@ -147,6 +174,8 @@ test.describe("@regression @nightly @notes Notes Functionality", () => {
             )
             .toBe(`Edited note for ${user.group}`);
         } catch {
+          // Collect all validation issues before failing
+          // to provide comprehensive feedback per user role
           currentUserIssues.push(`Edit of note failed for ${user.group}`);
         }
 
@@ -166,6 +195,8 @@ test.describe("@regression @nightly @notes Notes Functionality", () => {
         }
       });
 
+      // Cleanup is wrapped defensively to prevent test failures
+      // caused by intermittent UI flakiness during case deletion
       test.afterEach(async () => {
         if (!newCaseName) return;
 
@@ -180,14 +211,18 @@ test.describe("@regression @nightly @notes Notes Functionality", () => {
 });
 
 // // ============================================================
-// // Test 2: Notes Access Permissions
+// // Test 2: Notes Visibility & Access Control
 // // ============================================================
+//
+// As a user
+// I should only see Notes that I am permitted to see
+// based on my role and the note's share type
+//
+// This test validates:
+//  - No missing notes (underexposure)
+//  - No unexpected notes (overexposure)
 
-// // As a user
-// // I want be able to see a list of the correct available Notes for an existing case as per my user permissions
-// // So I don't get exposed to information outside of my remit that could impact the case integrity
-
-test.describe("@nightly @regression Notes Permissions & Access", () => {
+test.describe("@nightly @regression Notes Visibility & Access Control", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
   test.beforeEach(async ({ homePage }) => {
     await homePage.open();
@@ -231,14 +266,16 @@ test.describe("@nightly @regression Notes Permissions & Access", () => {
       // Get all available Notes for User
       const availableNotes = await reviewEvidencePage.notes.getAllNotes();
 
-      // Compare expected vs available Notes for the User
+      // Compare expected Notes (based on role permissions)
+      // against actual Notes rendered in the UI
       const { missingNotes, unexpectedNotes } =
         await reviewEvidencePage.notes.compareExpectedVsAvailableNotes(
           expectedNotes,
           availableNotes,
         );
 
-      // If there are any issues, push to currentUserIssues
+      // Collect any validation issues instead of failing immediately
+      // This allows us to report all Notes inconsistencies in a single run
       currentUserIssues.push(...missingNotes, ...unexpectedNotes);
 
       //Aggregate results across users

@@ -8,11 +8,26 @@ import {
   runCleanupSafely,
 } from "../helpers/deleteCase.helper";
 
+/**
+ * Section Document Upload Tests
+ * -----------------------------
+ *
+ * Purpose:
+ * Validate role- and defendant-based access control when uploading
+ * documents to case sections.
+ *
+ * Coverage:
+ * 1) Unrestricted section documents uploaded by HMCTS Admin
+ *    are visible to all users on the case.
+ * 2) Restricted section documents are scoped to individual defendants
+ *    and only visible to the appropriate Defence users.
+ */
+
 // ============================================================
 // Test 1: Upload Unrestricted Section Documents
 // ============================================================
 
-// As a user
+// As a user (HMCTS Admin)
 // I want to be able to upload a document to an unrestricted section
 // So that this is added to the case for further review for all parties
 
@@ -97,7 +112,7 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
 
   // As a user
   // I want to be able to upload a document to a restricted section pertaining to a single defendant
-  // So that only the relevant Defence lawyer for that defendant can see the document
+  // So that only the relevant Defence representative for that defendant can see the document
 
   test(`Upload of restricted section documents and validation of Defence User access`, async ({
     loginPage,

@@ -11,17 +11,37 @@ import {
 } from "../helpers/deleteCase.helper";
 import { verifyDocumentMove } from "../helpers/sectionDocuments.helper";
 
+/**
+ * Section Document Update & Removal Tests
+ * ---------------------------------------
+ *
+ * This suite validates that documents in both unrestricted and restricted sections:
+ *  1) Can be removed, moved, and edited by appropriate users.
+ *  2) Are correctly reflected in the Section view after each operation.
+ *  3) Maintain role-based access rules for restricted documents.
+ *
+ * Test structure:
+ *  - Unrestricted Section Tests: HMCTS Admin
+ *  - Restricted Section Tests: Defence Advocate A/C
+ *
+ * Cleanup:
+ *  - Each test dynamically creates and deletes a case to prevent shared state issues.
+ */
+
 // ============================================================
 // Test 1: Update and Remove Unrestricted Section Documents
 // ============================================================
 
 // As a user
 // I want to be able to update or remove a document in an unrestricted section
-// So that only relevant documents are available in the correct sections for further review for relevant parties
+// So that only relevant documents are available in the correct sections for further
+// review from relevant parties
 
 test.describe("@nightly @regression Unrestricted Document Update and Removal Tests @cleanup", () => {
   let sampleKey: [string, string][];
   let newCaseName: string;
+
+  // Arrays to collect any validation issues per operation
   const unrestrictedRemoveResults: string[] = [];
   const unrestrictedMoveResults: string[] = [];
   const unrestrictedEditResults: string[] = [];
@@ -54,6 +74,7 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
         "TestURN",
         "Defence",
       );
+      // Store section keys and case name for tests
       sampleKey = newCase.sampleKey as [string, string][];
       newCaseName = newCase.newCaseName;
     },
@@ -66,7 +87,11 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
   }) => {
     for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
+
+      // Remove document
       await updateDocumentsPage.removeDocument();
+
+      // Validate removal
       await updateDocumentsPage.sectionDocumentsBtn.click();
       const removeIssues = await sectionDocumentsPage.verifyDocumentRemoval(
         "HMCTSAdmin",
@@ -77,7 +102,7 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
       }
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
-    // Aggragate Results
+    // Push Aggragate Results
     pushTestResult({
       user: config.users.hmctsAdmin.group,
       heading: `Section Validation: Delete Unrestricted Document`,
@@ -105,12 +130,15 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
 
     for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
+
+      // Move document to a new section
       const newSection = await updateDocumentsPage.moveDocument(
         sampleKey,
         newSections,
       );
-      await updateDocumentsPage.sectionDocumentsBtn.click();
 
+      // Validate document move
+      await updateDocumentsPage.sectionDocumentsBtn.click();
       const moveIssues = await verifyDocumentMove(
         "HMCTSAdmin",
         section,
@@ -119,6 +147,7 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
         sectionDocumentsPage,
         sectionsPage,
       );
+
       if (moveIssues) {
         unrestrictedMoveResults.push(moveIssues);
       }
@@ -150,7 +179,11 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
   }) => {
     for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
+
+      // Edit document name
       await updateDocumentsPage.editDocumentName();
+
+      // Validate edit
       await updateDocumentsPage.sectionDocumentsBtn.click();
       const editIssues =
         await sectionDocumentsPage.validateUnrestrictedSectionDocument(
@@ -181,6 +214,7 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
     }
   });
 
+  //Cleanup: Remove dynamically created case
   test.afterEach(async () => {
     if (!newCaseName) return;
 
@@ -198,11 +232,13 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
 
 // As a user
 // I want to be able to update or remove a document in an restricted section
-// So that only relevant documents are available in the correct sections for further review for relevant parties
+// So that only relevant documents are available in the correct sections for further review from relevant parties
 
 test.describe("@nightly @regression Restricted Document Update and Removal Tests @cleanup", () => {
   let sampleKey: [string, string][];
   let newCaseName: string;
+
+  // Arrays to collect any validation issues per operation
   const restrictedRemoveResults: string[] = [];
   const restrictedMoveResults: string[] = [];
   const restrictedEditResults: string[] = [];
@@ -262,7 +298,11 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
+
+      // Remove document
       await updateDocumentsPage.removeDocument();
+
+      // Verify removal
       await updateDocumentsPage.sectionDocumentsBtn.click();
       const removeIssues = await sectionDocumentsPage.verifyDocumentRemoval(
         "Defence Advocate A",
@@ -316,12 +356,15 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
+
+      // Move document to a new section
       const randomSection = await updateDocumentsPage.moveDocument(
         sampleKey,
         newSections,
       );
-      await updateDocumentsPage.sectionDocumentsBtn.click();
 
+      // Validate move
+      await updateDocumentsPage.sectionDocumentsBtn.click();
       const moveIssues = await verifyDocumentMove(
         "Defence Advocate A",
         section,
@@ -376,7 +419,11 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
+
+      // Edit document
       await updateDocumentsPage.editDocumentName();
+
+      // Validate edit
       await updateDocumentsPage.sectionDocumentsBtn.click();
       const editIssues =
         await sectionDocumentsPage.validateSingleRestrictedSectionDocument(
@@ -407,6 +454,7 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
     }
   });
 
+  //Cleanup: Remove dynamically created case
   test.afterEach(async () => {
     if (!newCaseName) return;
 

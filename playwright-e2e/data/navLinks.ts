@@ -58,7 +58,7 @@ export const externalLinks: NavLink[] = [
   },
 ];
 
-export const internalLinksLoggedOut: NavLink[] = [
+export const publicNavigationLinks: NavLink[] = [
   {
     name: "Home",
     expectedTitle: "CCDCS",
@@ -81,7 +81,7 @@ export const internalLinksLoggedOut: NavLink[] = [
   },
 ];
 
-export const internalLinksLoggedIn: NavLink[] = [
+export const authenticatedNavigationLinks: NavLink[] = [
   {
     name: "AccountDetails",
     expectedTitle: "My Details",

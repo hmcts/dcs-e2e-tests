@@ -7,13 +7,25 @@ import {
   runCleanupSafely,
 } from "../helpers/deleteCase.helper";
 
-// ============================================================
-// Test 1: PTPH Form Rendering
-// ============================================================
-
-// As a user
-// When I upload a PTPH form into the DCS platform
-// This should be accurately displayed on the virtual PTPH form for the relevant case
+/**
+ * PTPH Form Rendering Tests
+ * -------------------------
+ *
+ * This test suite validates the accurate rendering of PTPH (Pre-Trial Plea Hearing) form
+ * in the DCS platform for a newly created case.
+ *
+ * Key points:
+ *  - Dynamically creates a new case with defendants and CPS prosecution
+ *  - Uploads a PTPH form for the case via a helper (API endpoints)
+ *  - Navigates to the PTPH form page and validates each form section visually
+ *    using screenshot comparisons
+ *  - Collects all visual mismatches and reports them collectively
+ *  - Cleans up test cases after execution to prevent state pollution
+ *
+ * Notes:
+ *  - Visual validation uses a strict threshold (maxDiffPixelRatio: 0.01) to catch layout changes
+ *  - runCleanupSafely ensures flaky deletion does not fail the test run
+ */
 
 test.describe("@nightly @regression PTPH Form Rendering / Photosnaps @ptph", () => {
   let newCaseUrn: string;
@@ -32,6 +44,8 @@ test.describe("@nightly @regression PTPH Form Rendering / Photosnaps @ptph", () 
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
 
+      // Create a new case with one defendant and CPS as prosecutor
+      // Returns the new case name and URN for use in the test
       const newCase = await createNewCaseWithDefendantsAndUsers(
         createCasePage,
         caseDetailsPage,
@@ -39,13 +53,13 @@ test.describe("@nightly @regression PTPH Form Rendering / Photosnaps @ptph", () 
         peoplePage,
         "TestCase",
         "TestURN",
-        "None",
-        "One",
-        "CPS"
+        "None", // No specific user access required
+        "One", // Single defendant
+        "CPS", // Prosecuted by CPS
       );
       newCaseUrn = newCase.newCaseUrn;
       newCaseName = newCase.newCaseName;
-    }
+    },
   );
 
   test(`Render PTPH form`, async ({ sectionsPage, ptphPage, context }) => {
@@ -61,19 +75,20 @@ test.describe("@nightly @regression PTPH Form Rendering / Photosnaps @ptph", () 
 
     for (const section of formSections) {
       try {
+        // Compare live section screenshot with baseline image
         await expect(section.locator).toHaveScreenshot(`${section.name}.png`, {
           maxDiffPixelRatio: 0.01,
         });
         console.log(
-          `Successful screenshot match found for PTPH section: ${section.name}`
+          `Successful screenshot match found for PTPH section: ${section.name}`,
         );
       } catch {
         currentUserIssues.push(
-          `Screenshot mismatch for PTPH form section: ${section.name}`
+          `Screenshot mismatch for PTPH form section: ${section.name}`,
         );
       }
     }
-    // Aggregate results
+    // Aggregate and report all issues for this user
     pushTestResult({
       user: "HMCTSAdmin",
       heading: `Verify PTPH Rendering for HMCTSAdmin`,
@@ -81,12 +96,13 @@ test.describe("@nightly @regression PTPH Form Rendering / Photosnaps @ptph", () 
       issues: currentUserIssues,
     });
 
-    // Fail the test if any issues were found
+    // Fail the test if any visual mismatches occurred
     if (currentUserIssues.length > 0) {
       throw new Error(`${currentUserIssues.join("\n")}`);
     }
   });
 
+  //Cleanup: Remove dynamically created case
   test.afterEach(async () => {
     if (!newCaseName) return;
 

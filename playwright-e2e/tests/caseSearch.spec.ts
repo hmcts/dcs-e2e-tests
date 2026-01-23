@@ -1,6 +1,30 @@
 import { test, expect } from "../fixtures";
 import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page";
 
+/**
+ * Case Search & Entry
+ * -------------------
+ *
+ * This file validates that known, stable test cases can be:
+ *  - located via Case Search
+ *  - entered via all primary entry points
+ *  - navigated without errors
+ *
+ * Covered entry points:
+ *  - Update Case (Case Details)
+ *  - Update Front Page
+ *  - Review Evidence (opens in a new window)
+ *
+ * Test data notes:
+ * - The cases used here ("Auto Case1" and "Comment Case") are
+ *   long-lived regression fixtures and MUST NOT be amended.
+ * - These cases are intentionally reused across multiple test suites.
+ *
+ * Scope:
+ * - They ensure core navigation and routing into existing cases
+ *   remains functional.
+ */
+
 test.describe("@regression @nightly Search Auto Case 1 (Documents Testing) and navigate into case", () => {
   test.beforeEach(async ({ homePage, caseSearchPage }) => {
     await homePage.open();
@@ -35,6 +59,7 @@ test.describe("@regression @nightly Search Auto Case 1 (Documents Testing) and n
   });
 
   test("Review Evidence - Auto Case1", async ({ caseSearchPage }) => {
+    // Review Evidence opens in a new window
     const [popup] = await Promise.all([
       caseSearchPage.page.waitForEvent("popup"),
       caseSearchPage.goToReviewEvidence("01AD111111"),
@@ -83,6 +108,7 @@ test.describe("Search Comment Case (Notes Testing) and navigate into case", () =
   });
 
   test("Review Evidence - Comment Case", async ({ caseSearchPage }) => {
+    // Review Evidence opens in a new window
     const [popup] = await Promise.all([
       caseSearchPage.page.waitForEvent("popup"),
       caseSearchPage.goToReviewEvidence("01SJ1111"),

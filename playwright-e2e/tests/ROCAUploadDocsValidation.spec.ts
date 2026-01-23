@@ -9,6 +9,27 @@ import {
   runCleanupSafely,
 } from "../helpers/deleteCase.helper";
 
+/**
+ * ROCA: Document Upload & Access Validation
+ * -----------------------------------------
+ *
+ * This test suite validates that:
+ * 1) Any unrestricted or restricted document uploaded to a case is reflected correctly in the ROCA tables.
+ * 2) Restricted documents are accessible only to the permitted users/defendants.
+ * 3) Multiple Defence Advocates’ uploads are correctly segregated.
+ *
+ * Test coverage:
+ *  - Unrestricted section uploads (HMCTS Admin)
+ *  - Restricted section uploads (Defence Advocates A, B, C)
+ *
+ * Cleanup:
+ *  - Cases are dynamically created and deleted to avoid shared state issues.
+ *
+ * Notes:
+ *  - ROCA validation checks both missing and unexpected documents per user.
+ *  - Restricted sections require logging in as the appropriate Defence Advocate to simulate access control.
+ */
+
 test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted and Unrestricted) @cleanup", () => {
   let newCaseName: string;
 
@@ -50,17 +71,22 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
       sections.unrestricted,
     );
 
+    // Store uploaded documents for ROCA validation
     const uploadedDocuments: ROCAModel[] = [];
 
+    // Pick up to 3 random sections for upload testing
     const sampleEntries = Object.entries(unrestrictedSectionKeys)
       .sort(() => Math.random() - 0.5)
       .slice(0, 3);
+
+    // Upload unrestricted documents and update expected ROCA model
     for (const [sectionIndex, sectionKey] of sampleEntries) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadUnrestrictedDocument(
         "unrestrictedSectionUpload",
       );
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
+      // Track in local ROCA model for later validation
       await rocaPage.createROCAModelRecord(
         uploadedDocuments,
         sectionIndex,
@@ -70,6 +96,7 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
       );
     }
 
+    // Navigate to ROCA page and validate unrestricted table
     await sectionsPage.caseNavigation.navigateTo("ROCA");
     await expect(rocaPage.unrestrictedTable).toBeVisible({ timeout: 30_000 });
 
@@ -116,6 +143,7 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
     rocaPage,
     peoplePage,
   }) => {
+    // Increase timeout for multi-user restricted uploads
     test.setTimeout(720000);
     await peoplePage.caseNavigation.navigateTo("Sections");
     const restrictedSectionKeys = await sectionsPage.getSectionKeys(
@@ -145,6 +173,8 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
         "restrictedSectionUploadDefendantOne",
       );
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
+
+      // Update ROCA expected model for Defence Advocate A
       await rocaPage.createROCAModelRecord(
         uploadedDocuments,
         sectionIndex,
@@ -172,6 +202,8 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
         "restrictedSectionUploadDefendantTwo",
       );
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
+
+      // Update ROCA expected model for Defence Advocate B
       await rocaPage.createROCAModelRecord(
         uploadedDocuments,
         sectionIndex,
@@ -184,6 +216,7 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
     await sectionsPage.caseNavigation.navigateTo("ROCA");
     await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
 
+    // Validate ROCA table filtered for Defence Advocate B documents
     const expectedROCADefenceB = uploadedDocuments.filter((document) =>
       document.defendants!.includes("Two Defendant"),
     );
@@ -233,6 +266,8 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
         "One, Defendant",
       );
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
+
+      // Track combined ROCA records
       await rocaPage.createROCAModelRecord(
         uploadedDocuments,
         sectionIndex,
@@ -245,6 +280,7 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
     await sectionsPage.caseNavigation.navigateTo("ROCA");
     await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
 
+    // Filter expected ROCA for combined visibility
     const expectedROCADefenceC = uploadedDocuments.filter(
       (document) =>
         document.defendants!.includes("One Defendant") ||
@@ -255,7 +291,7 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
       expectedROCADefenceC,
       rocaPage.restrictedTable,
     );
-    // Aggragate Results
+    // Aggregate all ROCA issues across Defence Advocates
     const uploadIssues = [...issuesA, ...issuesB, ...issuesC];
     pushTestResult({
       user: "Defence Users",
@@ -272,6 +308,8 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
       );
     }
   });
+
+  //Cleanup: Remove dynamically created case
   test.afterEach(async () => {
     if (!newCaseName) return;
 

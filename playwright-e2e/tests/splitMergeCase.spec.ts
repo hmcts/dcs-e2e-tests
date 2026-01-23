@@ -8,42 +8,34 @@ import {
 } from "../helpers/deleteCase.helper";
 import { getRandomSectionKey } from "../utils";
 
-// ============================================================
-// Test 1: Split & Merge Case Functionality
-// ============================================================
-
-// The Split function allows a case with more than one defendant to be split into a number of cases as set by the user,
-// and for the defendants to be allocated between those cases.
-// When the case is split, all listed users will be copied across to the new cases,
-// but defence users will only be copied to the cases containing defendants to which they are assigned.
-// All documents, comments and memos will be copied across to the new cases,
-// but documents in sections with defence access restrictions will only be copied to the cases
-// containing defendants to which access has been granted.
-// Only users of role HMCTS Admin have access to the Split & Merge function.
-
-// The Merge function allows multiple cases to be combined into one DCS case.
-// It can be used when a number of cases need to be consolidated, or when a defendant is sent to the Crown Court after his co-accused.
-// When the cases are merged, all defendants and listed users will be copied across to the merged case.
-// All documents, comments and memos will be copied across to the merged cases,
-// but a de-duplication process will ensure that only one copy of each unique document will end up in the merged case.
-// Where there are different comments on the same document in multiple cases,
-// these will be consolidated as part of the de-duplication process.
-// Any access permissions applied to documents in sections with defence access restrictions will remain in place on the new merged case.
-// Only users of role HMCTS Admin have access to the Merge function.
-
-// On the Merge Cases screen:
-// The top left section of the screen will display details about the current case, namely the case name, URN and Crest case numbers.
-// It will also list the defendants attached to this case.
-// The top right section of the screen will display proposed details for the new merged case.
-// 1. The New Case Name will default to the existing case name so will likely need to be amended to include the names of the additional defendants.
-// 2. The New Case URN will default to the existing URN with (M) added on the end. Amend as necessary.
-// 3. Search for the cases to be merged by typing in the Find cases to merge box.
-//    You can search by Case Name, URN or Crest Case Number. Results will be filtered to cases at the same courthouse as the current case.
-// 4. As you type a drop-down box will auto-populate with a list of matching cases.
-//    Click on a case to add it to the list of cases to be merged.
-// 5. If a case is added to the list in error, it can be removed with the Remove from Merge button.
-// 6. When all the cases to be merged have been added to the list, confirm the New Case Name and New Case URN and then click on Merge cases button.
-// A status bar will display detailing the progress of the merge. Once completed you will be taken to the new merged case.
+/**
+ * Split & Merge – End-to-End Case Integrity Validation
+ * ---------------------------------------------------
+ *
+ * This suite validates the Split and Merge case functionality,
+ * ensuring that data integrity, access control, and visibility
+ * rules are preserved throughout both operations.
+ *
+ * Scope:
+ *  - Defendant allocation across split cases
+ *  - Role-based user propagation
+ *  - Document copying with defence access restrictions
+ *  - Memo visibility with user access restrictions
+ *  - Index consistency
+ *  - ROCA accuracy
+ *
+ * Key Rules Under Test:
+ *  - Only HMCTS Admin users can Split or Merge cases
+ *  - Defence users are copied only to cases containing their defendants
+ *  - Restricted documents remain defendant-scoped after Split/Merge
+ *  - Unrestricted documents propagate to all resulting cases
+ *  - Merge de-duplicates documents and consolidates metadata
+ *
+ * Why this test is long:
+ *  - Split & Merge is a high-risk, multi-actor workflow
+ *  - Validation must be performed per role and per resulting case
+ *  - Failures here can result in data leakage or loss
+ */
 
 test.describe("@regression Split & Merge Case Functionality", () => {
   let newCaseName: string;
@@ -63,6 +55,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
 
+      // Seed case with defendants and users
       const newCase = await createNewCaseWithDefendantsAndUsers(
         createCasePage,
         caseDetailsPage,
@@ -91,7 +84,12 @@ test.describe("@regression Split & Merge Case Functionality", () => {
   }) => {
     test.setTimeout(720000);
 
-    // Add a memo and unrestricted document as HMCTS Admin
+    // --------------------------------------------------
+    // Seed Data: Documents, Memos & Private Sections
+    // --------------------------------------------------
+
+    // Seed unrestricted content as HMCTS Admin
+    // Only unrestricted documents should propagate to all split and merged cases
     await caseDetailsPage.caseNavigation.navigateTo("Memos");
     await memoPage.addMemo(hmctsAdminUser.group);
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
@@ -108,7 +106,8 @@ test.describe("@regression Split & Merge Case Functionality", () => {
       );
       await sectionDocumentsPage.navigation.navigateTo("LogOff");
 
-      // Add a memo, new private section & restricted document as Defence Advocate A
+      // Seed defence-restricted content for Defendant One as Defence Advocate A
+      // This content must only follow Defendant One through split
       await loginAndOpenCase(
         homePage,
         loginPage,
@@ -133,7 +132,8 @@ test.describe("@regression Split & Merge Case Functionality", () => {
         );
         await sectionDocumentsPage.navigation.navigateTo("LogOff");
 
-        // Add a memo, new private section & restricted document as Defence Advocate B
+        // Seed defence-restricted content for Defendant Two as Defence Advocate B
+        // This content must only follow Defendant Two through split/merge
         const defenceAdvocateBUser = config.users.defenceAdvocateB;
         await loginAndOpenCase(
           homePage,
@@ -159,7 +159,9 @@ test.describe("@regression Split & Merge Case Functionality", () => {
           );
           await sectionDocumentsPage.navigation.navigateTo("LogOff");
 
-          // Split the case by Defendants as HMCTS Admin
+          // --------------------------------------------------
+          // Action: Split Case by Defendant
+          // --------------------------------------------------
           await loginAndOpenCase(
             homePage,
             loginPage,
@@ -170,9 +172,18 @@ test.describe("@regression Split & Merge Case Functionality", () => {
           await sectionsPage.caseNavigation.navigateTo("Split");
           await splitCasePage.splitACase(newCaseName);
           await caseDetailsPage.confirmCaseSplit();
+          // This creates one case per defendant and re-assigns access accordingly
           await splitCasePage.navigation.navigateTo("LogOff");
 
-          // Split Case Validation - Memo, new Section, Index Documents & ROCA for Defence A
+          // --------------------------------------------------
+          // Validation: Post-Split Case Integrity
+          // --------------------------------------------------
+
+          // Validate Defence Advocate A split case:
+          //  - Own memo is present
+          //  - Other defence and admin memos are hidden
+          //  - Restricted documents align with Defendant One
+          //  - ROCA reflects correct document exposure
           await loginAndOpenCase(
             homePage,
             loginPage,
@@ -214,7 +225,11 @@ test.describe("@regression Split & Merge Case Functionality", () => {
           await expect(rocaPage.defBRestrDocRoca).toBeHidden();
           await rocaPage.navigation.logOff();
 
-          // Split Case Validation - Memo, new Section, Index Documents & ROCA for Defence B
+          // Validate Defence Advocate B split case:
+          //  - Own memo is present
+          //  - Other defence and admin memos are hidden
+          //  - Restricted documents align with Defendant Two
+          //  - ROCA reflects correct document exposure
           await loginAndOpenCase(
             homePage,
             loginPage,
@@ -275,7 +290,12 @@ test.describe("@regression Split & Merge Case Functionality", () => {
   }) => {
     test.setTimeout(720000);
 
-    // Add a memo and unrestricted document as HMCTS Admin
+    // --------------------------------------------------
+    // Seed Data: Documents, Memos & Private Sections
+    // --------------------------------------------------
+
+    // Seed unrestricted content as HMCTS Admin
+    // Only unrestricted documents should propagate to all split and merged case
     await caseDetailsPage.caseNavigation.navigateTo("Memos");
     await memoPage.addMemo(hmctsAdminUser.group);
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
@@ -291,7 +311,8 @@ test.describe("@regression Split & Merge Case Functionality", () => {
       );
       await sectionDocumentsPage.navigation.navigateTo("LogOff");
 
-      // Add a memo, new private section & restricted document as Defence Advocate A
+      // Seed defence-restricted content for Defendant One as Defence Advocate A
+      // This content must only follow Defendant One through split
       await loginAndOpenCase(
         homePage,
         loginPage,
@@ -316,7 +337,8 @@ test.describe("@regression Split & Merge Case Functionality", () => {
         );
         await sectionDocumentsPage.navigation.navigateTo("LogOff");
 
-        // Add a memo, new private section & restricted document as Defence Advocate B
+        // Seed defence-restricted content for Defendant Two as Defence Advocate B
+        // This content must only follow Defendant Two through split/merge
         const defenceAdvocateBUser = config.users.defenceAdvocateB;
         await loginAndOpenCase(
           homePage,
@@ -342,7 +364,10 @@ test.describe("@regression Split & Merge Case Functionality", () => {
           );
           await sectionDocumentsPage.navigation.navigateTo("LogOff");
 
-          // Split the case by Defendants as HMCTS Admin
+          // --------------------------------------------------
+          // Action: Split Case by Defendant
+          // --------------------------------------------------
+
           await loginAndOpenCase(
             homePage,
             loginPage,
@@ -354,7 +379,9 @@ test.describe("@regression Split & Merge Case Functionality", () => {
           await splitCasePage.splitACase(newCaseName);
           await caseDetailsPage.confirmCaseSplit();
 
-          // Merge two cases by HMCTS Admin
+          // --------------------------------------------------
+          // Action: Merge Split Cases
+          // --------------------------------------------------
 
           await caseDetailsPage.goToSplitCase(newCaseName);
           await caseDetailsPage.caseNavigation.navigateTo("Merge");
@@ -365,7 +392,15 @@ test.describe("@regression Split & Merge Case Functionality", () => {
           await caseDetailsPage.confirmCaseMerge();
           await mergeCasePage.navigation.navigateTo("LogOff");
 
-          // Merged Case Validation - Memo, new Section, Index Documents & ROCA for Defence A
+          // --------------------------------------------------
+          // Validation: Post-Merge Case Integrity
+          // --------------------------------------------------
+
+          // Validate Defence Advocate A merged case:
+          //  - Own memo is present
+          //  - Other defence and admin memos are hidden
+          //  - Restricted documents align with Defendant One
+          //  - ROCA reflects correct document exposure
           await loginAndOpenCase(
             homePage,
             loginPage,
@@ -407,7 +442,11 @@ test.describe("@regression Split & Merge Case Functionality", () => {
           await expect(rocaPage.defBRestrDocRoca).toBeHidden();
           await rocaPage.navigation.navigateTo("LogOff");
 
-          // Merged Case Validation - Memo, new Section, Index Documents & ROCA for Defence B
+          // Validate Defence Advocate B split case:
+          //  - Own memo is present
+          //  - Other defence and admin memos are hidden
+          //  - Restricted documents align with Defendant Two
+          //  - ROCA reflects correct document exposure
           await loginAndOpenCase(
             homePage,
             loginPage,
@@ -452,6 +491,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
     }
   });
 
+  //Cleanup: Remove dynamically created case
   test.afterEach(async () => {
     if (!newCaseName) return;
 

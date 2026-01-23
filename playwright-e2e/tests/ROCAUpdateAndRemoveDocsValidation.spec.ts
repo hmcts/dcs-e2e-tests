@@ -11,15 +11,38 @@ import {
 } from "../helpers/deleteCase.helper";
 import { ROCAModel } from "../data/ROCAModel";
 
+/**
+ * ROCA – End-to-End Document Audit Validation
+ * ------------------------------------------
+ *
+ * These test suites validate the ROCA (Record of Case Activity) tables for unrestricted
+ * and restricted documents, covering:
+ *
+ * 1) Document lifecycle actions: Add, Edit, Move, Remove
+ * 2) Each operation should correctly update the ROCA unrestricted or restricted table as
+ *    per user role permissions
+ *
+ * Document visibility and access
+ *    - Unrestricted documents should be visible to all relevant users
+ *    - Restricted documents visible only to permitted users (defendant-specific)
+ *
+ * Flow per test:
+ *  - Create a case with either unrestricted or restricted documents
+ *  - Perform a series of document operations (update, move, delete)
+ *  - Validate that the ROCA tables correctly reflect the expected state
+ *  - Aggregate issues and report via pushTestResult
+ *  - All tests dynamically create and clean up cases to ensure test isolation.
+ */
+
 // ======================================================================
 // Test 1: ROCA Validation of Unrestricted Document Updates or Removal
 // ======================================================================
+//
+// As a user (HMCTS Admin)
+// I want updates, moves, or deletions of unrestricted documents to be recorded in the ROCA table
+// So I can track document activity accurately
 
-// As a user
-// I want any updates or removal of unrestricted documents to be reflected in the ROCA unrestricted table
-// So that I can accurately track document activity
-
-test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", () => {
+test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unrestricted) @cleanup", () => {
   let sampleKey: [string, string][];
   let newCaseName: string;
   let rocaExpected: ROCAModel[] = [];
@@ -40,6 +63,8 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
 
+      // Create a new case with unrestricted documents
+      // sampleKey tracks section name + section key for ROCA operations
       const newCase = await createNewCaseWithUnrestrictedDocument(
         createCasePage,
         caseDetailsPage,
@@ -65,6 +90,8 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
   }) => {
     for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
+
+      // Reflect the deletion in the expected ROCA model
       await rocaPage.updateROCAModel(
         rocaExpected,
         section,
@@ -72,6 +99,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
         "Delete",
         config.users.hmctsAdmin.username,
       );
+
       await updateDocumentsPage.removeDocument();
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
     }
@@ -83,7 +111,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
       rocaExpected,
       rocaPage.unrestrictedTable,
     );
-    // Aggragate Results
+    // Aggregate results for reporting
     pushTestResult({
       user: config.users.hmctsAdmin.group,
       heading: `ROCA Validation: Delete Unrestricted Document`,
@@ -116,6 +144,7 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
         sampleKey,
         newSections,
       );
+      // Reflect the move in the expected ROCA model
       await rocaPage.updateROCAModelMove(
         rocaExpected,
         section,
@@ -166,6 +195,8 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
   }) => {
     for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
+
+      // Reflect the edit in the expected ROCA model
       await rocaPage.updateROCAModel(
         rocaExpected,
         section,
@@ -217,12 +248,12 @@ test.describe("ROCA: Document Update Audit Validation (Unrestricted) @cleanup", 
 // ============================================================
 // Test 2: Update and Remove Restricted Section Documents
 // ============================================================
+//
+// As a user (Defence Advocates)
+// I want updates, moves, or deletions of restricted documents to be recorded in the ROCA table
+// So I can track document activity accurately for the defendants I represent
 
-// As a user
-// I want any updates or removal of restricted documents to be reflected in the ROCA restricted table
-// So that I can accurately track document activity
-
-test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", () => {
+test.describe("@nightly @regression ROCA: Document Update Audit Validation (Restricted) @cleanup", () => {
   let sampleKey: [string, string][];
   let newCaseName: string;
   let rocaExpected: ROCAModel[] = [];
@@ -282,6 +313,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [section, key] of sampleKey) {
+      // Reflect the deletion in the expected ROCA model
       await sectionsPage.goToUpdateDocuments(key);
       await rocaPage.updateROCAModel(
         rocaExpected,
@@ -351,6 +383,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
         sampleKey,
         newSections,
       );
+      // Reflect the move in the expected ROCA model
       await rocaPage.updateROCAModelMove(
         rocaExpected,
         section,
@@ -419,6 +452,8 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [section, key] of sampleKey) {
       await sectionsPage.goToUpdateDocuments(key);
+
+      // Reflect the edit in the expected ROCA model
       await rocaPage.updateROCAModel(
         rocaExpected,
         section,
@@ -456,6 +491,7 @@ test.describe("ROCA: Document Update Audit Validation (Restricted) @cleanup", ()
     }
   });
 
+  //Cleanup: Remove dynamically created case
   test.afterEach(async () => {
     if (!newCaseName) return;
 
