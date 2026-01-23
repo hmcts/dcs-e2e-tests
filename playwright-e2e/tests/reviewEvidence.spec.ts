@@ -1,5 +1,5 @@
 import { test, expect, currentUser, eligibleUsers } from "../fixtures";
-import ReviewEvidencePage from "../page-objects/pages/Review Evidence/reviewEvidence.page";
+import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page";
 import { pushTestResult } from "../utils";
 
 const TEST_USERS = process.env.TEST_USERS || "nightly";
@@ -41,19 +41,20 @@ test.describe("@nightly @regression Sections and Documents availability", () => 
       const reviewEvidencePage = new ReviewEvidencePage(popup);
 
       // Filter expected documents based on User Group
-      const expectedDocuments =
-        await reviewEvidencePage.filterDocumentsByUser(user.group);
+      const expectedDocuments = await reviewEvidencePage.filterDocumentsByUser(
+        user.group,
+      );
 
       // Get all available documents from Index for User
       const availableDocuments = await reviewEvidencePage.getDocuments(
-        user.group
+        user.group,
       );
 
       // Compare expected vs available sections and documents for User
       const { missingDocuments, unexpectedDocuments } =
         await reviewEvidencePage.compareExpectedVsAvailableSectionsAndDocuments(
           expectedDocuments,
-          availableDocuments
+          availableDocuments,
         );
 
       // If there are any section or document issues, push to currentUserIssues
@@ -71,9 +72,7 @@ test.describe("@nightly @regression Sections and Documents availability", () => 
         throw new Error(
           `User ${
             user.group
-          } has missing/unexpected documents:\n${currentUserIssues.join(
-            "\n"
-          )}`
+          } has missing/unexpected documents:\n${currentUserIssues.join("\n")}`,
         );
       }
     });
@@ -117,10 +116,10 @@ test.describe("@regression Document rendering / photosnaps", () => {
 
       // Get all Documents by user
       const availableDocuments = await reviewEvidencePage.getDocuments(
-        user.group
+        user.group,
       );
       const filteredDocuments = availableDocuments.filter(
-        (doc) => doc.documentName !== "No available document: name"
+        (doc) => doc.documentName !== "No available document: name",
       );
 
       // Get document count
@@ -136,7 +135,7 @@ test.describe("@regression Document rendering / photosnaps", () => {
       for (const [index, doc] of sampleDocs.entries()) {
         try {
           const documentLink = reviewEvidencePage.page.locator(
-            `[id='${doc.documentId}']`
+            `[id='${doc.documentId}']`,
           );
 
           await documentLink.click();
@@ -149,17 +148,17 @@ test.describe("@regression Document rendering / photosnaps", () => {
             user.group,
             index,
             doc.sectionTitle,
-            sampleDocs.length
+            sampleDocs.length,
           );
 
           // Target document image for screenshot
           const documentImage = await reviewEvidencePage.getImageLocator(
-            doc.documentId ?? ""
+            doc.documentId ?? "",
           );
 
           // Prepare standardised screenshot name
           const screenshotName = await reviewEvidencePage.standardiseFileName(
-            reviewEvidencePage.page.locator(`[id='${doc.documentId}']`)
+            reviewEvidencePage.page.locator(`[id='${doc.documentId}']`),
           );
           // Take and compare screenshot to expected document image
 
@@ -168,7 +167,7 @@ test.describe("@regression Document rendering / photosnaps", () => {
           });
         } catch {
           currentUserIssues.push(
-            `Screenshot mismatch for "${doc.documentName}" in section "${doc.sectionTitle}"`
+            `Screenshot mismatch for "${doc.documentName}" in section "${doc.sectionTitle}"`,
           );
         }
       }
@@ -184,7 +183,7 @@ test.describe("@regression Document rendering / photosnaps", () => {
         throw new Error(
           `User ${
             user.group
-          } has document mismatches:\n${currentUserIssues.join("\n")}`
+          } has document mismatches:\n${currentUserIssues.join("\n")}`,
         );
       }
     });

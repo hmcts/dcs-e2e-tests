@@ -17,8 +17,8 @@ import { config } from "../utils";
 import { chromium, Page, BrowserContext } from "playwright";
 import { expect } from "../fixtures";
 import { todaysDate } from "../utils";
-import CaseSearchPage from "../page-objects/pages/caseSearch.page";
-import CaseDetailsPage from "../page-objects/pages/caseDetails.page";
+import CaseSearchPage from "../page-objects/pages/case/caseSearch.page";
+import CaseDetailsPage from "../page-objects/pages/case/caseDetails.page";
 
 /**
  * Executes a cleanup function without allowing failures to break the test run.

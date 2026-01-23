@@ -6,7 +6,7 @@ import {
   deleteCaseByName,
   runCleanupSafely,
 } from "../helpers/deleteCase.helper";
-import ReviewEvidencePage from "../page-objects/pages/Review Evidence/reviewEvidence.page";
+import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page";
 
 const TEST_USERS = process.env.TEST_USERS || "nightly";
 // Please update TEST_USERS=regression locally to run all users
@@ -62,14 +62,14 @@ test.describe("@regression @nightly @notes Notes Functionality", () => {
             rocaPage,
             "TestCase",
             "TestURN",
-            user.group
+            user.group,
           );
 
           sampleKey = newCase.sampleKey as [string, string][];
           newCaseName = newCase.newCaseName;
 
           await sectionsPage.navigation.navigateTo("LogOff");
-        }
+        },
       );
 
       test(`Create, Delete and Edit Notes on Document for ${user.group}`, async ({
@@ -85,7 +85,7 @@ test.describe("@regression @nightly @notes Notes Functionality", () => {
           loginPage,
           caseSearchPage,
           user,
-          newCaseName
+          newCaseName,
         );
 
         const popup = await caseDetailsPage.openReviewPopupAwaitPagination();
@@ -98,7 +98,7 @@ test.describe("@regression @nightly @notes Notes Functionality", () => {
 
         const types = await reviewEvidencePage.notes.addNotesForUserGroup(
           user.group,
-          user.username
+          user.username,
         );
 
         if (user.group === "DefenceAdvocateA") {
@@ -120,7 +120,7 @@ test.describe("@regression @nightly @notes Notes Functionality", () => {
           currentUserIssues,
           user,
           types,
-          notes
+          notes,
         );
 
         // Delete Note
@@ -143,7 +143,7 @@ test.describe("@regression @nightly @notes Notes Functionality", () => {
                   .last()
                   .locator(".commentText")
                   .innerText(),
-              { timeout: 10000 }
+              { timeout: 10000 },
             )
             .toBe(`Edited note for ${user.group}`);
         } catch {
@@ -160,8 +160,8 @@ test.describe("@regression @nightly @notes Notes Functionality", () => {
         if (currentUserIssues.length > 0) {
           throw new Error(
             `User ${user.group} experienced issues:\n${currentUserIssues.join(
-              "\n"
-            )}`
+              "\n",
+            )}`,
           );
         }
       });

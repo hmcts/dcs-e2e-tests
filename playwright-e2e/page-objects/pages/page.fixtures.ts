@@ -9,35 +9,35 @@
  * returns an instance of a specific Page Object. This allows tests to
  * access page-specific elements and methods without manual re-instantiation.
  */
-import HomePage from "./home.page";
-import CaseSearchPage from "./caseSearch.page";
-import CaseDetailsPage from "./caseDetails.page";
-import LoginPage from "./login.page";
-import ReviewEvidencePage from "./Review Evidence/reviewEvidence.page";
-import UpdateFrontPage from "./updateFront.page";
-import CreateCasePage from "./createCase.page";
-import AddDefendantPage from "./addDefendant.page";
-import ChangeCaseDetailsPage from "./changeCaseDetails.page";
-import SectionsPage from "./sections.page";
-import SectionDocumentsPage from "./sectionDocuments.page";
-import ViewDocumentPage from "./viewDocument.page";
-import UploadDocumentPage from "./uploadDocument.page";
-import PeoplePage from "./people.page";
-import MemoPage from "./memo.page";
-import IngestPage from "./ingest.page";
-import ROCAPage from "./ROCA.page";
-import RegisterUserPage from "./registerUser.page";
-import AdminPage from "./admin.page";
-import UserSettingsPage from "./userSettings.page";
-import ApprovalRequestsPage from "./approvalRequests.page";
-import ApproveAccessRequestPage from "./approveAccessRequest.page";
-import RejectAccessRequestPage from "./rejectAccessRequest.page";
-import CreateNewSectionPage from "./createNewSection.page"
-import SplitCasePage from "./splitCase.page";
-import MergeCasePage from "./mergeCase.page";
-import UpdateDocumentsPage from "./updateDocuments.page";
-import IndexPage from "./index.page";
-import PTPHPage from "./ptph.page";
+import HomePage from "./platform/home.page";
+import CaseSearchPage from "./case/caseSearch.page";
+import CaseDetailsPage from "./case/caseDetails.page";
+import LoginPage from "./platform/login.page";
+import ReviewEvidencePage from "./case/reviewEvidence/reviewEvidence.page";
+import UpdateFrontPage from "./case/updateFront.page";
+import CreateCasePage from "./case/createCase.page";
+import AddDefendantPage from "./case/addDefendant.page";
+import ChangeCaseDetailsPage from "./case/changeCaseDetails.page";
+import SectionsPage from "./case/sections.page";
+import SectionDocumentsPage from "./case/sectionDocuments.page";
+import ViewDocumentPage from "./case/viewDocument.page";
+import UploadDocumentPage from "./case/uploadDocument.page";
+import PeoplePage from "./case/people.page";
+import MemoPage from "./case/memo.page";
+import IngestPage from "./case/ingest.page";
+import ROCAPage from "./case/ROCA.page";
+import RegisterUserPage from "./platform/register/registerUser.page";
+import AdminPage from "./platform/admin.page";
+import UserSettingsPage from "./platform/register/userSettings.page";
+import ApprovalRequestsPage from "./platform/register/approvalRequests.page";
+import ApproveAccessRequestPage from "./platform/register/approveAccessRequest.page";
+import RejectAccessRequestPage from "./platform/register/rejectAccessRequest.page";
+import CreateNewSectionPage from "./case/createNewSection.page";
+import SplitCasePage from "./case/splitCase.page";
+import MergeCasePage from "./case/mergeCase.page";
+import UpdateDocumentsPage from "./case/updateDocuments.page";
+import IndexPage from "./case/index.page";
+import PTPHPage from "./case/ptph.page";
 
 /**
  * Interface defining the types of all available Page Object fixtures.

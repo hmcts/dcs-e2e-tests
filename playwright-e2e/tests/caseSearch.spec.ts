@@ -1,5 +1,5 @@
 import { test, expect } from "../fixtures";
-import ReviewEvidencePage from "../page-objects/pages/Review Evidence/reviewEvidence.page";
+import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page";
 
 test.describe("@regression @nightly Search Auto Case 1 (Documents Testing) and navigate into case", () => {
   test.beforeEach(async ({ homePage, caseSearchPage }) => {
@@ -14,10 +14,10 @@ test.describe("@regression @nightly Search Auto Case 1 (Documents Testing) and n
   }) => {
     await caseSearchPage.goToUpdateCase("01AD111111");
     await expect(caseDetailsPage.caseNameHeading).toContainText(
-      "Auto Case1 - DO NOT AMEND"
+      "Auto Case1 - DO NOT AMEND",
     );
     await expect(caseDetailsPage.caseDetailsHeading).toContainText(
-      "Case Details"
+      "Case Details",
     );
   });
 
@@ -27,10 +27,10 @@ test.describe("@regression @nightly Search Auto Case 1 (Documents Testing) and n
   }) => {
     await caseSearchPage.goToUpdateFrontPage("01AD111111");
     await expect(updateFrontPage.caseNameHeading).toContainText(
-      "Auto Case1 - DO NOT AMEND"
+      "Auto Case1 - DO NOT AMEND",
     );
     await expect(updateFrontPage.changeDetailsHeading).toContainText(
-      "Change Case Details"
+      "Change Case Details",
     );
   });
 
@@ -43,7 +43,7 @@ test.describe("@regression @nightly Search Auto Case 1 (Documents Testing) and n
     const reviewEvidencePage = new ReviewEvidencePage(popup);
     await expect(reviewEvidencePage.caseName).toContainText(
       "Auto Case1 - DO NOT AMEND",
-      { timeout: 30000 }
+      { timeout: 30000 },
     );
     await popup.close();
   });
@@ -62,10 +62,10 @@ test.describe("Search Comment Case (Notes Testing) and navigate into case", () =
   }) => {
     await caseSearchPage.goToUpdateCase("01SJ1111");
     await expect(caseDetailsPage.caseNameHeading).toContainText(
-      "Comment Case - DO NOT AMEND"
+      "Comment Case - DO NOT AMEND",
     );
     await expect(caseDetailsPage.caseDetailsHeading).toContainText(
-      "Case Details"
+      "Case Details",
     );
   });
 
@@ -75,10 +75,10 @@ test.describe("Search Comment Case (Notes Testing) and navigate into case", () =
   }) => {
     await caseSearchPage.goToUpdateFrontPage("01SJ1111");
     await expect(updateFrontPage.caseNameHeading).toContainText(
-      "Comment Case - DO NOT AMEND"
+      "Comment Case - DO NOT AMEND",
     );
     await expect(updateFrontPage.changeDetailsHeading).toContainText(
-      "Change Case Details"
+      "Change Case Details",
     );
   });
 
@@ -91,7 +91,7 @@ test.describe("Search Comment Case (Notes Testing) and navigate into case", () =
     const reviewEvidencePage = new ReviewEvidencePage(popup);
     await expect(reviewEvidencePage.caseName).toContainText(
       "Comment Case - DO NOT AMEND",
-      { timeout: 30000 }
+      { timeout: 30000 },
     );
     await popup.close();
   });
