@@ -2,16 +2,41 @@ import { test, expect, currentUser, eligibleUsers } from "../fixtures";
 import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page";
 import { pushTestResult } from "../utils";
 
+/**
+ * Review Evidence: Sections & Documents – End-to-End Validation
+ * -----------------------------------------------------------------------
+ *
+ * This test suite validates the availability and rendering of Sections and Documents
+ * on the Review Evidence Page for existing cases. It covers two primary scenarios:
+ *
+ * 1) Sections & Documents Visibility
+ *    - Ensures users only see sections and documents permitted for their role
+ *    - Compares expected documents with actual UI display
+ *
+ * 2) Document Rendering / Photosnaps
+ *    - Ensures documents can be opened and rendered correctly
+ *    - Takes screenshots for high-fidelity validation
+ *
+ * Tests are role-aware and dynamically pick users based on execution scope:
+ *  - nightly   → currentUser only (fast feedback)
+ *  - regression → all eligible users (full coverage)
+ *
+ */
+
 const TEST_USERS = process.env.TEST_USERS || "nightly";
 // Please update TEST_USERS=regression locally to run all users
 
 // ============================================================
 // Test 1: Sections & Documents Availability
 // ============================================================
-
+//
 // As a user
 // I want to be able to access the Review Evidence Page
-// And I should be able to see a list of the correct available Sections and Documents in the Index for an existing case
+// And see only the sections and documents I am permitted to view
+//
+// The test validates:
+//  - All expected sections and documents appear for the user's role
+//  - No unexpected sections or documents appear
 
 test.describe("@nightly @regression Sections and Documents availability", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
@@ -45,12 +70,12 @@ test.describe("@nightly @regression Sections and Documents availability", () => 
         user.group,
       );
 
-      // Get all available documents from Index for User
+      // Retrieve actual available documents from the UI
       const availableDocuments = await reviewEvidencePage.getDocuments(
         user.group,
       );
 
-      // Compare expected vs available sections and documents for User
+      // Compare expected vs available sections and documents and collect any mismatches
       const { missingDocuments, unexpectedDocuments } =
         await reviewEvidencePage.compareExpectedVsAvailableSectionsAndDocuments(
           expectedDocuments,
@@ -82,10 +107,15 @@ test.describe("@nightly @regression Sections and Documents availability", () => 
 // ============================================================
 // Test 2: Document Rendering / Photosnaps
 // ============================================================
-
+//
 // As a user
-// I want to be able to click onto an available document in the Index
-// And this document should render correctly on the page
+// I want to open documents in the Review Evidence Index
+// So that I can verify that they render correctly
+//
+// The test validates:
+//  - Documents can be opened and fully loaded
+//  - High-resolution images match baseline screenshots
+//  - Any mismatches are reported per user role
 
 test.describe("@regression Document rendering / photosnaps", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
@@ -126,7 +156,7 @@ test.describe("@regression Document rendering / photosnaps", () => {
       const documentCount = filteredDocuments.length;
       expect(documentCount).toBeGreaterThan(0);
 
-      // Pick up to 5 random documents to test
+      // Select up to 5 random documents to test
       const sampleDocs = filteredDocuments
         .sort(() => Math.random() - 0.5)
         .slice(0, Math.min(5, documentCount));
