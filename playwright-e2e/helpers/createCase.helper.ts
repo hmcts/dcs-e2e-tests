@@ -1,3 +1,9 @@
+import { config } from "../utils";
+import { expect } from "../fixtures";
+import { sections } from "../utils";
+import { ROCAModel } from "../data/ROCAModel";
+import { getRandomSectionKey } from "../utils";
+
 /**
  * Case creation helpers
  * ---------------------
@@ -11,12 +17,6 @@
  * UI flows are used rather than direct data seeding as API endpoints don't exist
  * to support this.
  */
-
-import { config } from "../utils";
-import { expect } from "../fixtures";
-import { sections } from "../utils";
-import { ROCAModel } from "../data/ROCAModel";
-import { getRandomSectionKey } from "../utils";
 
 /**
  * Mapping of user roles to the defendants they should be associated with

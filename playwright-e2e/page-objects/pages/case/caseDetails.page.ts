@@ -209,6 +209,12 @@ class CaseDetailsPage extends Base {
     );
   }
 
+  /**
+   * Confirms that a case has successfuly been split using the Split Page functionality.
+   * Successful split results in the Case Details page rendering a message including
+   * 'Case Has Split'. Other validation methods (eg. split progress bar) proved unreliable for
+   * validation at this time
+   */
   async confirmCaseSplit() {
     await expect
       .poll(
@@ -236,6 +242,12 @@ class CaseDetailsPage extends Base {
     await this.page.getByRole("link", { name: `${caseName}One` }).click();
   }
 
+  /**
+   * Confirms that a case has successfuly been merged using the Merge Page functionality.
+   * Successful split results in the Case Details page rendering a message including
+   * 'Case Has Merged'. Other validation methods (eg. merge progress bar) proved unreliable for
+   * validation at this time
+   */
   async confirmCaseMerge() {
     await expect
       .poll(

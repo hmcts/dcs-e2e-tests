@@ -23,7 +23,7 @@ class CaseNavigationBar {
       Index: page.getByRole("link", { name: "Index" }),
       Sections: page.locator('a.button[title*="View the list of sections"]'),
       People: page.locator(
-        'a.button[title*="View the list of people associated with this case."]'
+        'a.button[title*="View the list of people associated with this case."]',
       ),
       Access: page.getByRole("link", { name: "Access", exact: true }),
       Bundle: page.getByRole("link", { name: "Bundle", exact: true }),
@@ -45,13 +45,12 @@ class CaseNavigationBar {
 
   /**
    * Navigates to a specific link within the case navigation bar.
-   * @param {NavLink} link - The name of the link to navigate to (e.g., "CaseHome", "Review").
    */
   async navigateTo(link: NavLink) {
     const locator = this.links[link];
     if (!locator) {
       throw new Error(
-        `Link "${link}" does not exist in the Case navigation bar`
+        `Link "${link}" does not exist in the Case navigation bar`,
       );
     }
     await locator.click();

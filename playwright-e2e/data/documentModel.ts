@@ -14,7 +14,7 @@
  *  - Index
  *
  * Each entry in the `documents` array represents a single expected document (or the
- * explicit absence of a document) across users for the existing case 'Auto Case1 - DO NOT AMEND'.
+ * explicit absence of a document) across users for the existing case '01AD111111' or 'Auto Case1 - DO NOT AMEND'.
  * This case allows us to test document visiblity on a large complex case of varied permissions.
  *
  * Expected absence of document visibility in a restricted section is modelled here using
@@ -23,17 +23,11 @@
  */
 
 export interface DocumentModel {
-  /** The title of the section the document belongs to. */
   sectionTitle: string;
-  /** The document number within the section. */
   documentNumber: string;
-  /** The name of the document. */
   documentName: string;
-  /** The ID of the section, optional. */
   sectionId?: string;
-  /** The ID of the document, optional. */
   documentId?: string;
-  /** The roles that have access to the document, optional. */
   roles?: string[];
 }
 
