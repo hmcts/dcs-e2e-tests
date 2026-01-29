@@ -29,8 +29,8 @@ test.describe("@nightly @regression Internal navigation links logged out", () =>
     page,
     homePage,
   }) => {
+    await homePage.open();
     for (const link of publicNavigationLinks) {
-      await homePage.open();
       await homePage.navigation.navigateTo(link.name);
       await expect(page).toHaveTitle(link.expectedTitle);
       expect(page.url().toLowerCase()).toContain(
