@@ -24,7 +24,6 @@ import { Page, Locator } from "playwright-core";
 /**
  * Represents a standard navigation link with a name, expected page title, and URL.
  */
-
 export interface NavLink {
   name: string;
   expectedTitle: string;

@@ -2,7 +2,8 @@ import { Locator } from "@playwright/test";
 import { Base } from "../../base";
 
 /**
- * Represents the "Create New Section" page, allowing the creation of new sections within a case.
+ * Represents the "Create New Section" page, allowing the creation of new document sections
+ * within a case.
  * This Page Object provides locators and methods to define properties for a new section,
  * such as its number, name, and order, and to submit the creation request.
  */
@@ -23,7 +24,7 @@ class createNewSectionPage extends Base {
   /**
    * Creates a new private section with the given defendant and section number.
    * @param {string} defendant - The name of the defendant to associate with the private section.
-   * @param {string} sectionNumber - The letter/s and number/s for the new section (eg. 'PD1'),
+   * @param {string} sectionNumber - The letter/s and/or number/s for the new section (eg. 'PD1'),
    * called 'Section Number' in the platform.
    */
   async createPrivateSection(defendant: string, sectionNumber: string) {
