@@ -43,29 +43,16 @@ class UpdateDocumentsPage extends Base {
    * Clicks the "Remove" button and accepts the confirmation dialog.
    */
   async removeDocument() {
+    // Poll until the remove document button is interactable
     await waitUntilClickable(this.removeBtn);
-
-    const clickAndWaitForDialog = async () => {
-      const dialogPromise = this.page.waitForEvent("dialog", { timeout: 2000 });
-      await this.removeBtn.click();
-      return dialogPromise;
-    };
-
     try {
-      let dialog;
-
-      try {
-        dialog = await clickAndWaitForDialog();
-      } catch {
-        // Dialog didn’t appear – retry once
-        await this.removeBtn.click();
-        dialog = await this.page.waitForEvent("dialog");
-      }
-
-      await dialog.accept({ timeout: 30000 });
+      const dialogPromise = this.page.waitForEvent("dialog");
+      await this.removeBtn.click();
+      const dialog = await dialogPromise;
+      await dialog.accept();
       console.log("Dialog accepted - remove document");
-    } catch (error) {
-      console.log("Issue accepting document deletion dialog", error);
+    } catch {
+      console.log("Issue accepting document deletion dialog");
     }
   }
 
