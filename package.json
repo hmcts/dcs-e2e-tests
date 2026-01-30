@@ -48,8 +48,8 @@
     "allure:generate": "allure generate allure-results --clean -o allure-report",
     "allure:open": "allure open allure-report",
     "test:allure": "yarn playwright test && yarn allure:generate",
-    "test:chrome:run-notes-last": "yarn playwright test tests/ --project=chrome --grep \"$TEST_TAG\" --grep-invert='(@a11y)|(@performance)|(@visual)' && yarn playwright test tests/ --project=notes-chrome",
-    "test:firefox:run-notes-last": "yarn playwright test tests/ --project=firefox --grep \"$TEST_TAG\" --grep-invert='(@a11y)|(@performance)|(@visual)' && yarn playwright test tests/ --project=notes-firefox"
+    "test:chrome:run-notes-last": "yarn playwright test tests/ --project=chrome --project=notes-chrome --grep \"$TEST_TAG\" --grep-invert='(@a11y)|(@performance)|(@visual)'",
+    "test:firefox:run-notes-last": "yarn playwright test tests/ --project=firefox --project=notes-firefox --grep \"$TEST_TAG\" --grep-invert='(@a11y)|(@performance)|(@visual)'"
   },
   "packageManager": "yarn@4.12.0",
   "dependencies": {
