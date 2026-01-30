@@ -40,46 +40,66 @@ export default defineConfig({
       },
       dependencies: ["setup"],
     },
-    // {
-    //   name: "chromium",
-    //   use: {
-    //     ...ProjectsConfig.chromium.use,
-    //     //Use below line when running docker
-    //     channel: undefined,
-    //     storageState: "./playwright-e2e/.sessions/trainer01.json",
-    //   },
-    //   dependencies: ["setup"],
-    // },
-    // {
-    //   name: "edge",
-    //   use: {
-    //     ...ProjectsConfig.edge.use,
-    //     //Use below line when running docker
-    //     channel: undefined,
-    //     storageState: "./playwright-e2e/.sessions/trainer01.json",
-    //   },
-    //   dependencies: ["setup"],
-    // },
+    {
+       name: "chromium",
+       use: {
+         ...ProjectsConfig.chromium.use,
+         //Use below line when running docker
+        //  channel: undefined,
+         storageState: "./playwright-e2e/.sessions/trainer01.json",
+       },
+       dependencies: ["setup"],
+    },
+    {
+       name: "edge",
+       use: {
+         ...ProjectsConfig.edge.use,
+         //Use below line when running docker
+        //  channel: undefined,
+         storageState: "./playwright-e2e/.sessions/trainer01.json",
+       },
+       dependencies: ["setup"],
+    },
     {
       name: "firefox",
       use: {
         ...ProjectsConfig.firefox.use,
         //Use below line when running docker
-        channel: undefined,
+        // channel: undefined,
         storageState: "./playwright-e2e/.sessions/trainer01.json",
       },
       dependencies: ["setup"],
     },
-    // {
-    //   name: "webkit",
-    //   use: {
-    //     ...ProjectsConfig.webkit.use,
-    //     //Use below line when running docker
-    //     channel: undefined,
-    //     storageState: "./playwright-e2e/.sessions/trainer01.json",
-    //   },
-    //   dependencies: ["setup"],
-    // },
+    {
+       name: "webkit",
+       use: {
+         ...ProjectsConfig.webkit.use,
+         //Use below line when running docker
+        //  channel: undefined,
+         storageState: "./playwright-e2e/.sessions/trainer01.json",
+       },
+       dependencies: ["setup"],
+    },
+    {
+      name: "notes-chrome",
+      testMatch: /.*notes-lifecycle\.spec\.ts/,
+      workers: 1,
+      use: {
+        ...ProjectsConfig.chrome.use,
+        storageState: "./playwright-e2e/.sessions/trainer01.json",
+      },
+      dependencies: ["setup"],
+    },
+    {
+      name: "notes-firefox",
+      testMatch: /.*notes-lifecycle\.spec\.ts/,
+      workers: 1,
+      use: {
+        ...ProjectsConfig.firefox.use,
+        storageState: "./playwright-e2e/.sessions/trainer01.json",
+      },
+      dependencies: ["setup"],
+    },
     // {
     //   name: "tabletChrome",
     //   use: {
