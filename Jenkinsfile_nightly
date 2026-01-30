@@ -176,116 +176,42 @@ withNightlyPipeline(type, product, component, 600) {
     } else {
       currentBuild.displayName = "All E2E Tests"
 
-      if (isFullRegressionRun) {
-          // --- REGRESSION RUN ---
-          // Run parallel suite excluding notes-lifecycle
-          stage('Chrome – Parallel E2E Test Suite') {
-            try {
-              yarnBuilder.yarn('test:chrome --grep-invert "@notes-lifecycle"')
-            } catch (Error) {
-              unstable("Chrome parallel suite had failures")
-            } finally {
-              publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: "playwright-report",
-                reportFiles: 'index.html',
-                reportName: 'Chrome – Parallel E2E Test Suite)'
-              ])
-            }
-          }
+      currentBuild.displayName = "All E2E Tests"
 
-          // Run notes-lifecycle serially
-          stage('Chrome – Serial E2E Test Suite (Notes Lifecycle)') {
-            try {
-              yarnBuilder.yarn('playwright test --project=notes-chrome --grep \"${env.TEST_TAG}\"')
-            } catch (Error) {
-              unstable("Chrome serial suite (notes lifecycle) had failures")
-            } finally {
-              publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: "playwright-report",
-                reportFiles: 'index.html',
-                reportName: 'Chrome – Serial E2E Test Suite (Notes Lifecycle)'
-              ])
-            }
-          }
+      // Unified Chrome Tests: All tests, with notes lifecycle running last
+      stage('Chrome – E2E Tests') {
+        try {
+          yarnBuilder.yarn('test:chrome:run-notes-last')
+        } catch (Error) {
+          unstable("Chrome E2E tests had failures")
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Chrome – E2E Tests'
+          ])
+        }
+      }
 
-          // Firefox - Parallel Suite excluding notes-lifecycle
-          stage('Firefox – Parallel E2E Test Suite') {
-            try {
-              yarnBuilder.yarn('test:firefox --grep-invert "@notes-lifecycle"')
-            } catch (Error) {
-              unstable("Firefox E2E parallel suite had failures")
-            } finally {
-              publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: "playwright-report",
-                reportFiles: 'index.html',
-                reportName: 'Firefox – Parallel E2E Test Suite'
-              ])
-            }
-          }
-
-          // Firefox - Serial Suite for notes-lifecycle
-          stage('Firefox – Serial E2E Test Suite (Notes Lifecycle)') {
-            try {
-              yarnBuilder.yarn('playwright test --project=notes-firefox --grep \"${env.TEST_TAG}\"')
-            } catch (Error) {
-              unstable("Firefox serial suite (notes lifecycle) had failures")
-            } finally {
-              publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: "playwright-report",
-                reportFiles: 'index.html',
-                reportName: 'Firefox – Serial E2E Test Suite (Notes Lifecycle)'
-              ])
-            }
-          }
-
-      } else {
-          // --- NIGHTLY RUN ---
-          // Run everything in parallel for nightly
-          stage('Chrome – E2E Tests (Nightly)') {
-            try {
-              yarnBuilder.yarn('test:chrome')
-            } catch (Error) {
-              unstable("Chrome nightly E2E tests had failures")
-            } finally {
-              publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: "playwright-report",
-                reportFiles: 'index.html',
-                reportName: 'Chrome – E2E Tests (Nightly)'
-              ])
-            }
-          }
-
-          stage('Firefox – E2E Tests (Nightly)') {
-            try {
-              yarnBuilder.yarn('test:firefox')
-            } catch (Error) {
-              unstable("Firefox E2E tests (nightly) had failures")
-            } finally {
-              publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: "playwright-report",
-                reportFiles: 'index.html',
-                reportName: 'Firefox – E2E Tests (Nightly)'
-              ])
-            }
-          }
+      // Unified Firefox Tests: All tests, with notes lifecycle running last
+      stage('Firefox – E2E Tests') {
+        try {
+          yarnBuilder.yarn('test:firefox:run-notes-last')
+        } catch (Error) {
+          unstable("Firefox E2E tests had failures")
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Firefox – E2E Tests'
+          ])
+        }
       }
 
       stage('Generate & Publish Allure Report') {

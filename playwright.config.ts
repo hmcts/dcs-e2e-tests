@@ -39,26 +39,29 @@ export default defineConfig({
         storageState: "./playwright-e2e/.sessions/trainer01.json",
       },
       dependencies: ["setup"],
+      testIgnore: /.*notes-lifecycle\.spec\.ts/,
     },
     {
-       name: "chromium",
-       use: {
-         ...ProjectsConfig.chromium.use,
-         //Use below line when running docker
+      name: "chromium",
+      use: {
+        ...ProjectsConfig.chromium.use,
+        //Use below line when running docker
         //  channel: undefined,
-         storageState: "./playwright-e2e/.sessions/trainer01.json",
-       },
-       dependencies: ["setup"],
+        storageState: "./playwright-e2e/.sessions/trainer01.json",
+      },
+      dependencies: ["setup"],
+      testIgnore: /.*notes-lifecycle\.spec\.ts/,
     },
     {
-       name: "edge",
-       use: {
-         ...ProjectsConfig.edge.use,
-         //Use below line when running docker
+      name: "edge",
+      use: {
+        ...ProjectsConfig.edge.use,
+        //Use below line when running docker
         //  channel: undefined,
-         storageState: "./playwright-e2e/.sessions/trainer01.json",
-       },
-       dependencies: ["setup"],
+        storageState: "./playwright-e2e/.sessions/trainer01.json",
+      },
+      dependencies: ["setup"],
+      testIgnore: /.*notes-lifecycle\.spec\.ts/,
     },
     {
       name: "firefox",
@@ -69,16 +72,18 @@ export default defineConfig({
         storageState: "./playwright-e2e/.sessions/trainer01.json",
       },
       dependencies: ["setup"],
+      testIgnore: /.*notes-lifecycle\.spec\.ts/,
     },
     {
-       name: "webkit",
-       use: {
-         ...ProjectsConfig.webkit.use,
-         //Use below line when running docker
+      name: "webkit",
+      use: {
+        ...ProjectsConfig.webkit.use,
+        //Use below line when running docker
         //  channel: undefined,
-         storageState: "./playwright-e2e/.sessions/trainer01.json",
-       },
-       dependencies: ["setup"],
+        storageState: "./playwright-e2e/.sessions/trainer01.json",
+      },
+      dependencies: ["setup"],
+      testIgnore: /.*notes-lifecycle\.spec\.ts/,
     },
     {
       name: "notes-chrome",
@@ -100,21 +105,5 @@ export default defineConfig({
       },
       dependencies: ["setup"],
     },
-    // {
-    //   name: "tabletChrome",
-    //   use: {
-    //     ...ProjectsConfig.tabletChrome.use,
-    //     storageState: "./playwright-e2e/.sessions/trainer01.json",
-    //   },
-    //   dependencies: ["setup"],
-    // },
-    // {
-    //   name: "tabletWebKit",
-    //   use: {
-    //     ...ProjectsConfig.tabletWebkit.use,
-    //     storageState: "./playwright-e2e/.sessions/trainer01.json",
-    //   },
-    //   dependencies: ["setup"],
-    // },
   ],
 });
