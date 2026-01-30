@@ -24,7 +24,6 @@ import { Page, Locator } from "playwright-core";
 /**
  * Represents a standard navigation link with a name, expected page title, and URL.
  */
-
 export interface NavLink {
   name: string;
   expectedTitle: string;
@@ -65,11 +64,6 @@ export const publicNavigationLinks: NavLink[] = [
     expectedUrl: `${config.urls.base}`,
   },
   {
-    name: "LogOn",
-    expectedTitle: "Log On",
-    expectedUrl: `${config.urls.base}Account/logon`, //partial lowercase match due to two possible urls /Logon and /logon?IsSecure=yes
-  },
-  {
     name: "Register",
     expectedTitle: "Register",
     expectedUrl: `${config.urls.base}Account/Register`,
@@ -78,6 +72,11 @@ export const publicNavigationLinks: NavLink[] = [
     name: "ContactUs",
     expectedTitle: "ContactUs",
     expectedUrl: `${config.urls.base}Home/ContactUs`,
+  },
+  {
+    name: "LogOn",
+    expectedTitle: "Log On",
+    expectedUrl: `${config.urls.base}Account/logon`, //partial lowercase match due to two possible urls /Logon and /logon?IsSecure=yes
   },
 ];
 

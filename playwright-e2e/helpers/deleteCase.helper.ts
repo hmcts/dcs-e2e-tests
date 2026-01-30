@@ -1,3 +1,9 @@
+import { config } from "../utils";
+import { chromium, Page, BrowserContext } from "playwright";
+import { expect } from "../fixtures";
+import { todaysDate } from "../utils";
+import CaseSearchPage from "../page-objects/pages/case/caseSearch.page";
+import CaseDetailsPage from "../page-objects/pages/case/caseDetails.page";
 /**
  * Case cleanup helpers
  * --------------------
@@ -12,13 +18,6 @@
  * Any apparent redundancy is deliberate and should not be simplified
  * without re-validating stability in CI in the future.
  */
-
-import { config } from "../utils";
-import { chromium, Page, BrowserContext } from "playwright";
-import { expect } from "../fixtures";
-import { todaysDate } from "../utils";
-import CaseSearchPage from "../page-objects/pages/case/caseSearch.page";
-import CaseDetailsPage from "../page-objects/pages/case/caseDetails.page";
 
 /**
  * Executes a cleanup function without allowing failures to break the test run.

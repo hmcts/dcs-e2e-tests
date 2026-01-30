@@ -5,12 +5,14 @@ import { expect } from "../../../../fixtures";
 import { notes } from "../../../../data/notesModel";
 
 /**
- * This NotesComponent Page Object represents th Notes panel on the Review Evidence page,
+ * This NotesComponent Page Object represents the Notes panel on the Review Evidence page,
  * encapsulating all functionalities for creating, managing, and validating user-generated
- * notes within the application's 'Review Evidence' section. It provides a structured interface
- * for interacting with UI elements like the notes panel, drawing tools, note editor dialogs,
- * sharing options, and sticky notes. This component is crucial for tests verifying annotation
- * features, user collaboration, and role-based access control for sensitive note content.
+ * notes within the application's 'Review Evidence' section.
+ *
+ * It provides a structured interface for interacting with UI elements like the notes panel,
+ * drawing tools, note editor dialogs, sharing options, and sticky notes. This component is
+ * crucial for tests verifying annotation features, user collaboration, and role-based access
+ * control for sensitive note content.
  */
 
 class NotesComponent extends Base {
@@ -47,10 +49,11 @@ class NotesComponent extends Base {
 
   /**
    * the openNotes method activates the notes panel and
-   * drawing tool. It navigates UI clicks (Annotations link, Add Page Note button) and uses retry logic to ensure the drawing tool highlights
-   * or activates correctly, allowing reliable subsequent annotation actions.
+   * drawing tool. It navigates UI clicks (Annotations link, Add Page Note button)
+   * and uses retry logic to ensure the drawing tool highlights
+   * or activates correctly (observed flakiness), allowing reliable subsequent
+   * annotation actions.
    */
-
   async openNotes() {
     await expect(this.notesMenuLink).toBeVisible();
     await this.notesMenuLink.click();
@@ -81,7 +84,6 @@ class NotesComponent extends Base {
    * position and dimensions.
    * @returns a bounding box object ({ x, y, width, height })
    */
-
   async getCanvasBoundingBox() {
     const canvas = this.page.locator("canvas.documentPageCanvas").first();
     const exists = await canvas.count();
@@ -93,6 +95,7 @@ class NotesComponent extends Base {
     }
     return box;
   }
+
   /**
    * Simulates a user dragging a rectangle on the document canvas
    * to define the area for a new note.
@@ -101,7 +104,6 @@ class NotesComponent extends Base {
    * @param dragWidth (optional, default: 100): Note rectangle width.
    * @param dragHeight (optional, default: 40): Note rectangle height.
    */
-
   async dragCreateNote(
     canvasOffsetX: number,
     canvasOffsetY: number,
@@ -121,6 +123,7 @@ class NotesComponent extends Base {
     await this.page.mouse.move(endX, endY, { steps: 10 }); // smooth drag
     await this.page.mouse.up();
   }
+
   /**
    * Attempts to click the "Save" button within the note editor until the editor
    * dialog is no longer visible, accounting for known potential UI processing
@@ -265,7 +268,7 @@ class NotesComponent extends Base {
           {
             // Allow 2s delay before retrying
             intervals: [2000],
-            // Allow up to 1o seconds for draw box button to be selected
+            // Allow up to 10 seconds for draw box button to be selected
             timeout: 10000,
           },
         )
@@ -455,6 +458,7 @@ class NotesComponent extends Base {
 
     return documentId;
   }
+
   /**
    * Ensures that a document's high-resolution image has completely loaded in the viewer before
    * proceeding, which is critical for annotation.
@@ -511,6 +515,7 @@ class NotesComponent extends Base {
   // ---------------------------
   // Notes Table Methods
   // ---------------------------
+
   async getNotesCount(): Promise<number> {
     return await this.stickyNotes.count();
   }

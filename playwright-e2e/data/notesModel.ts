@@ -1,5 +1,5 @@
 /**
- * Notes test model
+ * Notes model
  * ----------------
  * This model represents a document note (via Review Evidence).
  *
@@ -9,8 +9,9 @@
  *  - which user roles should be able to view it
  *
  * Each entry in the `notes` array represents a single note for the
- * existing case 'Auto Case1 - DO NOT AMEND'.This case allows us to
- * test note visiblity and access on a large complex case covering
+ * existing case '01AD111111' or 'Auto Case1 - DO NOT AMEND'.
+ * This case allows us to test note visiblity and access on a large
+ * complex case covering
  *  - all supported roles
  *  - all supported share types
  *  - cross-role visibility scenarios

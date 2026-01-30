@@ -294,7 +294,7 @@ class ReviewEvidencePage extends Base {
   // ======================================================================
 
   /**
-   * Standardizes a document's file name for screenshot comparison purposes.
+   * Standardises a document's file name for screenshot comparison purposes.
    * Removes leading numbers/symbols and converts to a lowercase, underscore-separated format.
    * @param {Locator} documentLink - The Playwright Locator for the document link.
    * @returns {Promise<string>} The standardized file name appended with "_page1.png".

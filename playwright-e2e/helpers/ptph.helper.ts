@@ -1,3 +1,7 @@
+import { expect } from "../fixtures";
+import { BrowserContext } from "@playwright/test";
+import { config } from "../utils";
+
 /**
  * PTPH form ingestion helpers
  * ---------------------------
@@ -14,10 +18,6 @@
  * directly against upload/status endpoints due to time limitations of
  * UI actions to achieve the same.
  */
-
-import { expect } from "../fixtures";
-import { BrowserContext } from "@playwright/test";
-import { config } from "../utils";
 
 export async function editPayloadForm(page, caseUrn) {
   await page.goto(config.urls.ptphUpload);

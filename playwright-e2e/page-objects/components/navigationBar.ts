@@ -42,7 +42,6 @@ class NavigationBar {
 
   /**
    * Navigates to a specific link within the main navigation bar.
-   * @param {NavLink} link - The name of the link to navigate to (e.g., "Home", "LogOn").
    */
   async navigateTo(link: NavLink) {
     const locator = this.links[link];

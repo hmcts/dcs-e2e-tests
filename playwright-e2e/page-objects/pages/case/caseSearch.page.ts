@@ -8,6 +8,7 @@ import { expect } from "../../../fixtures";
  * applying filters, and navigating to case-specific actions like creating,
  * updating, or reviewing cases.
  */
+
 class CaseSearchPage extends Base {
   caseSearchHeading: Locator;
   createCaseButton: Locator;
