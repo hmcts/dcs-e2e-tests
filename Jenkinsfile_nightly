@@ -214,6 +214,7 @@ withNightlyPipeline(type, product, component, 600) {
 
       stage('Generate & Publish Allure Report') {
         try {
+          sh 'yarn allure:post-process'
           sh 'yarn allure:generate || true'
         } catch (Error) {
           unstable("Allure report generation failed")
