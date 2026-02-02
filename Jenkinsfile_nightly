@@ -176,8 +176,6 @@ withNightlyPipeline(type, product, component, 600) {
     } else {
       currentBuild.displayName = "All E2E Tests"
 
-      currentBuild.displayName = "All E2E Tests"
-
       // Unified Chrome Tests: All tests, with notes lifecycle running last
       stage('Chrome – E2E Tests') {
         try {

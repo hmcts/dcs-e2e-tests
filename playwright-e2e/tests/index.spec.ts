@@ -71,7 +71,7 @@ test.describe("@nightly @regression Index Page Functionality", () => {
     },
   );
 
-  test(`Retrieve & Validate Sections & Documents from Index Page`, async ({
+  test(`Upload & Validate Sections & Documents from Index Page`, async ({
     caseDetailsPage,
     indexPage,
     sectionDocumentsPage,
@@ -80,7 +80,7 @@ test.describe("@nightly @regression Index Page Functionality", () => {
   }) => {
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
 
-    // Retrieve keys for unrestricted sections and randomly sample one
+    // Retrieve keys for unrestricted sections and randomly samples one
     // This reduces execution time while still providing coverage
     const unrestrictedSectionKeys = await sectionsPage.getSectionKeys(
       sections.unrestricted,
