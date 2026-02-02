@@ -9,14 +9,13 @@ import {
 import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page";
 
 /**
- * Notes Feature – End-to-End Validation
+ * Notes Feature – End-to-End Validation (Lifecycle)
  * ------------------------------------
  *
  * This test suite validates the Notes functionality on case documents,
- * covering both:
+ * specifically covering:
  *
  * 1) Notes lifecycle behaviour (create, edit, delete)
- * 2) Notes visibility and access control across user roles
  *
  * The tests are intentionally data-driven and role-aware, ensuring:
  *  - Notes of all share types (Widely Shared, Tightly Shared, Private)
@@ -47,7 +46,7 @@ const TEST_USERS = process.env.TEST_USERS || "nightly";
 // I want to edit or remove my own notes
 // So that shared information remains accurate and current
 
-test.describe("@regression @nightly @notes Notes Lifecycle", () => {
+test.describe("@regression @nightly @notes-lifecycle Notes Lifecycle", () => {
   // Select users dynamically based on execution scope
   // Nightly runs are intentionally limited for speed
   const usersToTest = TEST_USERS === "nightly" ? [currentUser] : eligibleUsers;
@@ -95,7 +94,7 @@ test.describe("@regression @nightly @notes Notes Lifecycle", () => {
         },
       );
 
-      test(`Create, Delete and Edit Notes on Document for ${user.group}`, async ({
+      test(`Create, Delete and Edit Notes on Document for ${user.group}`, async ({ 
         homePage,
         loginPage,
         caseSearchPage,
@@ -128,13 +127,13 @@ test.describe("@regression @nightly @notes Notes Lifecycle", () => {
         // due to representation-based visibility rules
         if (user.group === "DefenceAdvocateA") {
           await expect
-            .poll(() => reviewEvidencePage.notes.getNotesCount(), {
+            .poll(() => reviewEvidencePage.notes.getNotesCount(), { 
               timeout: 30000,
             })
             .toBe(4);
         } else {
           await expect
-            .poll(() => reviewEvidencePage.notes.getNotesCount(), {
+            .poll(() => reviewEvidencePage.notes.getNotesCount(), { 
               timeout: 30000,
             })
             .toBe(3);
@@ -206,94 +205,6 @@ test.describe("@regression @nightly @notes Notes Lifecycle", () => {
           console.log(`Cleanup completed for ${newCaseName}`);
         }, 180_000);
       });
-    });
-  }
-});
-
-// // ============================================================
-// // Test 2: Notes Visibility & Access Control
-// // ============================================================
-//
-// As a user
-// I should only see Notes that I am permitted to see
-// based on my role and the note's share type
-//
-// This test validates:
-//  - No missing notes (underexposure)
-//  - No unexpected notes (overexposure)
-
-test.describe("@nightly @regression Notes Visibility & Access Control", () => {
-  test.use({ storageState: { cookies: [], origins: [] } });
-  test.beforeEach(async ({ homePage }) => {
-    await homePage.open();
-    await homePage.navigation.navigateTo("LogOn");
-  });
-
-  const usersToTest = TEST_USERS === "nightly" ? [currentUser] : eligibleUsers;
-
-  for (const user of usersToTest) {
-    test(`Verify access to Notes for: ${user.group}`, async ({
-      loginPage,
-      homePage,
-      caseSearchPage,
-    }) => {
-      const currentUserIssues: string[] = [];
-
-      await loginPage.login(user);
-      await homePage.navigation.navigateTo("ViewCaseListLink");
-      await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
-      const [popup] = await Promise.all([
-        caseSearchPage.page.waitForEvent("popup"),
-        caseSearchPage.goToReviewEvidence("01AD111111"),
-      ]);
-
-      const reviewEvidencePage = new ReviewEvidencePage(popup);
-      await reviewEvidencePage.sectionPanelLoad();
-      await expect
-        .poll(
-          async () => {
-            return await reviewEvidencePage.notes.getNotesCount();
-          },
-          { timeout: 20000 },
-        )
-        .toBeGreaterThan(0);
-
-      // Filter expected documents based on User Group
-      const expectedNotes = await reviewEvidencePage.notes.filterNotesByUser(
-        user.group,
-      );
-
-      // Get all available Notes for User
-      const availableNotes = await reviewEvidencePage.notes.getAllNotes();
-
-      // Compare expected Notes (based on role permissions)
-      // against actual Notes rendered in the UI
-      const { missingNotes, unexpectedNotes } =
-        await reviewEvidencePage.notes.compareExpectedVsAvailableNotes(
-          expectedNotes,
-          availableNotes,
-        );
-
-      // Collect any validation issues instead of failing immediately
-      // This allows us to report all Notes inconsistencies in a single run
-      currentUserIssues.push(...missingNotes, ...unexpectedNotes);
-
-      //Aggregate results across users
-      pushTestResult({
-        user: user.group,
-        heading: `Verify Notes Access for ${user.group}`,
-        category: "Notes",
-        issues: currentUserIssues,
-      });
-
-      // Fail the test if any issues were found
-      if (currentUserIssues.length > 0) {
-        throw new Error(
-          `User ${
-            user.group
-          } has missing/unexpected Notes:\n${currentUserIssues.join("\n")}`,
-        );
-      }
     });
   }
 });

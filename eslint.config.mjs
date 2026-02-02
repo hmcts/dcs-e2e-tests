@@ -12,5 +12,8 @@ export default tseslint.config(
   LintingConfig.tseslintRecommended,
   LintingConfig.ignored,
   LintingConfig.tseslintPlugin,
-  LintingConfig.playwright
+  LintingConfig.playwright,
+  {
+    ignores: ["**/transform-v4-to-v3-audit.cjs"]
+  }
 );

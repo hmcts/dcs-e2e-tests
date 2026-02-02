@@ -74,7 +74,7 @@ test.describe("@regression @nightly Search Auto Case 1 (Documents Testing) and n
   });
 });
 
-test.describe("Search Comment Case (Notes Testing) and navigate into case", () => {
+test.describe("@regression @nightly Search Comment Case (Notes Testing) and navigate into case", () => {
   test.beforeEach(async ({ homePage, caseSearchPage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");

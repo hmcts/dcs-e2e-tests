@@ -176,11 +176,12 @@ withNightlyPipeline(type, product, component, 600) {
     } else {
       currentBuild.displayName = "All E2E Tests"
 
-      stage('Chrome – Multi-worker E2E Tests') {
+      // Unified Chrome Tests: All tests, with notes lifecycle running last
+      stage('Chrome – E2E Tests') {
         try {
-          yarnBuilder.yarn('test:chrome')
+          yarnBuilder.yarn('test:chrome:run-notes-last')
         } catch (Error) {
-          unstable("Chrome multi-worker tests had failures")
+          unstable("Chrome E2E tests had failures")
         } finally {
           publishHTML([
             allowMissing: true,
@@ -188,16 +189,17 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: 'Chrome – Multi-worker'
+            reportName: 'Chrome – E2E Tests'
           ])
         }
       }
 
-      stage('Chrome – Single-worker (@notes)') {
+      // Unified Firefox Tests: All tests, with notes lifecycle running last
+      stage('Firefox – E2E Tests') {
         try {
-          yarnBuilder.yarn('test:notes --project=chrome')
+          yarnBuilder.yarn('test:firefox:run-notes-last')
         } catch (Error) {
-          unstable("Chrome single-worker (@notes) tests had failures")
+          unstable("Firefox E2E tests had failures")
         } finally {
           publishHTML([
             allowMissing: true,
@@ -205,47 +207,14 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: 'Chrome – Single-worker (@notes)'
-          ])
-        }
-      }
-
-      stage('Firefox – Multi-worker E2E Tests') {
-        try {
-          yarnBuilder.yarn('test:firefox')
-        } catch (Error) {
-          unstable("Firefox multi-worker tests had failures")
-        } finally {
-          publishHTML([
-            allowMissing: true,
-            alwaysLinkToLastBuild: true,
-            keepAll: true,
-            reportDir: "playwright-report",
-            reportFiles: 'index.html',
-            reportName: 'Firefox – Multi-worker'
-          ])
-        }
-      }
-
-      stage('Firefox – Single-worker (@notes)') {
-        try {
-          yarnBuilder.yarn('test:notes --project=firefox')
-        } catch (Error) {
-          unstable("Firefox single-worker (@notes) tests had failures")
-        } finally {
-          publishHTML([
-            allowMissing: true,
-            alwaysLinkToLastBuild: true,
-            keepAll: true,
-            reportDir: "playwright-report",
-            reportFiles: 'index.html',
-            reportName: 'Firefox – Single-worker (@notes)'
+            reportName: 'Firefox – E2E Tests'
           ])
         }
       }
 
       stage('Generate & Publish Allure Report') {
         try {
+          sh 'yarn allure:post-process'
           sh 'yarn allure:generate || true'
         } catch (Error) {
           unstable("Allure report generation failed")
@@ -266,5 +235,5 @@ withNightlyPipeline(type, product, component, 600) {
       //   archiveArtifacts artifacts: 'playwright-e2e/tests/**/*-snapshots/**/*.png', allowEmptyArchive: true
       // }
     }
-  } 
+  }
 } 
