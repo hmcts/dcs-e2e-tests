@@ -19,7 +19,7 @@ When writing tests, the following factors should be taken into account:
 
 There are times where a test script might have to wait. There are a few options for doing this:
 
-- Implicit waits (e.g. `page.waitForTimeout(5000)`) - Avoid these where possible, there are limited cases where these might be useful/required.
+- Implicit waits (e.g. `page.waitForTimeout(4000)`) - Avoid these where possible, there are limited cases where these might be useful/required.
 - Explicit waits (e.g. `expect().toBeVisible()` and `expect.poll`) - Use a polling approach to ensure the condition you are waiting for is achieved and if not provide a clear error pointing to the failure location. The majority of assertions will auto-retry, see assertion guide above.
 
 Playwright also has a list of actionability checks for various types of actions: [actionability matrix](https://playwright.dev/docs/actionability)
