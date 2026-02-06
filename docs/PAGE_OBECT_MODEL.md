@@ -1,55 +1,101 @@
 # Page Object Model
 
-A page object model (POM) is typical design pattern in test automation with the aim of reducing code duplication and maintenance. Implmentations of POM's can vary and this doc aims to explain how the POM works in this template.
+A Page Object Model (POM) is a design pattern in test automation that aims to reduce code duplication and improve test maintenance. This document explains the POM implementation in this project.
 
 ## Structure
 
-The POM structure is made up as below:
+The POM in this project is organized into two main categories: **Pages** and **Components**.
 
 ```sh
-├── page-objects/            # Page objects
-├──── components/            # Common components shared across pages
-├──── elements/              # Common elements that could be found in a page or in a component
-├──── pages/                 # Unique pages that may contain their own locators
+├── page-objects/
+├──── base.ts                # Base class for all page objects
+├──── components/            # Reusable components shared across pages
+│     ├── caseNavigationBar.ts
+│     └── navigationBar.ts
+└──── pages/                 # Page-specific objects
+      ├── case/
+      └── platform/
 ```
 
-### Elements
+### Base Class (`base.ts`)
 
-Elements can exist on multiple components. These typically boil down to the raw HTML elements such as inputs, raw text and buttons etc. Sometimes it can be useful to have an element class that allows you to store logic related to specific elements separately.
+All page objects in this project extend the `Base` class (`playwright-e2e/page-objects/base.ts`). This class serves as a foundation for all page objects and provides them with:
 
-For example with checkboxes you may want to store locators, custom assertions or handling logic. You can then refer to this class rather than duplicating the code for each test.
+-   A Playwright `page` object.
+-   Instances of shared components like `NavigationBar` and `CaseNavigationBar`.
+
+```typescript
+// playwright-e2e/page-objects/base.ts
+export abstract class Base {
+  public readonly page: Page;
+  navigation: NavigationBar;
+  caseNavigation: CaseNavigationBar;
+
+  constructor(page: Page) {
+    this.page = page;
+    this.navigation = new NavigationBar(page);
+    this.caseNavigation = new CaseNavigationBar(page);
+  }
+}
+```
 
 ### Components
 
-Components can exist on multiple pages, they are mostly made up of elements or could also include other components. Likewise with elements, you may also want to store handling logic or custom assertions for components.
+Components are reusable parts of the UI that can appear on multiple pages. They encapsulate the locators and methods for interacting with a specific piece of the UI. A good example is the `NavigationBar` component (`playwright-e2e/page-objects/components/navigationBar.ts`), which represents the main navigation bar of the application.
 
-A common example of this within HMCTS is the "cookie banner". This component can appear on every page and is made up of text elements and buttons.
+```typescript
+// playwright-e2e/page-objects/components/navigationBar.ts
+class NavigationBar {
+  page: Page;
+  links: Record<NavLink, Locator>;
+
+  constructor(page: Page) {
+    this.page = page;
+    this.links = {
+      Home: page.getByRole("link", { name: "Home" }),
+      // ...
+    };
+  }
+
+  async navigateTo(link: NavLink) {
+    // ...
+  }
+}
+```
 
 ### Pages
 
-Finally, pages are essentially made up of elements are components. You may also choose to store unique locators in these pages as well (if they are not part of a component). These will be at a higher level than elements or components and should mostly be kept lightweight.
+Pages represent entire pages of the application. They extend the `Base` class and can use the shared components, as well as define their own page-specific locators and methods.
 
-## How to combine Elements, Components and Pages
+For example, the `HomePage` object (`playwright-e2e/page-objects/pages/platform/home.page.ts`) represents the application's home page.
 
-Using the above examples, we could model it like so:
+```typescript
+// playwright-e2e/page-objects/pages/platform/home.page.ts
+class HomePage extends Base {
+  accountMessage: Locator;
 
-```mermaid
-graph TD
-    A[Test]
-    B[Manage Cases<br/><b>Page</b>]
-    C[Cookie Banner<br/><b>Component</b>]
-    D[Button<br/><b>Element</b>]
-    E[Text<br/><b>Element</b>]
+  constructor(page) {
+    super(page);
+    this.accountMessage = page.locator("#content");
+  }
 
-    A -- instantiates with page object --> B
-    B -- instantiates with root locator --> C
-    C -- instantiates with root locator --> D
-    C -- instantiates with root locator --> E
+  async open() {
+    await this.page.goto(config.urls.base);
+  }
+}
 ```
 
-Then for example, your test using the page (as a fixture) can inherit any components or elements that are used in that page.
-See example [here](https://github.com/hmcts/tcoe-playwright-example/blob/master/playwright-e2e/tests/case-list-professional.spec.ts#L28)
+## How to use the Page Object Model
 
-## Base Page
+By using fixtures, the page objects are instantiated and made available to the tests. This allows you to write clean and readable tests that focus on the test logic rather than on the implementation details of the page structure.
 
-In addition to the above, there is a ["base page"](https://github.com/hmcts/tcoe-playwright-example/blob/master/playwright-e2e/page-objects/base.ts). This acts as a parent to the other pages where they also inherit the "page" object e.g. [here](https://github.com/hmcts/tcoe-playwright-example/blob/master/playwright-e2e/page-objects/components/cui/cui-case-list.component.ts#L17) a benefit of this is that you can avoid declaring locators inside the constructor and instead make the locators a class property instead.
+```typescript
+// Example test
+import { test } from "../fixtures";
+
+test("should navigate to the home page", async ({ homePage }) => {
+  await homePage.open();
+  // ...
+});
+```
+This structure makes the test framework more robust, maintainable, and easier to use.

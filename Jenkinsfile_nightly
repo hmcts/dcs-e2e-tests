@@ -91,10 +91,8 @@ withNightlyPipeline(type, product, component, 600) {
   
   if (env.TEST_USERS == 'regression') {
     env.TEST_TAG = '@regression'
-    env.TEST_TAG_REGEX = '(?=.*@regression)'
   } else {
     env.TEST_TAG = '@nightly'
-    env.TEST_TAG_REGEX = '(?=.*@nightly)'
   }
 
   echo "Running with TEST_USERS=${env.TEST_USERS}"
@@ -102,7 +100,7 @@ withNightlyPipeline(type, product, component, 600) {
   
   enableSlackNotifications(channel)
 
-  // ---- USER ROTATION ----
+  // ---- USER ROTATION (Stateless & Deterministic) ----
   def eligibleUsers = [
       'HMCTSAdmin',
       'CPSAdmin',
@@ -112,23 +110,14 @@ withNightlyPipeline(type, product, component, 600) {
       'ProbationStaff'
   ]
   
-  def nextUser
-  node {
-      def lastUserIndexFile = "${env.WORKSPACE}/last_user_index.txt"
-      def lastIndex = -1
-
-      if (fileExists(lastUserIndexFile)) {
-          lastIndex = readFile(lastUserIndexFile).trim().toInteger()
-      }
-
-      def nextIndex = (lastIndex + 1) % eligibleUsers.size()
-      nextUser = eligibleUsers[nextIndex]
-
-      writeFile file: lastUserIndexFile, text: nextIndex.toString()
-  }
+  // Use the current day of the year to pick a user
+  def dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
+  def userIndex = dayOfYear % eligibleUsers.size()
+  
+  def nextUser = eligibleUsers[userIndex]
+  
   env.TEST_USER = nextUser
-  echo "Nightly Playwright tests will run as user: ${env.TEST_USER}"
-
+  echo "Nightly Playwright tests will run as user: ${env.TEST_USER} (Determined by day of year)"
   // ------------------------
 
   stage('Clean Sessions') {
@@ -179,7 +168,7 @@ withNightlyPipeline(type, product, component, 600) {
       // Unified Chrome Tests: All tests, with notes lifecycle running last
       stage('Chrome – E2E Tests') {
         try {
-          yarnBuilder.yarn('test:chrome:run-notes-last')
+          yarnBuilder.yarn('test:chrome')
         } catch (Error) {
           unstable("Chrome E2E tests had failures")
         } finally {
@@ -197,7 +186,7 @@ withNightlyPipeline(type, product, component, 600) {
       // Unified Firefox Tests: All tests, with notes lifecycle running last
       stage('Firefox – E2E Tests') {
         try {
-          yarnBuilder.yarn('test:firefox:run-notes-last')
+          yarnBuilder.yarn('test:firefox')
         } catch (Error) {
           unstable("Firefox E2E tests had failures")
         } finally {

@@ -1,19 +1,26 @@
 # Configuration
 
-Out of the box, playwright provides many options for how tests are run, browser config, reporting, debugging etc.
+This project's configuration is split between two main files: `playwright.config.ts` for the Playwright-specific setup, and `playwright-e2e/utils/config.utils.ts` for project-specific settings like users and URLs.
 
-## Playwright Config
+## Playwright Config (`playwright.config.ts`)
 
-The [`playwright.config.ts`](https://github.com/hmcts/tcoe-playwright-example/blob/master/playwright.config.ts) file contains all of the playwright specific config. The config included in this template has been modified to include increased timeouts, CI alterations and more browsers/device emulators. These default values are provided as a base and will probably need to be tweaked for your liking.
+The `playwright.config.ts` file in the root of the repository contains all the Playwright-specific configuration. Key aspects of this configuration include:
 
-The [playwright docs](https://playwright.dev/docs/test-configuration) cover all of the configuration options.
+- **Base Configuration**: It extends a common configuration from `@hmcts/playwright-common`, which provides a shared base for HMCTS projects.
+- **Timeout**: The global timeout for tests is set to 8 minutes (`480_000` ms).
+- **Reporting**: It uses the built-in HTML reporter for local runs and adds the Allure reporter for CI builds.
+- **Projects**: It defines projects for different browsers, with `chrome` and `firefox` being the primary ones.
+- **Authentication**: The project uses a global setup (`global.setup.ts`) and stored session files (`.sessions/*.json`) to handle authentication. This means that tests can start already logged in, which saves time and isolates test logic from the login process.
 
-## Other Config
+For more details on the available Playwright configuration options, see the [official Playwright documentation](https://playwright.dev/docs/test-configuration).
 
-There are also instances where you will need extra configuration not explicitly covered in Playwright. These are things like user credentials or URL's. To cover these, we have used a utils class [here](https://github.com/hmcts/tcoe-playwright-example/blob/master/playwright-e2e/utils/config.utils.ts). This can also follow the typical fixture pattern to allow your config to be accessed a fixture in your tests.
+## Project-Specific Config (`playwright-e2e/utils/config.utils.ts`)
 
-It is generally good practice to keep any sensitive information as an environment variable. These can be easily swapped if needed (e.g. switching from AAT to Demo or a preview environment). The "dotenv" package is used for this, this allows you to specify a `.env` file to store your environment variables (rather than part of your bash profile).
+This file contains configuration specific to this application and its test environments.
 
-As an example, the file `.env.example` is provided to show what environment variables are required.
+- **Environments**: The configuration supports multiple environments (`preprod` and `uat`), with `preprod` as the default. The environment can be changed by setting the `TEST_ENV` environment variable.
+- **Environment Variables**: The project uses the `dotenv` package to load environment variables from a `.env` file. An example `.env.example` file is provided in the root of the repository.
+- **Users**: It defines a comprehensive list of test users with their roles, credentials, and paths to their session files. This allows tests to easily run as different user personas.
+- **URLs**: It manages the base URLs and other endpoints for the different environments.
 
-The utils class has a [helper function](https://github.com/hmcts/tcoe-playwright-example/blob/master/playwright-e2e/utils/config.utils.ts#L47) to ensure the given environment variable is set when loaded (fail fast rather than wait until the specific variable is accessed).
+The exported `config` object from this file is used throughout the test framework to access user credentials, URLs, and other configuration values. This provides a single source of truth for all project-specific settings.
