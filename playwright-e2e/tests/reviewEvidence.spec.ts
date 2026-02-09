@@ -85,7 +85,7 @@ test.describe("@nightly @regression Sections and Documents availability", () => 
       // If there are any section or document issues, push to currentUserIssues
       currentUserIssues.push(...missingDocuments, ...unexpectedDocuments);
 
-      //Aggragate results across users
+      //Aggregate results across users
       pushTestResult({
         user: user.group,
         heading: `Verify Sections & Documents for ${user.group}`,
@@ -201,7 +201,7 @@ test.describe("@regression Document rendering / photosnaps", () => {
           );
         }
       }
-      //Aggragate results across users
+      //Aggregate results across users
       pushTestResult({
         user: user.group,
         heading: `Verify Document Rendering for ${user.group}`,

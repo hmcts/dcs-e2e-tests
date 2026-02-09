@@ -14,8 +14,8 @@
  *  - Index
  *
  * Each entry in the `documents` array represents a single expected document (or the
- * explicit absence of a document) across users for the existing case '01AD111111' or 'Auto Case1 - DO NOT AMEND'.
- * This case allows us to test document visiblity on a large complex case of varied permissions.
+ * explicit absence of a document) across users for the existing case '01AD111111'/'Auto Case1 - DO NOT AMEND'.
+ * This case allows us to test document visibility on a large complex case of varied permissions.
  *
  * Expected absence of document visibility in a restricted section is modelled here using
  * "No available document" so we can assert that restricted users do NOT see documents

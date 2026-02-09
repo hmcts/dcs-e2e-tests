@@ -9,8 +9,8 @@
  *  - which user roles should be able to view it
  *
  * Each entry in the `notes` array represents a single note for the
- * existing case '01AD111111' or 'Auto Case1 - DO NOT AMEND'.
- * This case allows us to test note visiblity and access on a large
+ * existing case '01AD111111'/'Auto Case1 - DO NOT AMEND'.
+ * This case allows us to test note visibility and access on a large
  * complex case covering
  *  - all supported roles
  *  - all supported share types

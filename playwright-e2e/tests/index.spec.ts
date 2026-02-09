@@ -125,7 +125,7 @@ test.describe("@nightly @regression Index Page Functionality", () => {
       if (uploadIssues) {
         unrestrictedUploadResults.push(...uploadIssues);
       }
-      // Aggragate Results
+      // Aggregate Results
       pushTestResult({
         user: config.users.hmctsAdmin.group,
         heading: `Index Validation: Upload Unrestricted Document`,
@@ -133,7 +133,7 @@ test.describe("@nightly @regression Index Page Functionality", () => {
         issues: unrestrictedUploadResults,
       });
 
-      // Fail the test if any issues were found after all valildation has completed
+      // Fail the test if any issues were found after all validation has completed
       if (unrestrictedUploadResults.length > 0) {
         throw new Error(
           `User ${
