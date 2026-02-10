@@ -19,9 +19,6 @@ class CaseSearchPage extends Base {
   todayButton: Locator;
   fromDateCheckbox: Locator;
   toDateCheckbox: Locator;
-  updateCaseButton: Locator;
-  reviewEvidenceButton: Locator;
-  updateFrontPageButton: Locator;
   noCasesText: Locator;
 
   constructor(page) {
@@ -33,13 +30,6 @@ class CaseSearchPage extends Base {
     this.applyFilter = page.getByRole("link", { name: "Apply Filter" });
     this.clearFilter = page.getByRole("link", { name: "Clear Filter" });
     this.todayButton = page.getByRole("link", { name: "Today" });
-    this.updateCaseButton = page.getByRole("link", { name: "Update Case" });
-    this.reviewEvidenceButton = page.getByRole("link", {
-      name: "Review Evidence",
-    });
-    this.updateFrontPageButton = page.getByRole("link", {
-      name: "Update Front Page",
-    });
     this.fromDateCheckbox = page.locator("#fromDateCheck");
     this.toDateCheckbox = page.locator("#toDateCheck");
     this.noCasesText = page.locator("#caseListDiv > h4");
@@ -51,18 +41,18 @@ class CaseSearchPage extends Base {
    * @returns {Locator} A Playwright Locator for the matching case row.
    */
   getCaseRowByTextInput(textFieldInput: string, hearingDate?: string) {
-    let selector = `tr:has(td.tableText:has-text("${textFieldInput}"))`;
+    let row = `tr:has(td.tableText:has-text("${textFieldInput}"))`;
 
     if (hearingDate) {
-      selector += `:has(td.tableText:has-text("${hearingDate}"))`;
+      row += `:has(td.tableText:has-text("${hearingDate}"))`;
     }
 
-    return this.page.locator(selector);
+    return this.page.locator(row);
   }
 
   /**
    * Searches for a case using the provided text input, location, and optional hearing date.
-   * Applies filters and includes retry logic to handle potential UI delays.
+   * Applies filters and includes retry logic to handle potential UI delays and hearing date flakiness.
    */
   async searchCaseFile(
     textFieldInput: string,
@@ -118,14 +108,25 @@ class CaseSearchPage extends Base {
   }
 
   /**
+   * Helper function for case search row navigation.
+   */
+  private async rowNavigation(
+    navigationAction: string,
+    textFieldInput: string,
+    hearingDate?: string,
+  ) {
+    const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
+    const button = caseRow.getByRole("link", { name: navigationAction });
+    await expect(button).toBeVisible({ timeout: 5000 });
+    await button.click();
+  }
+
+  /**
    * Navigates to the "Update Case" page for a specific case.
    * @returns {Promise<boolean>} Resolves to true if navigation is successful.
    */
   async goToUpdateCase(textFieldInput: string, hearingDate?: string) {
-    const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
-    const updateBtn = caseRow.getByRole("link", { name: "Update Case" });
-    await expect(updateBtn).toBeVisible({ timeout: 5000 });
-    await updateBtn.click();
+    await this.rowNavigation("Update Case", textFieldInput, hearingDate);
     return true;
   }
 
@@ -133,24 +134,14 @@ class CaseSearchPage extends Base {
    * Navigates to the "Review Evidence" page for a specific case.
    */
   async goToReviewEvidence(textFieldInput: string, hearingDate?: string) {
-    const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
-    const reviewEvidenceBtn = caseRow.getByRole("link", {
-      name: "Review Evidence",
-    });
-    await expect(reviewEvidenceBtn).toBeVisible({ timeout: 5000 });
-    return reviewEvidenceBtn.click();
+    await this.rowNavigation("Review Evidence", textFieldInput, hearingDate);
   }
 
   /**
    * Navigates to the "Update Front Page" for a specific case.
    */
   async goToUpdateFrontPage(textFieldInput: string, hearingDate?: string) {
-    const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
-    const updateFrntPageBtn = caseRow.getByRole("link", {
-      name: "Update Front Page",
-    });
-    await expect(updateFrntPageBtn).toBeVisible({ timeout: 5000 });
-    await updateFrntPageBtn.click();
+    await this.rowNavigation("Update Front Page", textFieldInput, hearingDate);
   }
 
   /**
