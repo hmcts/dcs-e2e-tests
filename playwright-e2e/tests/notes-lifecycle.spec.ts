@@ -7,6 +7,7 @@ import {
   runCleanupSafely,
 } from "../helpers/deleteCase.helper";
 import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page";
+import { openReviewPopupAwaitPagination } from "../helpers/reviewEvidencePagination.helper";
 
 /**
  * Notes Feature – End-to-End Validation (Lifecycle)
@@ -94,7 +95,7 @@ test.describe("@regression @nightly @notes-lifecycle Notes Lifecycle", () => {
         },
       );
 
-      test(`Create, Delete and Edit Notes on Document for ${user.group}`, async ({ 
+      test(`Create, Delete and Edit Notes on Document for ${user.group}`, async ({
         homePage,
         loginPage,
         caseSearchPage,
@@ -110,7 +111,7 @@ test.describe("@regression @nightly @notes-lifecycle Notes Lifecycle", () => {
           newCaseName,
         );
 
-        const popup = await caseDetailsPage.openReviewPopupAwaitPagination();
+        const popup = await openReviewPopupAwaitPagination(caseDetailsPage);
         const reviewEvidencePage = new ReviewEvidencePage(popup);
 
         const sectionKey = sampleKey[0][0];
@@ -127,13 +128,13 @@ test.describe("@regression @nightly @notes-lifecycle Notes Lifecycle", () => {
         // due to representation-based visibility rules
         if (user.group === "DefenceAdvocateA") {
           await expect
-            .poll(() => reviewEvidencePage.notes.getNotesCount(), { 
+            .poll(() => reviewEvidencePage.notes.getNotesCount(), {
               timeout: 30000,
             })
             .toBe(4);
         } else {
           await expect
-            .poll(() => reviewEvidencePage.notes.getNotesCount(), { 
+            .poll(() => reviewEvidencePage.notes.getNotesCount(), {
               timeout: 30000,
             })
             .toBe(3);
