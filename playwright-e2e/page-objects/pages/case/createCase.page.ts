@@ -16,6 +16,8 @@ class CreateCasePage extends Base {
   hearingDateYear: Locator;
   frontPgDesc: Locator;
   createBtn: Locator;
+  frontPageTextFrame: Locator;
+  frontPageTextArea: Locator;
 
   constructor(page) {
     super(page);
@@ -28,6 +30,14 @@ class CreateCasePage extends Base {
     this.hearingDateYear = page.locator("#HearingDateYear");
     this.frontPgDesc = page.locator("#Description_ifr");
     this.createBtn = page.getByRole("button", { name: "Create" });
+    this.frontPageTextFrame = page
+      .locator('iframe[class="tox-edit-area__iframe"]')
+      .contentFrame()
+      .locator("html");
+    this.frontPageTextArea = page
+      .locator('iframe[class="tox-edit-area__iframe"]')
+      .contentFrame()
+      .locator("#tinymce");
   }
 
   /**
@@ -70,20 +80,26 @@ class CreateCasePage extends Base {
     caseName: string,
     caseUrn: string,
     prosecutedBy?: string,
-  ): Promise<{ newCaseName: string; newCaseUrn: string }> {
+  ): Promise<{
+    newCaseName: string;
+    newCaseUrn: string;
+    prosecutedByLabel: string;
+  }> {
     const { newCaseName, newCaseUrn } = await this.generateCaseNameAndUrn(
       caseName,
       caseUrn,
     );
     await this.caseName.fill(newCaseName.toString());
     await this.caseUrn.fill(newCaseUrn.toString());
-    const label = await this.selectRandomOptionFromDropdown(
+    const selectedProsecutedBy = await this.selectRandomOptionFromDropdown(
       this.dropdownCaseProsecutedBy,
     );
     if (prosecutedBy) {
       await this.dropdownCaseProsecutedBy.selectOption({ label: prosecutedBy });
     } else {
-      await this.dropdownCaseProsecutedBy.selectOption({ label });
+      await this.dropdownCaseProsecutedBy.selectOption({
+        label: selectedProsecutedBy,
+      });
     }
     await this.dropdownCourtHouse.selectOption({ label: "Southwark" });
     const today = new Date();
@@ -93,8 +109,10 @@ class CreateCasePage extends Base {
     await this.hearingDateDay.selectOption({ label: date.toString() });
     await this.hearingDateMonth.selectOption({ label: monthName.toString() });
     await this.hearingDateYear.selectOption({ label: year.toString() });
+    await this.frontPageTextFrame.click();
+    await this.frontPageTextArea.fill("Front Page Test");
     await this.createBtn.click();
-    return { newCaseName, newCaseUrn };
+    return { newCaseName, newCaseUrn, prosecutedByLabel: selectedProsecutedBy };
   }
 }
 

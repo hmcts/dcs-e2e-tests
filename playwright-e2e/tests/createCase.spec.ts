@@ -67,31 +67,31 @@ test.describe("@regression @nightly Create & Update New Case", () => {
         caseDetails.newCaseUrn,
       );
     }
-
-    await expect(caseDetailsPage.nameDefOne).toBeVisible();
-    await expect(caseDetailsPage.nameDefTwo).toBeVisible();
+    await caseDetailsPage.validateDefendants();
 
     // Update case-level details
     await caseDetailsPage.goToChangeCaseDetails();
     await changeCaseDetailsPage.changeCaseDetails();
-    await expect(caseDetailsPage.additionalNotes).toBeVisible();
+    await caseDetailsPage.validateCaseUpdate();
 
-    // // Assign defence users with different levels of defendant access
+    // Assign defence users with different levels of defendant access
     await caseDetailsPage.caseNavigation.navigateTo("People");
     const defenceUserDetails = [
       {
         username: config.users.defenceAdvocateA.username,
         defendants: ["Defendant One"],
+        role: "Defence",
       },
       {
         username: config.users.defenceAdvocateB.username,
         defendants: ["Defendant Two"],
+        role: "Defence",
       },
       {
         username: config.users.defenceAdvocateC.username,
         defendants: ["Defendant One", "Defendant Two"],
+        role: "Defence",
       },
-      { username: config.users.admin.username },
     ];
     for (const defenceDetail of defenceUserDetails) {
       await peoplePage.addUser(
