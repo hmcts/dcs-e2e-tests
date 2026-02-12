@@ -52,7 +52,7 @@ export interface Config {
 function sessionPath(username: string): string {
   return path.join(
     path.dirname(fileURLToPath(import.meta.url)),
-    `../.sessions/${username}.json`
+    `../.sessions/${username}.json`,
   );
 }
 
@@ -65,13 +65,13 @@ export const config: Config = {
     base: ENV === "uat" ? urls.uat : urls.preprod,
     ptphUpload:
       ENV === "uat"
-        ? process.env.UAT_UPLOAD_PTPH_FORM_URL ?? ""
-        : process.env.PREPROD_UPLOAD_PTPH_FORM_URL ?? "",
+        ? (process.env.UAT_UPLOAD_PTPH_FORM_URL ?? "")
+        : (process.env.PREPROD_UPLOAD_PTPH_FORM_URL ?? ""),
 
     ptphStatus:
       ENV === "uat"
-        ? process.env.UAT_CONFIRM_PTPH_UPLOAD_STATUS_URL ?? ""
-        : process.env.PREPROD_CONFIRM_PTPH_UPLOAD_STATUS_URL ?? "",
+        ? (process.env.UAT_CONFIRM_PTPH_UPLOAD_STATUS_URL ?? "")
+        : (process.env.PREPROD_CONFIRM_PTPH_UPLOAD_STATUS_URL ?? ""),
   },
   users: {
     hmctsAdmin: {
@@ -150,13 +150,8 @@ export const invalidUsers: {
     username: "wrongUser",
     password: process.env.HMCTS_ADMIN_PASSWORD as string,
   },
-  //   {
-  //     scenario: "wrong password",
-  //     username: "trainer07",
-  //     password: "wrongPassword",
-  //   },
   {
-    scenario: "wrong username and password",
+    scenario: "non-existent user and password",
     username: "wrongUser",
     password: "wrongPassword",
   },

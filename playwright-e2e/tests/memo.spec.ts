@@ -1,5 +1,9 @@
 import { test, expect } from "../fixtures";
 import { config } from "../utils";
+import {
+  runCleanupSafely,
+  deleteCaseByName,
+} from "../helpers/deleteCase.helper";
 
 /**
  * Memo Validation
@@ -15,39 +19,55 @@ import { config } from "../utils";
  */
 
 test.describe("@nightly @regression Memo Functionality", () => {
-  test.beforeEach(async ({ homePage }) => {
-    await homePage.open();
-    await homePage.navigation.navigateTo("ViewCaseListLink");
-  });
+  let newCaseName: string;
+
+  test.beforeEach(
+    async ({ homePage, caseSearchPage, createCasePage, caseDetailsPage }) => {
+      await homePage.open();
+      await homePage.navigation.navigateTo("ViewCaseListLink");
+      await caseSearchPage.goToCreateCase();
+      const caseDetails = await createCasePage.createNewCase(
+        "TestCase",
+        "TestURN",
+      );
+      newCaseName = caseDetails.newCaseName;
+      await expect(caseDetailsPage.caseNameHeading).toBeVisible();
+    },
+  );
 
   test("Add, Change and Remove Memos", async ({
-    createCasePage,
     caseDetailsPage,
-    caseSearchPage,
     memoPage,
   }) => {
-    await caseSearchPage.goToCreateCase();
-    await createCasePage.createNewCase("TestCase", "TestURN");
-    await expect(caseDetailsPage.caseNameHeading).toBeVisible();
     await caseDetailsPage.caseNavigation.navigateTo("Memos");
     await expect(memoPage.memoHeading).toContainText("Add a Memorandum");
     const user = config.users.hmctsAdmin;
-    await memoPage.addMemo(user.group);
-    await expect(memoPage.memoTableRow1).toHaveText(
+    const memos = [
       `${user.group} memo test textbox directly available`,
-      { timeout: 30000 },
-    );
-    await memoPage.addMemo(user.group);
-    await expect(memoPage.memoTableRow2).toHaveText(
       `${user.group} memo test via Add a Memorandum button`,
-      { timeout: 30000 },
-    );
+    ];
+    for (const memo of memos) {
+      await memoPage.addMemo(user.group);
+      await expect(memoPage.getMemoRowByText(memo)).toBeVisible({
+        timeout: 30000,
+      });
+    }
     await memoPage.changeMemo();
-    await expect(memoPage.memoTableRow1).toContainText("Change memo test");
+    await expect(memoPage.getMemoRowByText(`Change memo test`)).toBeVisible({
+      timeout: 30000,
+    });
     await memoPage.removeMemo();
-    const remainingMemo = memoPage.page.locator(
-      `xpath=//table[@class='formTable-zebra']//td[contains(text(), '${user.group} memo test via Add a Memorandum button')]`,
-    );
-    await expect(remainingMemo).toBeVisible({ timeout: 30000 });
+    await memoPage.expectMemoCount(1);
+  });
+
+  //Cleanup: Remove dynamically created case
+  test.afterEach(async () => {
+    if (!newCaseName) return;
+
+    await runCleanupSafely(async () => {
+      console.log(`Attempting to delete test case: ${newCaseName}`);
+      await deleteCaseByName(newCaseName, 180_000);
+      console.log(`Cleanup completed for ${newCaseName}`);
+    }, 180_000);
   });
 });
