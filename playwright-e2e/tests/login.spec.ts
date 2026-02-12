@@ -18,7 +18,8 @@ import { UserCredentials, config, invalidUsers } from "../utils";
  * Key principles:
  * - No shared session state between tests
  * - Clear separation between positive and negative login paths
- * - Assertions focus on post-login navigation visibility rather than URLs
+ * - Assertions focus on post-login navigation visibility rather than URL
+ *   as the Homepage URL remains the same
  */
 
 test.describe("@nightly @regression Successful login across User Groups", () => {
@@ -32,8 +33,6 @@ test.describe("@nightly @regression Successful login across User Groups", () => 
 
   /**
    * Iterate over all configured user roles to validate successful login.
-   * This ensures any newly added user group is automatically covered
-   * without requiring new test cases.
    */
   for (const [roleKey, user] of Object.entries(config.users) as [
     string,
@@ -50,7 +49,6 @@ test.describe("@nightly @regression Successful login across User Groups", () => 
 });
 
 test.describe("@nightly @regression Invalid login attempts", () => {
-  // Ensure each test starts unauthenticated by clearing all session state
   test.use({ storageState: { cookies: [], origins: [] } });
 
   test.beforeEach(async ({ homePage }) => {
@@ -68,7 +66,6 @@ test.describe("@nightly @regression Invalid login attempts", () => {
 });
 
 test.describe("@nightly @regression Missing login fields", () => {
-  // Ensure each test starts unauthenticated by clearing all session state
   test.use({ storageState: { cookies: [], origins: [] } });
 
   test.beforeEach(async ({ homePage }) => {
