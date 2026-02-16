@@ -87,7 +87,7 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
       }
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
-    // Aggragate Results
+    // Aggregate Results
     pushTestResult({
       user: config.users.hmctsAdmin.group,
       heading: `Section Validation: Upload Unrestricted Document`,
@@ -214,7 +214,7 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
       sectionsPage,
       sectionDocumentsPage,
     );
-    // Aggragate Results
+    // Aggregate Results
     pushTestResult({
       user: "Defence Users",
       heading: `Section Validation: Upload and Access Restricted Document`,

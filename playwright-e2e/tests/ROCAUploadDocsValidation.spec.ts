@@ -112,7 +112,7 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
         availableROCA,
       );
 
-    // Aggragate Results
+    // Aggregate Results
     const uploadIssues = [...missingDocuments, ...unexpectedDocuments];
     pushTestResult({
       user: config.users.hmctsAdmin.group,

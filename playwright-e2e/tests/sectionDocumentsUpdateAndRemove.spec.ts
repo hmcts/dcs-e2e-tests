@@ -102,7 +102,7 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
       }
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
-    // Push Aggragate Results
+    // Push Aggregate Results
     pushTestResult({
       user: config.users.hmctsAdmin.group,
       heading: `Section Validation: Delete Unrestricted Document`,
@@ -153,7 +153,7 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
       }
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
-    // Aggragate Results
+    // Aggregate Results
     pushTestResult({
       user: config.users.hmctsAdmin.group,
       heading: `Section Validation: Move Unrestricted Document`,
@@ -195,7 +195,7 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
       }
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
-    // Aggragate Results
+    // Aggregate Results
     pushTestResult({
       user: config.users.hmctsAdmin.group,
       heading: `Section Validation: Edit Unrestricted Document`,
@@ -313,7 +313,7 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
       }
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
-    // Aggragate Results
+    // Aggregate Results
     pushTestResult({
       user: config.users.defenceAdvocateA.group,
       heading: `Section Validation: Delete Restricted Document`,
@@ -378,7 +378,7 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
       }
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
-    // Aggragate Results
+    // Aggregate Results
     pushTestResult({
       user: config.users.defenceAdvocateA.group,
       heading: `Section Validation: Move Restricted Document`,
@@ -435,7 +435,7 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
       }
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
-    // Aggragate Results
+    // Aggregate Results
     pushTestResult({
       user: config.users.defenceAdvocateC.group,
       heading: `Section Validation: Edit Restricted Document`,

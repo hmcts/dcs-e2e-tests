@@ -170,7 +170,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unre
       expectedRestrictedROCA,
       rocaPage.restrictedTable,
     );
-    // Aggragate Results
+    // Aggregate Results
     const moveIssues = [...unrestrictedResult, ...restrictedResult];
     pushTestResult({
       user: config.users.hmctsAdmin.group,
@@ -217,7 +217,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unre
       rocaPage.unrestrictedTable,
     );
 
-    // Aggragate Results
+    // Aggregate Results
     pushTestResult({
       user: config.users.hmctsAdmin.group,
       heading: `ROCA Validation: Edit Unrestricted Document`,
@@ -335,7 +335,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
       rocaPage.restrictedTable,
     );
 
-    // Aggragate Results
+    // Aggregate Results
     pushTestResult({
       user: config.users.defenceAdvocateA.group,
       heading: `ROCA Validation: Delete Restricted Document`,
@@ -411,7 +411,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
       rocaPage.unrestrictedTable,
     );
 
-    // Aggragate Results
+    // Aggregate Results
     const moveIssues = [...unrestrictedResult, ...restrictedResult];
     pushTestResult({
       user: config.users.defenceAdvocateA.group,
@@ -474,7 +474,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
       rocaPage.restrictedTable,
     );
 
-    // Aggragate Results
+    // Aggregate Results
     pushTestResult({
       user: config.users.defenceAdvocateC.group,
       heading: `ROCA Validation: Edit Restricted Document`,

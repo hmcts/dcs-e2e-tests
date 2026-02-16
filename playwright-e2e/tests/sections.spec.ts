@@ -101,7 +101,7 @@ test.describe("@nightly @regression Sections Page", () => {
       // Accumulate all visibility issues for this user
       currentUserIssues.push(...unexpectedDocuments);
 
-      // Aggragate results across users
+      // Aggregate results across users
       pushTestResult({
         user: user.group,
         heading: `Verify Sections & Documents for ${user.group}`,

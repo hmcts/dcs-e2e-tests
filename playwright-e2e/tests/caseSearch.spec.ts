@@ -25,100 +25,62 @@ import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/review
  *   remains functional.
  */
 
-test.describe("@regression @nightly @smoke Search Auto Case 1 (Documents Testing) and navigate into case", () => {
-  test.beforeEach(async ({ homePage, caseSearchPage }) => {
-    await homePage.open();
-    await homePage.navigation.navigateTo("ViewCaseListLink");
-    await caseSearchPage.searchCaseFile("01AD111111", "Southwark");
-  });
+const cases = [
+  { URN: "01AD111111", name: "Auto Case1 - DO NOT AMEND" },
+  { URN: "01SJ1111", name: "Comment Case - DO NOT AMEND" },
+];
 
-  test("Update Case - Auto Case1", async ({
-    caseSearchPage,
-    caseDetailsPage,
-  }) => {
-    await caseSearchPage.goToUpdateCase("01AD111111");
-    await expect(caseDetailsPage.caseNameHeading).toContainText(
-      "Auto Case1 - DO NOT AMEND",
-    );
-    await expect(caseDetailsPage.caseDetailsHeading).toContainText(
-      "Case Details",
-    );
-  });
+test.describe("@regression @nightly @smoke Case search and navigation for existing cases", () => {
+  for (const caseDetails of cases) {
+    test.beforeEach(async ({ homePage }) => {
+      await homePage.open();
+      await homePage.navigation.navigateTo("ViewCaseListLink");
+    });
 
-  test("Update Front Page - Auto Case1", async ({
-    caseSearchPage,
-    updateFrontPage,
-  }) => {
-    await caseSearchPage.goToUpdateFrontPage("01AD111111");
-    await expect(updateFrontPage.caseNameHeading).toContainText(
-      "Auto Case1 - DO NOT AMEND",
-    );
-    await expect(updateFrontPage.changeDetailsHeading).toContainText(
-      "Change Case Details",
-    );
-  });
+    test(`Search and Navigate to Update Case Details: ${caseDetails.name}`, async ({
+      caseSearchPage,
+      caseDetailsPage,
+    }) => {
+      await caseSearchPage.searchCaseFile(caseDetails.URN, "Southwark");
+      await caseSearchPage.goToUpdateCase(caseDetails.URN);
+      await expect(caseDetailsPage.caseNameHeading).toContainText(
+        caseDetails.name,
+      );
+      await expect(caseDetailsPage.caseDetailsHeading).toContainText(
+        "Case Details",
+      );
+    });
 
-  test("Review Evidence - Auto Case1", async ({ caseSearchPage }) => {
-    // Review Evidence opens in a new window
-    const [popup] = await Promise.all([
-      caseSearchPage.page.waitForEvent("popup"),
-      caseSearchPage.goToReviewEvidence("01AD111111"),
-    ]);
+    test(`Search and Navigate to Update Front Page: ${caseDetails.name}`, async ({
+      caseSearchPage,
+      updateFrontPage,
+    }) => {
+      await caseSearchPage.searchCaseFile(caseDetails.URN, "Southwark");
+      await caseSearchPage.goToUpdateFrontPage(caseDetails.URN);
+      await expect(updateFrontPage.caseNameHeading).toContainText(
+        caseDetails.name,
+      );
+      await expect(updateFrontPage.changeDetailsHeading).toContainText(
+        "Change Case Details",
+      );
+    });
 
-    const reviewEvidencePage = new ReviewEvidencePage(popup);
-    await expect(reviewEvidencePage.caseName).toContainText(
-      "Auto Case1 - DO NOT AMEND",
-      { timeout: 30000 },
-    );
-    await popup.close();
-  });
-});
+    test(`Search and Navigate to Review Evidence: ${caseDetails.name}`, async ({
+      caseSearchPage,
+    }) => {
+      await caseSearchPage.searchCaseFile(caseDetails.URN, "Southwark");
+      // Review Evidence opens in a new window
+      const [popup] = await Promise.all([
+        caseSearchPage.page.waitForEvent("popup"),
+        caseSearchPage.goToReviewEvidence(caseDetails.URN),
+      ]);
 
-test.describe("@regression @nightly Search Comment Case (Notes Testing) and navigate into case", () => {
-  test.beforeEach(async ({ homePage, caseSearchPage }) => {
-    await homePage.open();
-    await homePage.navigation.navigateTo("ViewCaseListLink");
-    await caseSearchPage.searchCaseFile("01SJ1111", "Southwark");
-  });
-
-  test("Update Case - Comment Case", async ({
-    caseSearchPage,
-    caseDetailsPage,
-  }) => {
-    await caseSearchPage.goToUpdateCase("01SJ1111");
-    await expect(caseDetailsPage.caseNameHeading).toContainText(
-      "Comment Case - DO NOT AMEND",
-    );
-    await expect(caseDetailsPage.caseDetailsHeading).toContainText(
-      "Case Details",
-    );
-  });
-
-  test("Update Front Page - Comment Case", async ({
-    caseSearchPage,
-    updateFrontPage,
-  }) => {
-    await caseSearchPage.goToUpdateFrontPage("01SJ1111");
-    await expect(updateFrontPage.caseNameHeading).toContainText(
-      "Comment Case - DO NOT AMEND",
-    );
-    await expect(updateFrontPage.changeDetailsHeading).toContainText(
-      "Change Case Details",
-    );
-  });
-
-  test("Review Evidence - Comment Case", async ({ caseSearchPage }) => {
-    // Review Evidence opens in a new window
-    const [popup] = await Promise.all([
-      caseSearchPage.page.waitForEvent("popup"),
-      caseSearchPage.goToReviewEvidence("01SJ1111"),
-    ]);
-
-    const reviewEvidencePage = new ReviewEvidencePage(popup);
-    await expect(reviewEvidencePage.caseName).toContainText(
-      "Comment Case - DO NOT AMEND",
-      { timeout: 30000 },
-    );
-    await popup.close();
-  });
+      const reviewEvidencePage = new ReviewEvidencePage(popup);
+      await expect(reviewEvidencePage.caseName).toContainText(
+        caseDetails.name,
+        {},
+      );
+      await popup.close();
+    });
+  }
 });

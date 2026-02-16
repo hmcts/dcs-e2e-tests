@@ -210,7 +210,7 @@ class CaseDetailsPage extends Base {
   }
 
   /**
-   * Confirms that a case has successfuly been split using the Split Page functionality.
+   * Confirms that a case has successfully been split using the Split Page functionality.
    * Successful split results in the Case Details page rendering a message including
    * 'Case Has Split'. Other validation methods (eg. split progress bar) proved unreliable for
    * validation at this time
@@ -243,7 +243,7 @@ class CaseDetailsPage extends Base {
   }
 
   /**
-   * Confirms that a case has successfuly been merged using the Merge Page functionality.
+   * Confirms that a case has successfully been merged using the Merge Page functionality.
    * Successful split results in the Case Details page rendering a message including
    * 'Case Has Merged'. Other validation methods (eg. merge progress bar) proved unreliable for
    * validation at this time
