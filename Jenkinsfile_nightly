@@ -169,6 +169,7 @@ withNightlyPipeline(type, product, component, 600) {
       stage('Smoke Tests') {
         try {
           env.TEST_TAG = '@smoke'
+          yarnBuilder.yarn('setup:edge')
           yarnBuilder.yarn('test:smoke')
         } catch (Error) {
           unstable("Smoke tests had failures")
