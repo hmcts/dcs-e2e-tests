@@ -30,14 +30,14 @@ const cases = [
   { URN: "01SJ1111", name: "Comment Case - DO NOT AMEND" },
 ];
 
-test.describe("@regression @nightly @smoke Case search and navigation for existing cases", () => {
+test.describe("@regression @nightly Case search and navigation for existing cases", () => {
   for (const caseDetails of cases) {
     test.beforeEach(async ({ homePage }) => {
       await homePage.open();
       await homePage.navigation.navigateTo("ViewCaseListLink");
     });
 
-    test(`Search and Navigate to Update Case Details: ${caseDetails.name}`, async ({
+    test(`@smoke Search and Navigate to Update Case Details: ${caseDetails.name}`, async ({
       caseSearchPage,
       caseDetailsPage,
     }) => {
