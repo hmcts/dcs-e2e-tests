@@ -85,7 +85,7 @@ withNightlyPipeline(type, product, component, 600) {
   env.BASE_URL = params.BASE_URL
   env.FUNCTIONAL_TESTS_WORKERS = params.FUNCTIONAL_TESTS_WORKERS
 
-  def isFullRegressionRun = TAGS_TO_RUN?.trim() == '@regression'
+  def isFullRegressionRun = params.TAGS_TO_RUN?.trim() == '@regression'
 
   env.TEST_USERS = isFullRegressionRun ? 'regression' : 'nightly'
   
@@ -139,14 +139,14 @@ withNightlyPipeline(type, product, component, 600) {
       catch (Error) { unstable("${STAGE_NAME} is unstable: ${Error}") }
     }
 
-    if (TAGS_TO_RUN?.trim() && !isFullRegressionRun) {
-      stage("${TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}") {
+    if (params.TAGS_TO_RUN?.trim() && !isFullRegressionRun) {
+      stage("${params.TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}") {
         try {
-          currentBuild.displayName = "${TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}"
+          currentBuild.displayName = "${params.TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}"
           if (params.BROWSER_TO_RUN == 'edge') yarnBuilder.yarn('setup:edge')
-          yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN))
+          yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN, params.BROWSER_TO_RUN))
           // USE TO UPDATE SCREENSHOTS
-          // yarnBuilder.yarn(buildPlaywrightCommand(TAGS_TO_RUN, params.BROWSER_TO_RUN)+ " --update-snapshots")
+          // yarnBuilder.yarn(buildPlaywrightCommand(params.TAGS_TO_RUN, params.BROWSER_TO_RUN)+ " --update-snapshots")
         } catch (Error) {
           unstable("${STAGE_NAME} is unstable: ${Error}")
         } finally {
@@ -156,7 +156,7 @@ withNightlyPipeline(type, product, component, 600) {
             keepAll: true,
             reportDir: "playwright-report",
             reportFiles: 'index.html',
-            reportName: "${TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}"
+            reportName: "${params.TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}"
           ])
           // archiveArtifacts artifacts: 'playwright-e2e/tests/**/*-snapshots/**/*.png',
           //          allowEmptyArchive: true
