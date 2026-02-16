@@ -165,6 +165,24 @@ withNightlyPipeline(type, product, component, 600) {
     } else {
       currentBuild.displayName = "All E2E Tests"
 
+      //Cross-browser smoke tests for critical functionality
+      stage('Smoke Tests') {
+        try {
+          yarnBuilder.yarn('test:smoke')
+        } catch (Error) {
+          unstable("Smoke tests had failures")
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "playwright-report",
+            reportFiles: 'index.html',
+            reportName: 'Smoke Tests'
+          ])
+        }
+      }
+
       // Unified Chrome Tests: All tests, with notes lifecycle running last
       stage('Chrome – E2E Tests') {
         try {

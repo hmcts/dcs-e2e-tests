@@ -23,8 +23,9 @@ import { config } from "../utils";
  *
  */
 
-test.describe("@nightly @regression Internal navigation links logged out", () => {
+test.describe("@nightly @regression @smoke Internal navigation links logged out", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
+
   test(`Navigate to available internal links while logged out`, async ({
     page,
     homePage,
@@ -43,7 +44,7 @@ test.describe("@nightly @regression Internal navigation links logged out", () =>
 
 // External links always open in a new browser tab/window
 // and do not alter the current session or page state
-test.describe("@nightly @regression External navigation links", () => {
+test.describe("@nightly @regression @smoke External navigation links", () => {
   test(`Navigate to available links external to the platform`, async ({
     page,
     homePage,
@@ -64,8 +65,9 @@ test.describe("@nightly @regression External navigation links", () => {
   });
 });
 
-test.describe("@nightly @regression Internal navigation links Logged In", () => {
+test.describe("@nightly @regression @smoke Internal navigation links Logged In", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
+
   test(`Navigate to available internal links while logged in`, async ({
     page,
     homePage,

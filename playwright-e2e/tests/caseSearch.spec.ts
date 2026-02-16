@@ -25,7 +25,7 @@ import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/review
  *   remains functional.
  */
 
-test.describe("@regression @nightly Search Auto Case 1 (Documents Testing) and navigate into case", () => {
+test.describe("@regression @nightly @smoke Search Auto Case 1 (Documents Testing) and navigate into case", () => {
   test.beforeEach(async ({ homePage, caseSearchPage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");

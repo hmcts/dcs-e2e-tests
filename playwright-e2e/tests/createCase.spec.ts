@@ -20,7 +20,7 @@ import { config } from "../utils";
  *   should be created via the UI
  */
 
-test.describe("@regression @nightly Create & Update New Case", () => {
+test.describe("@regression @nightly @smoke Create & Update New Case", () => {
   test.beforeEach(async ({ homePage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");
