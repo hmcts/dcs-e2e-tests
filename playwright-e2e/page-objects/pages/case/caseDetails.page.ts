@@ -1,7 +1,6 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../../base";
 import { expect } from "../../../fixtures";
-import { Page } from "@playwright/test";
 import { waitUntilClickable } from "../../../utils";
 import { Dialog } from "@playwright/test";
 
@@ -20,6 +19,12 @@ class CaseDetailsPage extends Base {
   nameDefTwo: Locator;
   additionalNotes: Locator;
   removeCaseBtn: Locator;
+  invitationOnlyValue: Locator;
+  prosecutedByValue: Locator;
+  caseUrnValue: Locator;
+  hearingDateValue: Locator;
+  courtHouseValue: Locator;
+  frontPageValue: Locator;
 
   constructor(page) {
     super(page);
@@ -41,6 +46,65 @@ class CaseDetailsPage extends Base {
       name: "Test additional notes",
     });
     this.removeCaseBtn = page.getByRole("link", { name: "Remove Case" });
+    this.invitationOnlyValue = page
+      .getByRole("row", { name: /Case is Invitation Only/i })
+      .locator("td.display-field");
+    this.prosecutedByValue = page
+      .getByRole("row", { name: /Case Prosecuted By/i })
+      .locator("td.display-field");
+    this.caseUrnValue = page
+      .getByRole("row", { name: /URN/i })
+      .locator("td.display-field");
+    this.hearingDateValue = page
+      .getByRole("row", { name: /Hearing Dates/i })
+      .locator("td.display-field");
+    this.courtHouseValue = page
+      .getByRole("row", { name: /Court House/i })
+      .locator("td.display-field");
+    this.frontPageValue = page.locator(".caseDescription");
+  }
+
+  /**
+   * Validates that the correct details have been populated on the Case Details page after
+   * creating a new case (createCase.spec.ts).
+   */
+  async validateCaseDetails(
+    caseName: string,
+    caseUrn: string,
+    prosecutedBy: string,
+  ) {
+    await expect(this.caseNameHeading).toHaveText(caseName);
+    await expect(this.prosecutedByValue).toContainText(prosecutedBy);
+    if (prosecutedBy === "CPS") {
+      await expect(this.caseUrnValue).toContainText(caseUrn);
+    }
+    await expect(this.courtHouseValue).toContainText("Southwark");
+
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, "0");
+    const mm = String(today.getMonth() + 1).padStart(2, "0"); // month is 0-indexed
+    const yy = String(today.getFullYear()).slice(-2); // last 2 digits
+    const todayFormatted = `${dd}.${mm}.${yy}`; // "10.02.26"
+    await expect(this.hearingDateValue).toContainText(todayFormatted);
+    await expect(this.frontPageValue).toHaveText("Front Page Test");
+  }
+
+  /**
+   * Validates that the correct defendant details are present on the Case Details page (createCase.spec.ts)
+   */
+  async validateDefendants() {
+    await expect(this.nameDefOne).toBeVisible();
+    await expect(this.nameDefTwo).toBeVisible();
+  }
+
+  /**
+   * Validates that the correct details are visible on the Case Details page following update (createCase.spec.ts).
+   */
+  async validateCaseUpdate() {
+    await expect(this.additionalNotes).toBeVisible();
+    await expect(this.additionalNotes).toHaveText("Test additional notes");
+    await expect(this.invitationOnlyValue).toHaveText(/Yes/);
+    await expect(this.frontPageValue).toHaveText("Update Front Page");
   }
 
   /**
@@ -109,104 +173,6 @@ class CaseDetailsPage extends Base {
         },
       )
       .toBe(true);
-  }
-
-  /**
-   * Attempts to open the Review popup for the current case.
-   * Handles existing popups and checks the state of the new popup.
-   * @returns {Promise<Page | null>} A Promise that resolves to the Playwright Page object of the popup if successful and ready, otherwise null.
-   */
-  async tryOpenReviewPopup(): Promise<Page | null> {
-    let popupPage: Page | null = null;
-
-    // Reuse existing popup if present
-    const existingPopups = this.page
-      .context()
-      .pages()
-      .filter((p) => p !== this.page && !p.isClosed());
-
-    if (existingPopups.length > 0) {
-      popupPage = existingPopups[0];
-    } else {
-      const popupPromise = this.page.waitForEvent("popup");
-      await this.caseNavigation.navigateTo("Review");
-      popupPage = await popupPromise;
-    }
-
-    try {
-      // 🔑 Wait until DOM is safe to inspect
-      await popupPage.waitForFunction(() => !!document.body, {
-        timeout: 30000,
-      });
-
-      const status = await popupPage.evaluate<"wrong" | "ready" | "loading">(
-        () => {
-          const bodyText = document.body?.innerText ?? "";
-
-          const isPaginationPopup =
-            bodyText.includes(
-              "There are no documents in the paginated bundle",
-            ) ||
-            bodyText.includes(
-              "The initial pagination for this bundle is underway",
-            );
-
-          if (isPaginationPopup) return "wrong";
-
-          const panel = document.querySelector(
-            "#bundleIndexDiv",
-          ) as HTMLElement | null;
-
-          if (panel && panel.offsetParent !== null) return "ready";
-
-          return "loading";
-        },
-      );
-
-      if (status === "wrong") {
-        if (popupPage && !popupPage.isClosed()) {
-          await popupPage.close().catch(() => {});
-        }
-        return null;
-      }
-
-      if (status === "ready") {
-        return popupPage;
-      }
-
-      // Still loading — keep popup open
-      return null;
-    } catch {
-      if (popupPage && !popupPage.isClosed()) {
-        await popupPage.close().catch(() => {});
-      }
-      return null;
-    }
-  }
-
-  /**
-   * Opens the Review popup and waits for its content to be fully paginated and ready.
-   * This method repeatedly calls `tryOpenReviewPopup` until the popup is ready or a timeout occurs.
-   * @param {number} maxWaitMs - Maximum time to wait for the Review popup to become ready.
-   * @returns {Promise<Page>} A Promise that resolves to the Playwright Page object of the ready popup.
-   * @throws {Error} If the Review popup is not ready within the specified timeout.
-   */
-  async openReviewPopupAwaitPagination(maxWaitMs = 90000): Promise<Page> {
-    const start = Date.now();
-    let popup: Page | null = null;
-
-    while (Date.now() - start < maxWaitMs) {
-      popup = await this.tryOpenReviewPopup();
-
-      if (popup) return popup;
-
-      // retry loop — avoids creating multiple popups
-      await this.page.waitForTimeout(1000);
-    }
-
-    throw new Error(
-      `Unable to open Review popup with correct content after ${maxWaitMs}ms`,
-    );
   }
 
   /**

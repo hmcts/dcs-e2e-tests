@@ -8,20 +8,26 @@ import { Base } from "../../base";
  */
 class ChangeCaseDetailsPage extends Base {
   dropdownCaseIsInvitationOnly: Locator;
-  dropdownCategory: Locator;
-  otherCategory: Locator;
   isCaseCompleteCheckBox: Locator;
   additionalNotes: Locator;
   saveChangeCaseButton: Locator;
+  frontPageTextFrame: Locator;
+  frontPageTextArea: Locator;
 
   constructor(page) {
     super(page);
     this.dropdownCaseIsInvitationOnly = page.locator("#ddIsInvitationOnly");
-    this.dropdownCategory = page.locator("#categoryDropDown");
-    this.otherCategory = page.locator("#otherCategory");
     this.isCaseCompleteCheckBox = page.locator("#IsComplete");
     this.additionalNotes = page.locator("#AdditionalNotes");
     this.saveChangeCaseButton = page.getByRole("button", { name: "Save" });
+    this.frontPageTextFrame = page
+      .locator('iframe[class="tox-edit-area__iframe"]')
+      .contentFrame()
+      .locator("html");
+    this.frontPageTextArea = page
+      .locator('iframe[class="tox-edit-area__iframe"]')
+      .contentFrame()
+      .locator("#tinymce");
   }
 
   /**
@@ -31,8 +37,8 @@ class ChangeCaseDetailsPage extends Base {
    */
   async changeCaseDetails() {
     await this.dropdownCaseIsInvitationOnly.selectOption({ label: "Yes" });
-    await this.dropdownCategory.selectOption({ label: "Other ..." });
-    await this.otherCategory.fill("Test");
+    await this.frontPageTextFrame.click();
+    await this.frontPageTextArea.fill("Update Front Page");
     await this.isCaseCompleteCheckBox.check();
     await this.additionalNotes.fill("Test additional notes");
     await this.saveChangeCaseButton.click();

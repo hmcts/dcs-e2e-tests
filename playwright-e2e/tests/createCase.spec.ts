@@ -36,11 +36,13 @@ test.describe("@regression @nightly Create & Update New Case", () => {
   }) => {
     // Create a brand new case
     await caseSearchPage.goToCreateCase();
-    const { newCaseName, newCaseUrn } = await createCasePage.createNewCase(
-      "TestCase",
-      "TestURN",
+    const { newCaseName, newCaseUrn, prosecutedByLabel } =
+      await createCasePage.createNewCase("TestCase", "TestURN");
+    await caseDetailsPage.validateCaseDetails(
+      newCaseName,
+      newCaseUrn,
+      prosecutedByLabel,
     );
-    await expect(caseDetailsPage.caseNameHeading).toContainText(newCaseName);
 
     // Add multiple defendants to the case
     const defDetails = [
@@ -56,31 +58,31 @@ test.describe("@regression @nightly Create & Update New Case", () => {
         newCaseUrn,
       );
     }
-
-    await expect(caseDetailsPage.nameDefOne).toBeVisible();
-    await expect(caseDetailsPage.nameDefTwo).toBeVisible();
+    await caseDetailsPage.validateDefendants();
 
     // Update case-level details
     await caseDetailsPage.goToChangeCaseDetails();
     await changeCaseDetailsPage.changeCaseDetails();
-    await expect(caseDetailsPage.additionalNotes).toBeVisible();
+    await caseDetailsPage.validateCaseUpdate();
 
-    // // Assign defence users with different levels of defendant access
+    // Assign defence users with different levels of defendant access
     await caseDetailsPage.caseNavigation.navigateTo("People");
     const defenceUserDetails = [
       {
         username: config.users.defenceAdvocateA.username,
         defendants: ["Defendant One"],
+        role: "Defence",
       },
       {
         username: config.users.defenceAdvocateB.username,
         defendants: ["Defendant Two"],
+        role: "Defence",
       },
       {
         username: config.users.defenceAdvocateC.username,
         defendants: ["Defendant One", "Defendant Two"],
+        role: "Defence",
       },
-      { username: config.users.admin.username },
     ];
     for (const defenceDetail of defenceUserDetails) {
       await peoplePage.addUser(
@@ -91,17 +93,6 @@ test.describe("@regression @nightly Create & Update New Case", () => {
     await expect(peoplePage.pageTitle).toBeVisible({ timeout: 40_000 });
 
     // Confirm defence users have been granted the expected access
-    await peoplePage.confirmUserAccess(
-      config.users.defenceAdvocateA.username,
-      "Defence",
-    );
-    await peoplePage.confirmUserAccess(
-      config.users.defenceAdvocateB.username,
-      "Defence",
-    );
-    await peoplePage.confirmUserAccess(
-      config.users.defenceAdvocateC.username,
-      "Defence",
-    );
+    await peoplePage.validateUsers(defenceUserDetails);
   });
 });
