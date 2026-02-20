@@ -28,10 +28,6 @@ import {
  * Test characteristics:
  * - Aggregates validation issues instead of failing immediately
  * - Performs explicit cleanup to avoid test data pollution
- *
- * Cleanup strategy:
- * - Case deletion is handled in afterEach
- * - Deletion is wrapped in runCleanupSafely due to historical flakiness
  */
 
 test.describe("@nightly @regression Index Page Functionality", () => {
@@ -57,7 +53,6 @@ test.describe("@nightly @regression Index Page Functionality", () => {
       await caseSearchPage.goToCreateCase();
 
       // Create a fully configured case with defendants and defence users
-      // This helper abstracts a long setup flow used across multiple tests
       const newCase = await createNewCaseWithDefendantsAndUsers(
         createCasePage,
         caseDetailsPage,
@@ -80,7 +75,7 @@ test.describe("@nightly @regression Index Page Functionality", () => {
   }) => {
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
 
-    // Retrieve keys for unrestricted sections and randomly samples one
+    // Retrieve keys for unrestricted sections and randomly sample one
     // This reduces execution time while still providing coverage
     const unrestrictedSectionKeys = await sectionsPage.getSectionKeys(
       sections.unrestricted,

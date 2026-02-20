@@ -1,5 +1,9 @@
 import { test, expect } from "../fixtures";
 import { config } from "../utils";
+import {
+  runCleanupSafely,
+  deleteCaseByName,
+} from "../helpers/deleteCase.helper";
 
 /**
  * Case Creation & End-to-End Setup Test
@@ -21,6 +25,8 @@ import { config } from "../utils";
  */
 
 test.describe("@regression @nightly Create & Update New Case", () => {
+  let newCaseName: string;
+
   test.beforeEach(async ({ homePage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");
@@ -36,12 +42,15 @@ test.describe("@regression @nightly Create & Update New Case", () => {
   }) => {
     // Create a brand new case
     await caseSearchPage.goToCreateCase();
-    const { newCaseName, newCaseUrn, prosecutedByLabel } =
-      await createCasePage.createNewCase("TestCase", "TestURN");
+    const caseDetails = await createCasePage.createNewCase(
+      "TestCase",
+      "TestURN",
+    );
+    newCaseName = caseDetails.newCaseName;
     await caseDetailsPage.validateCaseDetails(
       newCaseName,
-      newCaseUrn,
-      prosecutedByLabel,
+      caseDetails.newCaseUrn,
+      caseDetails.prosecutedByLabel,
     );
 
     // Add multiple defendants to the case
@@ -55,7 +64,7 @@ test.describe("@regression @nightly Create & Update New Case", () => {
       await addDefendantPage.addDefendant(
         defDetail.surName,
         defDetail.dobMonth,
-        newCaseUrn,
+        caseDetails.newCaseUrn,
       );
     }
     await caseDetailsPage.validateDefendants();
@@ -94,5 +103,16 @@ test.describe("@regression @nightly Create & Update New Case", () => {
 
     // Confirm defence users have been granted the expected access
     await peoplePage.validateUsers(defenceUserDetails);
+  });
+
+  //Cleanup: Remove dynamically created case
+  test.afterEach(async () => {
+    if (!newCaseName) return;
+
+    await runCleanupSafely(async () => {
+      console.log(`Attempting to delete test case: ${newCaseName}`);
+      await deleteCaseByName(newCaseName, 180_000);
+      console.log(`Cleanup completed for ${newCaseName}`);
+    }, 180_000);
   });
 });
