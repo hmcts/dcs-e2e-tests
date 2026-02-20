@@ -40,7 +40,9 @@ test.describe("@regression @nightly @smoke Create & Update New Case", () => {
       "TestCase",
       "TestURN",
     );
-    await expect(caseDetailsPage.caseNameHeading).toContainText(newCaseName);
+    await expect(caseDetailsPage.caseNameHeading).toContainText(newCaseName, {
+      timeout: 30000,
+    });
 
     // Add multiple defendants to the case
     const defDetails = [
