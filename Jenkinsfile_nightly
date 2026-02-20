@@ -168,7 +168,6 @@ withNightlyPipeline(type, product, component, 600) {
       //Cross-browser smoke tests for critical functionality
       stage('Smoke Tests') {
         try {
-          env.TEST_TAG = '@smoke'
           yarnBuilder.yarn('setup:edge')
           yarnBuilder.yarn('test:smoke')
         } catch (Error) {
