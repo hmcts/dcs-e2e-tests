@@ -6,7 +6,7 @@ import { sections } from "../../../utils";
 
 /**
  * Represents the "Record of Case Activity" (ROCA) page, which logs actions
- * performed on cases and documents. This Page Object provides locators and
+ * performed on cases and documents in tables. This Page Object provides locators and
  * methods to interact with ROCA tables, create and update ROCA model records,
  * retrieve documents from ROCA tables, and compare/validate expected vs. actual
  * ROCA entries.

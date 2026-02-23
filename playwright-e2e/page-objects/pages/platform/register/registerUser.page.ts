@@ -54,7 +54,7 @@ class RegisterUserPage extends Base {
     const userName = await this.generateUserName();
     await this.userName.fill(userName);
 
-    // Random selection - Self Inviting or Invitation only user roles
+    // Random selection - Self Inviting or Invitation Only user roles
     const isSelfInviteRole = Math.random() < 0.5;
     const domains: string[] = isSelfInviteRole
       ? ["@justice.gov.uk", "@cps.gov.uk", "@judiciary.gsi.gov.uk"]

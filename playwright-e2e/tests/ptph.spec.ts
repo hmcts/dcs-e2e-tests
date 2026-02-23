@@ -24,7 +24,6 @@ import {
  *
  * Notes:
  *  - Visual validation uses a strict threshold (maxDiffPixelRatio: 0.01) to catch layout changes
- *  - runCleanupSafely ensures flaky deletion does not fail the test run
  */
 
 test.describe("@nightly @regression PTPH Form Rendering / Photosnaps @ptph", () => {

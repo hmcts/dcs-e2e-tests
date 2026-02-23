@@ -26,10 +26,6 @@ class IngestPage extends Base {
 
   /**
    * Uploads a ZIP file containing multiple sections and documents for a given defendant.
-   * Checks the defendant's checkbox, selects the ZIP file, initiates the upload,
-   * and waits for the upload to complete (100% status).
-   * @param {string} defendant - The name of the defendant associated with the documents.
-   * @param {string} zipFile - The name of the ZIP file (without extension) located in `playwright-e2e/data/`.
    */
   async uploadBulkSectionsDocuments(defendant: string, zipFile: string) {
     const defendantCheckbox = this.page.getByRole("checkbox", {
