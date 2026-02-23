@@ -1,5 +1,6 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../../base";
+import { expect } from "../../../fixtures";
 
 /**
  * Represents the "Memos" page within a case, where users can create, edit,
@@ -15,8 +16,6 @@ class MemoPage extends Base {
   saveChangeMemo: Locator;
   memoHeading: Locator;
   memoTable: Locator;
-  memoTableRow1: Locator;
-  memoTableRow2: Locator;
 
   constructor(page) {
     super(page);
@@ -27,13 +26,7 @@ class MemoPage extends Base {
     this.removeMemoButton = page.getByRole("link", { name: "Remove" }).first();
     this.saveChangeMemo = page.getByRole("button", { name: "Save" });
     this.memoHeading = page.locator('div[id="content"] h3');
-    this.memoTable = page.locator(".formTable-zebra");
-    this.memoTableRow1 = page.locator(
-      "xpath= //table[@class='formTable-zebra']/tbody[1]/tr[2]/td[2]",
-    );
-    this.memoTableRow2 = page.locator(
-      "xpath= //table[@class='formTable-zebra']/tbody[1]/tr[3]/td[2]",
-    );
+    this.memoTable = page.locator("table.formTable-zebra");
   }
 
   /**
@@ -56,6 +49,11 @@ class MemoPage extends Base {
     }
   }
 
+  getMemoRowByText(text: string) {
+    return this.memoTable.locator("tr", {
+      has: this.page.locator("td.tableText", { hasText: text }),
+    });
+  }
   /**
    * Changes an existing memo. Clicks the "Change" button, updates the memo text,
    * and saves the changes.
@@ -80,6 +78,14 @@ class MemoPage extends Base {
     } catch {
       console.log("Issue accepting memo deletion dialog");
     }
+  }
+
+  /**
+   * Validates the number of memos in the memos table against an expected count
+   */
+  async expectMemoCount(count: number) {
+    const rows = this.memoTable.locator("tbody tr:has(td.tableText)");
+    await expect(rows).toHaveCount(count, { timeout: 30000 });
   }
 }
 export default MemoPage;
