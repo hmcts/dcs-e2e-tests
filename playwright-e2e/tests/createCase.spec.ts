@@ -1,5 +1,9 @@
 import { test, expect } from "../fixtures";
 import { config } from "../utils";
+import {
+  runCleanupSafely,
+  deleteCaseByName,
+} from "../helpers/deleteCase.helper";
 
 /**
  * Case Creation & End-to-End Setup Test
@@ -20,7 +24,9 @@ import { config } from "../utils";
  *   should be created via the UI
  */
 
-test.describe("@regression @nightly @smoke Create & Update New Case", () => {
+test.describe("@regression @nightly Create & Update New Case", () => {
+  let newCaseName: string;
+
   test.beforeEach(async ({ homePage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");
@@ -36,13 +42,16 @@ test.describe("@regression @nightly @smoke Create & Update New Case", () => {
   }) => {
     // Create a brand new case
     await caseSearchPage.goToCreateCase();
-    const { newCaseName, newCaseUrn } = await createCasePage.createNewCase(
+    const caseDetails = await createCasePage.createNewCase(
       "TestCase",
       "TestURN",
     );
-    await expect(caseDetailsPage.caseNameHeading).toContainText(newCaseName, {
-      timeout: 30000,
-    });
+    newCaseName = caseDetails.newCaseName;
+    await caseDetailsPage.validateCaseDetails(
+      newCaseName,
+      caseDetails.newCaseUrn,
+      caseDetails.prosecutedByLabel,
+    );
 
     // Add multiple defendants to the case
     const defDetails = [
@@ -55,34 +64,34 @@ test.describe("@regression @nightly @smoke Create & Update New Case", () => {
       await addDefendantPage.addDefendant(
         defDetail.surName,
         defDetail.dobMonth,
-        newCaseUrn,
+        caseDetails.newCaseUrn,
       );
     }
-
-    await expect(caseDetailsPage.nameDefOne).toBeVisible();
-    await expect(caseDetailsPage.nameDefTwo).toBeVisible();
+    await caseDetailsPage.validateDefendants();
 
     // Update case-level details
     await caseDetailsPage.goToChangeCaseDetails();
     await changeCaseDetailsPage.changeCaseDetails();
-    await expect(caseDetailsPage.additionalNotes).toBeVisible();
+    await caseDetailsPage.validateCaseUpdate();
 
-    // // Assign defence users with different levels of defendant access
+    // Assign defence users with different levels of defendant access
     await caseDetailsPage.caseNavigation.navigateTo("People");
     const defenceUserDetails = [
       {
         username: config.users.defenceAdvocateA.username,
         defendants: ["Defendant One"],
+        role: "Defence",
       },
       {
         username: config.users.defenceAdvocateB.username,
         defendants: ["Defendant Two"],
+        role: "Defence",
       },
       {
         username: config.users.defenceAdvocateC.username,
         defendants: ["Defendant One", "Defendant Two"],
+        role: "Defence",
       },
-      { username: config.users.admin.username },
     ];
     for (const defenceDetail of defenceUserDetails) {
       await peoplePage.addUser(
@@ -93,17 +102,17 @@ test.describe("@regression @nightly @smoke Create & Update New Case", () => {
     await expect(peoplePage.pageTitle).toBeVisible({ timeout: 40_000 });
 
     // Confirm defence users have been granted the expected access
-    await peoplePage.confirmUserAccess(
-      config.users.defenceAdvocateA.username,
-      "Defence",
-    );
-    await peoplePage.confirmUserAccess(
-      config.users.defenceAdvocateB.username,
-      "Defence",
-    );
-    await peoplePage.confirmUserAccess(
-      config.users.defenceAdvocateC.username,
-      "Defence",
-    );
+    await peoplePage.validateUsers(defenceUserDetails);
+  });
+
+  //Cleanup: Remove dynamically created case
+  test.afterEach(async () => {
+    if (!newCaseName) return;
+
+    await runCleanupSafely(async () => {
+      console.log(`Attempting to delete test case: ${newCaseName}`);
+      await deleteCaseByName(newCaseName, 180_000);
+      console.log(`Cleanup completed for ${newCaseName}`);
+    }, 180_000);
   });
 });

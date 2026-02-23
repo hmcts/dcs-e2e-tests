@@ -66,6 +66,15 @@ class PeoplePage extends Base {
       `${role} user: ${lastName} does not have access to this case.`,
     ).toBeVisible({ timeout: 30000 });
   }
+
+  /**
+   * Confirms that a range of defence users with a specific last name and role is visible in the People Index table.
+   */
+  async validateUsers(users) {
+    for (const user of users) {
+      await this.confirmUserAccess(user.username, user.role);
+    }
+  }
 }
 
 export default PeoplePage;
