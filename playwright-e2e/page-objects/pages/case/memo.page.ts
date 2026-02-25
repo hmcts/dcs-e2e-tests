@@ -1,6 +1,7 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../../base";
 import { expect } from "../../../fixtures";
+import { waitUntilClickable } from "../../../utils";
 
 /**
  * Represents the "Memos" page within a case, where users can create, edit,
@@ -69,13 +70,16 @@ class MemoPage extends Base {
    * confirmation dialog. Includes error handling for dialog acceptance.
    */
   async removeMemo() {
-    try {
-      const dialogPromise = this.page.waitForEvent("dialog");
-      await this.removeMemoButton.click();
-      const dialog = await dialogPromise;
+    await waitUntilClickable(this.removeMemoButton);
+    const dialogPromise = this.page
+      .waitForEvent("dialog", { timeout: 5000 })
+      .catch(() => null);
+    await this.removeMemoButton.click();
+    const dialog = await dialogPromise;
+    if (dialog) {
       await dialog.accept();
       console.log("Dialog accepted");
-    } catch {
+    } else {
       console.log("Issue accepting memo deletion dialog");
     }
   }
