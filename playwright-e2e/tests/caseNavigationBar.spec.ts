@@ -49,7 +49,7 @@ const assertNavigation = {
   },
 };
 
-test.describe("@regression @nightly Case navigation links", () => {
+test.describe("@regression @nightly @smoke Case navigation links", () => {
   test.beforeEach(async ({ homePage, caseSearchPage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("ViewCaseListLink");

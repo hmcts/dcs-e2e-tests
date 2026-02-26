@@ -37,7 +37,7 @@ test.describe("@regression @nightly Case search and navigation for existing case
       await homePage.navigation.navigateTo("ViewCaseListLink");
     });
 
-    test(`Search and Navigate to Update Case Details: ${caseDetails.name}`, async ({
+    test(`@smoke Search and Navigate to Update Case Details: ${caseDetails.name}`, async ({
       caseSearchPage,
       caseDetailsPage,
     }) => {

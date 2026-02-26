@@ -22,7 +22,7 @@ import { UserCredentials, config, invalidUsers } from "../utils";
  *   as the Homepage URL remains the same
  */
 
-test.describe("@nightly @regression Successful login across User Groups", () => {
+test.describe("@nightly @regression @smoke Successful login across User Groups", () => {
   // Ensure each test starts unauthenticated by clearing all session state
   test.use({ storageState: { cookies: [], origins: [] } });
 

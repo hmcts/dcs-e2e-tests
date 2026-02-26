@@ -34,6 +34,9 @@ class MergeCasePage extends Base {
    * Fills in the new URN, selects the second case to merge, and clicks the merge button.
    */
   async mergeCases(caseName1: string, caseName2: string) {
+    await expect(this.newCaseName).toBeEditable();
+    await this.newCaseName.clear();
+    await this.newCaseName.fill(caseName1 + "(M)" + "(FT)");
     await expect(this.newCaseUrn).toBeEditable();
     await this.newCaseUrn.clear();
     await this.newCaseUrn.fill(caseName1 + "(M)");
