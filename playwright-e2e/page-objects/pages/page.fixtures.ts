@@ -38,6 +38,8 @@ import MergeCasePage from "./case/mergeCase.page";
 import UpdateDocumentsPage from "./case/updateDocuments.page";
 import IndexPage from "./case/index.page";
 import PTPHPage from "./case/ptph.page";
+import AccessPage from "./case/access.page";
+import AddEmailDomainPage from "./case/addEmailDomain.page";
 
 /**
  * Interface defining the types of all available Page Object fixtures.
@@ -74,6 +76,8 @@ export interface PageFixtures {
   updateDocumentsPage: UpdateDocumentsPage;
   indexPage: IndexPage;
   ptphPage: PTPHPage;
+  accessPage: AccessPage;
+  addEmailDomainPage: AddEmailDomainPage;
 }
 
 /**
@@ -169,5 +173,11 @@ export const pageFixtures = {
   },
   ptphPage: async ({ page }, use) => {
     await use(new PTPHPage(page));
+  },
+  accessPage: async ({ page }, use) => {
+    await use(new AccessPage(page));
+  },
+  addEmailDomainPage: async ({ page }, use) => {
+    await use(new AddEmailDomainPage(page));
   },
 };

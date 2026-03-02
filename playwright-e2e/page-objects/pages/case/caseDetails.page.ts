@@ -100,7 +100,8 @@ class CaseDetailsPage extends Base {
   /**
    * Validates that the correct details are visible on the Case Details page following update (createCase.spec.ts).
    */
-  async validateCaseUpdate() {
+  async validateCaseUpdate(caseUrn) {
+    await expect(this.caseUrnValue).toContainText(caseUrn);
     await expect(this.additionalNotes).toBeVisible();
     await expect(this.additionalNotes).toHaveText("Test additional notes");
     await expect(this.invitationOnlyValue).toHaveText(/Yes/);
