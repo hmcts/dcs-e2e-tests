@@ -1,5 +1,6 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../../base";
+import { expect } from "../../../fixtures";
 
 /**
  * Represents the "Create Case" page, used for initiating a new case in the application.
@@ -70,11 +71,34 @@ class CreateCasePage extends Base {
     return randomLabel;
   }
 
+  async verifyUrnFieldIsDisabled() {
+    await expect
+      .poll(
+        async () => {
+          return await this.caseUrn.isDisabled();
+        },
+        {
+          timeout: 5_000,
+          message: `Case URN is not disabled`,
+        },
+      )
+      .toBe(true);
+  }
+
+  async handleUrnField(prosecutedBy: string, newCaseUrn: string) {
+    if (prosecutedBy === "CPS") {
+      await expect(this.caseUrn).toBeEnabled({ timeout: 10_000 });
+      await this.caseUrn.fill(newCaseUrn);
+    } else {
+      await this.verifyUrnFieldIsDisabled();
+    }
+  }
+
   /**
    * Fills out the form to create a new case and submits it.
    * Automatically generates unique case name and URN, selects random/specified prosecution details,
    * a default court house, and today's date for the hearing.
-   * @returns {{newCaseName: string, newCaseUrn: string}} An object containing the generated new case name and URN.
+   * @returns {{newCaseName: string, newCaseUrn: string, prosecutedByLabel: string}} An object containing the generated new case name and URN and prosecution party.
    */
   async createNewCase(
     caseName: string,
@@ -90,17 +114,16 @@ class CreateCasePage extends Base {
       caseUrn,
     );
     await this.caseName.fill(newCaseName.toString());
-    await this.caseUrn.fill(newCaseUrn.toString());
-    const selectedProsecutedBy = await this.selectRandomOptionFromDropdown(
-      this.dropdownCaseProsecutedBy,
-    );
-    if (prosecutedBy) {
-      await this.dropdownCaseProsecutedBy.selectOption({ label: prosecutedBy });
-    } else {
-      await this.dropdownCaseProsecutedBy.selectOption({
-        label: selectedProsecutedBy,
-      });
-    }
+    const finalProsecutedBy =
+      prosecutedBy ??
+      (await this.selectRandomOptionFromDropdown(
+        this.dropdownCaseProsecutedBy,
+      ));
+    await this.dropdownCaseProsecutedBy.isEnabled();
+    await this.dropdownCaseProsecutedBy.selectOption({
+      label: finalProsecutedBy,
+    });
+    await this.handleUrnField(finalProsecutedBy, newCaseUrn);
     await this.dropdownCourtHouse.selectOption({ label: "Southwark" });
     const today = new Date();
     const date = today.getDate();
@@ -112,7 +135,7 @@ class CreateCasePage extends Base {
     await this.frontPageTextFrame.click();
     await this.frontPageTextArea.fill("Front Page Test");
     await this.createBtn.click();
-    return { newCaseName, newCaseUrn, prosecutedByLabel: selectedProsecutedBy };
+    return { newCaseName, newCaseUrn, prosecutedByLabel: finalProsecutedBy };
   }
 }
 

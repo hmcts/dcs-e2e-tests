@@ -4,6 +4,7 @@ import {
   runCleanupSafely,
   deleteCaseByName,
 } from "../helpers/deleteCase.helper";
+import { loginAndOpenCase } from "../helpers/login.helper";
 
 /**
  * Case Creation & End-to-End Setup Test
@@ -16,12 +17,11 @@ import {
  *  - Creating a brand new case
  *  - Adding multiple defendants
  *  - Updating case details
- *  - Assigning defence users with different defendant scopes
- *
- * Purpose:
- * - Acts as an end-to-end regression test for core case setup
- * - Serves as a reference implementation for how a "fully configured" case
- *   should be created via the UI
+ *    Note: Based on previous regression issues, a core change is to update
+ *    the prosecution type and re-validate the URN field. Only when the prosecution
+ *    type is 'CPS' should the URN field be enabled.
+ *  - Assigning defence users with different defendant scopes, via both invite, and
+ *    addition of a defence domain.
  */
 
 test.describe("@regression @nightly Create & Update New Case", () => {
@@ -33,24 +33,29 @@ test.describe("@regression @nightly Create & Update New Case", () => {
   });
 
   test("Create New Case & Change Case Details", async ({
+    homePage,
+    loginPage,
     caseSearchPage,
     createCasePage,
     caseDetailsPage,
     addDefendantPage,
     changeCaseDetailsPage,
     peoplePage,
+    accessPage,
+    addEmailDomainPage,
   }) => {
     // Create a brand new case
     await caseSearchPage.goToCreateCase();
     const caseDetails = await createCasePage.createNewCase(
       "TestCase",
       "TestURN",
+      "Probation",
     );
     newCaseName = caseDetails.newCaseName;
     await caseDetailsPage.validateCaseDetails(
       newCaseName,
       caseDetails.newCaseUrn,
-      caseDetails.prosecutedByLabel,
+      "Probation",
     );
 
     // Add multiple defendants to the case
@@ -71,17 +76,12 @@ test.describe("@regression @nightly Create & Update New Case", () => {
 
     // Update case-level details
     await caseDetailsPage.goToChangeCaseDetails();
-    await changeCaseDetailsPage.changeCaseDetails();
-    await caseDetailsPage.validateCaseUpdate();
+    await changeCaseDetailsPage.changeCaseDetails(caseDetails.newCaseUrn);
+    await caseDetailsPage.validateCaseUpdate(caseDetails.newCaseUrn);
 
-    // Assign defence users with different levels of defendant access
+    // Invite defence users to access case with different defendant access
     await caseDetailsPage.caseNavigation.navigateTo("People");
     const defenceUserDetails = [
-      {
-        username: config.users.defenceAdvocateA.username,
-        defendants: ["Defendant One"],
-        role: "Defence",
-      },
       {
         username: config.users.defenceAdvocateB.username,
         defendants: ["Defendant Two"],
@@ -101,8 +101,30 @@ test.describe("@regression @nightly Create & Update New Case", () => {
     }
     await expect(peoplePage.pageTitle).toBeVisible({ timeout: 40_000 });
 
-    // Confirm defence users have been granted the expected access
+    // Confirm defence users have been granted the expected access by invite
     await peoplePage.validateUsers(defenceUserDetails);
+
+    // Confirm Defence user access granted by the addition of a Domain email
+    await peoplePage.caseNavigation.navigateTo("Access");
+    await accessPage.navigateToAddDomain();
+    await addEmailDomainPage.addEmailDomain("Defendant One", "pspb.cjsm.co.uk");
+    await accessPage.verifyEmailDomain("pspb.cjsm.co.uk");
+    await accessPage.navigation.navigateTo("LogOff");
+    await loginAndOpenCase(
+      homePage,
+      loginPage,
+      caseSearchPage,
+      config.users.defenceAdvocateA,
+      newCaseName,
+    );
+    await caseDetailsPage.caseNavigation.navigateTo("People");
+    await peoplePage.validateUsers([
+      {
+        username: config.users.defenceAdvocateA.username,
+        defendants: ["Defendant One"],
+        role: "Defence",
+      },
+    ]);
   });
 
   //Cleanup: Remove dynamically created case
