@@ -42,17 +42,21 @@ class ChangeCaseDetailsPage extends Base {
     await expect(this.dropdownCaseProsecutedBy).toBeVisible();
 
     await expect
-      .poll(async () => {
-        await this.dropdownCaseProsecutedBy.selectOption({ index: 0 });
-        await this.page.waitForTimeout(100);
-        await this.dropdownCaseProsecutedBy.selectOption({ label: "CPS" });
+      .poll(
+        async () => {
+          await this.dropdownCaseProsecutedBy.selectOption({ index: 0 });
+          await this.page.waitForTimeout(100);
 
-        const selected = await this.dropdownCaseProsecutedBy
-          .locator("option:checked")
-          .textContent();
+          await this.dropdownCaseProsecutedBy.selectOption({ label: "CPS" });
 
-        return selected?.trim() === "CPS";
-      })
+          return await this.caseUrn.isEnabled();
+        },
+        {
+          timeout: 10000,
+          intervals: [500],
+          message: "CPS selection not registered by application",
+        },
+      )
       .toBe(true);
   }
   /**
@@ -60,7 +64,6 @@ class ChangeCaseDetailsPage extends Base {
    */
   async changeCaseDetails(newCaseUrn) {
     await this.selectProsecutedByCPS();
-    await this.caseUrn.isEnabled();
     await this.caseUrn.fill(newCaseUrn.toString());
     await this.dropdownCaseIsInvitationOnly.selectOption({ label: "Yes" });
     await this.frontPageTextFrame.click();
