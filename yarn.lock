@@ -936,20 +936,20 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 25.3.1
-  resolution: "@types/node@npm:25.3.1"
+  version: 25.3.3
+  resolution: "@types/node@npm:25.3.3"
   dependencies:
     undici-types: "npm:~7.18.0"
-  checksum: 10/7f999e88e7ff3d2e2ee4efbf1de60d9375577d1ad3e1bee01455ec9d8257da2fb1f83dce4cb8fdf9c05dde9fec9e54f61fc9b1731393b53fc74f254712de9f6e
+  checksum: 10/883e8942b0ddf89f9aae56c4205af8d9a368acd6cab83aa052447a6c5e69ce2bc8ab3f54e549233ada160ba9216dad7f30c62c35867c584fe844ae99f7dea2e0
   languageName: node
   linkType: hard
 
 "@types/node@npm:^22.15.34":
-  version: 22.19.12
-  resolution: "@types/node@npm:22.19.12"
+  version: 22.19.13
+  resolution: "@types/node@npm:22.19.13"
   dependencies:
     undici-types: "npm:~6.21.0"
-  checksum: 10/8918d48faae717e9d74443a676e1da85957976789b39c6cf7a7dd10ea01bd1387081e98d4f72dcbff7c786dd4d30bdb1f36bd153425b2050df4e84cc647a5b5b
+  checksum: 10/b2d1d0cff2f0e283cbd5a3b60226b8a938c59d868c5c4715d52be619b1e57386c3ce043abc28a833e21c86fa33aaa2d00181e76d23600953f18c9aa69e3d654b
   languageName: node
   linkType: hard
 
@@ -1460,13 +1460,13 @@ __metadata:
   linkType: hard
 
 "axios@npm:^1.7.4":
-  version: 1.13.5
-  resolution: "axios@npm:1.13.5"
+  version: 1.13.6
+  resolution: "axios@npm:1.13.6"
   dependencies:
     follow-redirects: "npm:^1.15.11"
     form-data: "npm:^4.0.5"
     proxy-from-env: "npm:^1.1.0"
-  checksum: 10/db726d09902565ef9a0632893530028310e2ec2b95b727114eca1b101450b00014133dfc3871cffc87983fb922bca7e4874d7e2826d1550a377a157cdf3f05b6
+  checksum: 10/a7ed83c2af3ef21d64609df0f85e76893a915a864c5934df69241001d0578082d6521a0c730bf37518ee458821b5695957cb10db9fc705f2a8996c8686ea7a89
   languageName: node
   linkType: hard
 
@@ -2132,13 +2132,13 @@ __metadata:
   linkType: hard
 
 "eslint-plugin-playwright@npm:^2.0.0, eslint-plugin-playwright@npm:^2.5.1":
-  version: 2.7.1
-  resolution: "eslint-plugin-playwright@npm:2.7.1"
+  version: 2.9.0
+  resolution: "eslint-plugin-playwright@npm:2.9.0"
   dependencies:
     globals: "npm:^17.3.0"
   peerDependencies:
     eslint: ">=8.40.0"
-  checksum: 10/7b4da273f8238ae80f54e65edf15b35e10543db4d2b9b98c8e3c62d07b8b943e7df66c21d29de7a795a58191fa3da8ff08dc194c27bb96736973bbe3844d2b92
+  checksum: 10/6851990084679752b7c6dd39f72767076723aba01d0b174b30dcb6992f8f98f237e598b5ef544074d04cc980ebedac2103347d3f0aadf45e4e0d07d5ffd9f30b
   languageName: node
   linkType: hard
 
