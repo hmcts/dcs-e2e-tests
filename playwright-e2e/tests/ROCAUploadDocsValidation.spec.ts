@@ -59,6 +59,7 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
       newCaseName = newCase.newCaseName;
     },
   );
+
   test(`Validate ROCA for unrestricted document uploads`, async ({
     sectionsPage,
     sectionDocumentsPage,
@@ -169,7 +170,7 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
     for (const [sectionIndex, sectionKey] of sampleEntries) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadRestrictedSectionDocument(
-        "One, Defendant",
+        ["One, Defendant"],
         "restrictedSectionUploadDefendantOne",
       );
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
@@ -198,7 +199,7 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
     for (const [sectionIndex, sectionKey] of sampleEntries) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadRestrictedSectionDocument(
-        "Two, Defendant",
+        ["Two, Defendant"],
         "restrictedSectionUploadDefendantTwo",
       );
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
@@ -261,9 +262,8 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
     for (const [sectionIndex, sectionKey] of sampleEntries) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadRestrictedSectionDocument(
-        "Two, Defendant",
+        ["One, Defendant", "Two, Defendant"],
         "restrictedSectionUploadD1&D2",
-        "One, Defendant",
       );
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
 

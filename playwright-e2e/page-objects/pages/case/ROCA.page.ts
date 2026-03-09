@@ -346,5 +346,39 @@ class ROCAPage extends Base {
     await this.unrestrictedTable.waitFor({ state: "visible", timeout: 40000 });
     await this.restrictedTable.waitFor({ state: "visible", timeout: 40000 });
   }
+
+  async validateSingleRestrictedROCAEntry(
+    action: string,
+    section: string,
+    filename: string,
+    user: string,
+    defendant?: string | undefined,
+  ) {
+    const row = this.restrictedTable.locator("tbody tr").filter({
+      hasText: action,
+    });
+    const fullName = await row.locator("td:nth-child(1)").innerText();
+    const username = fullName.match(/\b(\w+)\s*$/)?.[1] ?? fullName;
+    expect(username).toBe(user);
+
+    const sectionIndex = (
+      await row.locator("td:nth-child(3) div:nth-child(1)").innerText()
+    )
+      .replace("Section:", "")
+      .trim();
+    expect(sectionIndex).toBe(section);
+
+    const documentName = (
+      await row.locator("td:nth-child(3) div:nth-child(3)").innerText()
+    )
+      .replace("Name:", "")
+      .trim();
+    expect(documentName).toBe(filename);
+
+    if (defendant) {
+      const defendantText = row.locator("td:nth-child(5)");
+      await expect(defendantText).toHaveText(defendant);
+    }
+  }
 }
 export default ROCAPage;

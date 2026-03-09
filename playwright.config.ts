@@ -39,7 +39,10 @@ export default defineConfig({
         storageState: "./playwright-e2e/.sessions/trainer01.json",
       },
       dependencies: ["setup"],
-      testIgnore: /.*notes-lifecycle\.spec\.ts/,
+      testIgnore: [
+        /.*notes-lifecycle\.spec\.ts/,
+        /.*removeDefendant\.spec\.ts/,
+      ],
     },
     {
       name: "chromium",
@@ -50,7 +53,10 @@ export default defineConfig({
         storageState: "./playwright-e2e/.sessions/trainer01.json",
       },
       dependencies: ["setup"],
-      testIgnore: /.*notes-lifecycle\.spec\.ts/,
+      testIgnore: [
+        /.*notes-lifecycle\.spec\.ts/,
+        /.*removeDefendant\.spec\.ts/,
+      ],
     },
     {
       name: "edge",
@@ -61,7 +67,10 @@ export default defineConfig({
         storageState: "./playwright-e2e/.sessions/trainer01.json",
       },
       dependencies: ["setup"],
-      testIgnore: /.*notes-lifecycle\.spec\.ts/,
+      testIgnore: [
+        /.*notes-lifecycle\.spec\.ts/,
+        /.*removeDefendant\.spec\.ts/,
+      ],
     },
     {
       name: "firefox",
@@ -72,7 +81,10 @@ export default defineConfig({
         storageState: "./playwright-e2e/.sessions/trainer01.json",
       },
       dependencies: ["setup"],
-      testIgnore: /.*notes-lifecycle\.spec\.ts/,
+      testIgnore: [
+        /.*notes-lifecycle\.spec\.ts/,
+        /.*removeDefendant\.spec\.ts/,
+      ],
     },
     {
       name: "webkit",
@@ -83,11 +95,14 @@ export default defineConfig({
         storageState: "./playwright-e2e/.sessions/trainer01.json",
       },
       dependencies: ["setup"],
-      testIgnore: /.*notes-lifecycle\.spec\.ts/,
+      testIgnore: [
+        /.*notes-lifecycle\.spec\.ts/,
+        /.*removeDefendant\.spec\.ts/,
+      ],
     },
     {
-      name: "notes-chrome",
-      testMatch: /.*notes-lifecycle\.spec\.ts/,
+      name: "pagination-chrome",
+      testMatch: [/.*notes-lifecycle\.spec\.ts/, /.*removeDefendant\.spec\.ts/],
       workers: 1,
       use: {
         ...ProjectsConfig.chrome.use,
@@ -96,8 +111,8 @@ export default defineConfig({
       dependencies: ["setup"],
     },
     {
-      name: "notes-firefox",
-      testMatch: /.*notes-lifecycle\.spec\.ts/,
+      name: "pagination-firefox",
+      testMatch: [/.*notes-lifecycle\.spec\.ts/, /.*removeDefendant\.spec\.ts/],
       workers: 1,
       use: {
         ...ProjectsConfig.firefox.use,

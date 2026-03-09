@@ -345,11 +345,11 @@ class SectionsPage extends Base {
   async uploadRestrictedSectionDocument(
     key: string,
     filename: string,
-    defendant: string,
+    defendants: string[],
   ) {
     await this.goToUploadDocuments(key);
     await this.uploadDocumentPage.uploadRestrictedSectionDocument(
-      defendant,
+      defendants,
       filename,
     );
   }

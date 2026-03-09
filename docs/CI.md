@@ -59,7 +59,7 @@ This rotation mechanism does **not** apply to `@regression` runs, which have the
 The pipeline executes the test suites based on the strategy defined above.
 
 -   It runs the main tests in Chrome and Firefox using the `test:chrome` and `test:firefox` scripts.
--   Tests requiring special handling, such as `notes-lifecycle.spec.ts`, are run separately using dedicated Playwright projects (e.g., `notes-chrome`) that are configured to use a single worker.
+-   Tests requiring special handling, such as `notes-lifecycle.spec.ts`, are run separately using dedicated Playwright projects (e.g., `pagination-chrome`) that are configured to use a single worker.
 -   After execution, the pipeline publishes both the standard Playwright HTML report and a more detailed Allure report, which can be accessed from the Jenkins build results page.
 
 ## Secrets

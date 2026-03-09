@@ -40,6 +40,7 @@ import IndexPage from "./case/index.page";
 import PTPHPage from "./case/ptph.page";
 import AccessPage from "./case/access.page";
 import AddEmailDomainPage from "./case/addEmailDomain.page";
+import EditHearingDatePage from "./case/editHearingDate.page";
 
 /**
  * Interface defining the types of all available Page Object fixtures.
@@ -78,6 +79,7 @@ export interface PageFixtures {
   ptphPage: PTPHPage;
   accessPage: AccessPage;
   addEmailDomainPage: AddEmailDomainPage;
+  editHearingDatePage: EditHearingDatePage;
 }
 
 /**
@@ -179,5 +181,8 @@ export const pageFixtures = {
   },
   addEmailDomainPage: async ({ page }, use) => {
     await use(new AddEmailDomainPage(page));
+  },
+  editHearingDatePage: async ({ page }, use) => {
+    await use(new EditHearingDatePage(page));
   },
 };
