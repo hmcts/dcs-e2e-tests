@@ -89,7 +89,7 @@ class CaseDetailsPage extends Base {
   async validateDefendants(defendants: string[]) {
     for (const defendant of defendants) {
       expect(
-        this.defendantsTable
+        await this.defendantsTable
           .getByRole("cell", {
             name: defendant,
             exact: true,
