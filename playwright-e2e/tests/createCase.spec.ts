@@ -72,7 +72,10 @@ test.describe("@regression @nightly Create & Update New Case", () => {
         caseDetails.newCaseUrn,
       );
     }
-    await caseDetailsPage.validateDefendants();
+    await caseDetailsPage.validateDefendants([
+      "Defendant One",
+      "Defendant Two",
+    ]);
 
     // Update case-level details
     await caseDetailsPage.goToChangeCaseDetails();

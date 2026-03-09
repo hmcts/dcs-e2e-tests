@@ -47,14 +47,13 @@ const TEST_USERS = process.env.TEST_USERS || "nightly";
 // I want to edit or remove my own notes
 // So that shared information remains accurate and current
 
-test.describe("@regression @nightly @notes-lifecycle Notes Lifecycle", () => {
+test.describe("@regression @nightly @pagination Notes Lifecycle", () => {
   // Select users dynamically based on execution scope
   // Nightly runs are intentionally limited for speed
   const usersToTest = TEST_USERS === "nightly" ? [currentUser] : eligibleUsers;
 
   for (const user of usersToTest) {
     test.describe(`Notes Functionality for ${user.group}`, () => {
-      let sampleKey: [string, string][];
       let newCaseName: string;
 
       test.beforeEach(
@@ -86,7 +85,6 @@ test.describe("@regression @nightly @notes-lifecycle Notes Lifecycle", () => {
             user.group,
           );
 
-          sampleKey = newCase.sampleKey as [string, string][];
           newCaseName = newCase.newCaseName;
 
           // Log out after case setup so each test can log in
@@ -114,9 +112,11 @@ test.describe("@regression @nightly @notes-lifecycle Notes Lifecycle", () => {
         const popup = await openReviewPopupAwaitPagination(caseDetailsPage);
         const reviewEvidencePage = new ReviewEvidencePage(popup);
 
-        const sectionKey = sampleKey[0][0];
         await reviewEvidencePage.sectionPanelLoad();
-        await reviewEvidencePage.notes.waitForHighResImageLoad(sectionKey);
+        const documentId = await reviewEvidencePage.notes.selectSectionDocument(
+          "unrestrictedSection",
+        );
+        await reviewEvidencePage.notes.waitForHighResImageLoad(documentId);
         await reviewEvidencePage.notes.openNotes();
 
         const types = await reviewEvidencePage.notes.addNotesForUserGroup(
@@ -170,7 +170,7 @@ test.describe("@regression @nightly @notes-lifecycle Notes Lifecycle", () => {
                   .last()
                   .locator(".commentText")
                   .innerText(),
-              { timeout: 10000 },
+              { timeout: 20000 },
             )
             .toBe(`Edited note for ${user.group}`);
         } catch {

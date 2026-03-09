@@ -75,6 +75,32 @@ class PeoplePage extends Base {
       await this.confirmUserAccess(user.username, user.role);
     }
   }
+
+  async confirmRetainedDefenceUserAccess(
+    lastName: string,
+    defendantOne: string,
+    defendantTwo: string,
+  ) {
+    const userRow = this.page.locator("table.formTable-zebra tbody tr").filter({
+      hasText: `${lastName}`,
+    });
+    await expect(
+      userRow,
+      `${lastName} does not have access to this case.`,
+    ).toBeVisible({ timeout: 30000 });
+    await expect(userRow).toContainText(defendantTwo);
+    await expect(userRow).not.toContainText(defendantOne);
+  }
+
+  async confirmRemovedUserAccess(lastName: string) {
+    const userRow = this.page.locator("table.formTable-zebra tbody tr").filter({
+      hasText: `${lastName}`,
+    });
+    await expect(
+      userRow,
+      `${lastName} has unexpected access to this case.`,
+    ).not.toBeVisible({ timeout: 30000 });
+  }
 }
 
 export default PeoplePage;

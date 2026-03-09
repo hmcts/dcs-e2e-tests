@@ -47,6 +47,27 @@ class NotesComponent extends Base {
     this.stickyNotes = page.locator("#StickyNotes .stickyNote");
   }
 
+  async selectSectionDocument(documentName: string): Promise<string> {
+    const documentLi = this.page
+      .locator("li.documentLi", {
+        has: this.page.locator(".docTextName", {
+          hasText: new RegExp(documentName, "i"),
+        }),
+      })
+      .first();
+
+    const documentId = await documentLi.getAttribute("id");
+    if (!documentId) {
+      throw new Error(
+        `Could not find document with name containing "${documentName}"`,
+      );
+    }
+
+    await documentLi.locator(".docTextName").click();
+
+    return documentId;
+  }
+
   /**
    * the openNotes method activates the notes panel and
    * drawing tool. It navigates UI clicks (Annotations link, Add Page Note button)
@@ -56,7 +77,17 @@ class NotesComponent extends Base {
    */
   async openNotes() {
     await expect(this.notesMenuLink).toBeVisible();
-    await this.notesMenuLink.click();
+    await expect
+      .poll(
+        async () => {
+          await this.notesMenuLink.click();
+          return this.addPageNote.isVisible();
+        },
+        {
+          timeout: 5000,
+        },
+      )
+      .toBe(true);
     await this.addPageNote.click();
     try {
       await expect
@@ -421,60 +452,27 @@ class NotesComponent extends Base {
   // ---------------------------
 
   /**
-   * Retrieves the unique identifier (key) of a specific document within a given section
-   * of the document viewer, enabling targeted interaction with that document.
-   */
-  async getDocumentIDBySectionIndex(
-    documentIndex: number,
-    sectionTextIndex: string,
-  ): Promise<string> {
-    const sectionTableLocator = this.page.locator(
-      `table.sectionTextTable >> td.sectionTextIndex`,
-      {
-        hasText: new RegExp(`^${sectionTextIndex}:$`),
-      },
-    );
-
-    await expect(sectionTableLocator).toBeVisible();
-
-    const sectionTableHandle = await sectionTableLocator
-      .first()
-      .evaluateHandle((td) => td.closest("table"));
-
-    const sectionId = await sectionTableHandle.evaluate(
-      (table: HTMLTableElement) => table.id.replace("sectionName-", ""),
-    );
-    const documentLocator = this.page
-      .locator(`.sectionDocumentUl-${sectionId} .documentLi`)
-      .nth(documentIndex);
-
-    await expect(documentLocator).toBeVisible();
-
-    const documentId = await documentLocator.getAttribute("id");
-    if (!documentId)
-      throw new Error(
-        `Document at index ${documentIndex} in section with index: ${sectionTextIndex} not found`,
-      );
-
-    return documentId;
-  }
-
-  /**
    * Ensures that a document's high-resolution image has completely loaded in the viewer before
    * proceeding, which is critical for annotation.
    */
-  async waitForHighResImageLoad(sectionKey, timeoutMs = 45000) {
-    const documentId = await this.getDocumentIDBySectionIndex(0, sectionKey);
+  async waitForHighResImageLoad(documentId: string, timeoutMs = 45000) {
     const result = await this.page.evaluate(
-      ({ documentId, sectionId, timeout }) => {
+      ({ documentId, timeout }) => {
         const img = document.querySelector<HTMLImageElement>(
           `img.documentPageImage[data-documentrowkey="${documentId}"]`,
         );
         if (!img)
           return {
             success: false,
-            message: `❌ Image not found for Document in Section: ${sectionId}`,
+            message: `❌ Image not found for Document`,
           };
+
+        if (img.src.includes("r=i")) {
+          return {
+            success: true,
+            message: `✅ High-res image was already loaded for Document`,
+          };
+        }
 
         return new Promise<{ success: boolean; message: string }>((resolve) => {
           const handler = () => {
@@ -482,7 +480,7 @@ class NotesComponent extends Base {
               img.removeEventListener("load", handler);
               resolve({
                 success: true,
-                message: `✅ High-res image loaded for Document in Section: ${sectionId}`,
+                message: `✅ High-res image loaded for Document`,
               });
             }
           };
@@ -492,13 +490,12 @@ class NotesComponent extends Base {
             img.removeEventListener("load", handler);
             resolve({
               success: false,
-              message: `⚠️ Timeout (${timeout}ms) waiting for high-res image for Document in Section: ${sectionId}`,
+              message: `⚠️ Timeout (${timeout}ms) waiting for high-res image for Document`,
             });
           }, timeout);
         });
       },
       {
-        sectionId: sectionKey,
         timeout: timeoutMs,
         documentId,
       },

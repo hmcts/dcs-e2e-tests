@@ -128,7 +128,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
         await sectionsPage.uploadRestrictedSectionDocument(
           sectionKeyA,
           "restrictedSectionUploadDefendantOne",
-          "One, Defendant",
+          ["One, Defendant"],
         );
         await sectionDocumentsPage.navigation.navigateTo("LogOff");
 
@@ -155,7 +155,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
           await sectionsPage.uploadRestrictedSectionDocument(
             sectionKeyB,
             "restrictedSectionUploadDefendantTwo",
-            "Two, Defendant",
+            ["Two, Defendant"],
           );
           await sectionDocumentsPage.navigation.navigateTo("LogOff");
 
@@ -212,7 +212,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
             "restrictedSectionUploadDefendantOne",
             sectionA,
           );
-          await indexPage.validateNoAccessToRestrictedIndexDocument(
+          await indexPage.validateNoDocumentPresent(
             "restrictedSectionUploadDefendantTwo",
           );
           await indexPage.validateSections(["PD1"]);
@@ -258,7 +258,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
             "restrictedSectionUploadDefendantTwo",
             sectionB,
           );
-          await indexPage.validateNoAccessToRestrictedIndexDocument(
+          await indexPage.validateNoDocumentPresent(
             "restrictedSectionUploadDefendantOne",
           );
           await indexPage.validateSections(["PD2"]);
@@ -333,7 +333,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
         await sectionsPage.uploadRestrictedSectionDocument(
           sectionKeyA,
           "restrictedSectionUploadDefendantOne",
-          "One, Defendant",
+          ["One, Defendant"],
         );
         await sectionDocumentsPage.navigation.navigateTo("LogOff");
 
@@ -360,7 +360,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
           await sectionsPage.uploadRestrictedSectionDocument(
             sectionKeyB,
             "restrictedSectionUploadDefendantTwo",
-            "Two, Defendant",
+            ["Two, Defendant"],
           );
           await sectionDocumentsPage.navigation.navigateTo("LogOff");
 
@@ -429,7 +429,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
             "restrictedSectionUploadDefendantOne",
             sectionA,
           );
-          await indexPage.validateNoAccessToRestrictedIndexDocument(
+          await indexPage.validateNoDocumentPresent(
             "restrictedSectionUploadDefendantTwo",
           );
           await indexPage.validateSections(["PD1"]);
@@ -475,7 +475,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
             "restrictedSectionUploadDefendantTwo",
             sectionB,
           );
-          await indexPage.validateNoAccessToRestrictedIndexDocument(
+          await indexPage.validateNoDocumentPresent(
             "restrictedSectionUploadDefendantOne",
           );
           await indexPage.validateSections(["PD2"]);

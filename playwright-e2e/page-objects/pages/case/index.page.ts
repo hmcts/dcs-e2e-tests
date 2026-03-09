@@ -281,7 +281,7 @@ class IndexPage extends Base {
   /**
    * Validates that a restricted document is NOT accessible or visible in the index.
    */
-  async validateNoAccessToRestrictedIndexDocument(filename) {
+  async validateNoDocumentPresent(filename) {
     const contentsTable = this.page.locator(".fullContents > tbody");
     await expect(contentsTable).not.toContainText(`${filename}:`);
   }
