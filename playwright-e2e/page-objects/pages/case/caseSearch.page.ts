@@ -20,6 +20,7 @@ class CaseSearchPage extends Base {
   fromDateCheckbox: Locator;
   toDateCheckbox: Locator;
   noCasesText: Locator;
+  allWordsCheckbox: Locator;
 
   constructor(page) {
     super(page);
@@ -33,6 +34,7 @@ class CaseSearchPage extends Base {
     this.fromDateCheckbox = page.locator("#fromDateCheck");
     this.toDateCheckbox = page.locator("#toDateCheck");
     this.noCasesText = page.locator("#caseListDiv > h4");
+    this.allWordsCheckbox = page.locator("#searchAllWords");
   }
 
   /**
@@ -67,6 +69,10 @@ class CaseSearchPage extends Base {
     }
     if (await this.toDateCheckbox.isChecked()) {
       await this.toDateCheckbox.uncheck();
+    }
+    const allWordsChecked = await this.allWordsCheckbox.isChecked();
+    if (!allWordsChecked) {
+      await this.allWordsCheckbox.check();
     }
     const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
     const caseRowNoHearing = this.getCaseRowByTextInput(textFieldInput);

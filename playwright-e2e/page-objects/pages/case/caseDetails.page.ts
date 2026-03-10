@@ -88,14 +88,12 @@ class CaseDetailsPage extends Base {
    */
   async validateDefendants(defendants: string[]) {
     for (const defendant of defendants) {
-      expect(
-        await this.defendantsTable
-          .getByRole("cell", {
-            name: defendant,
-            exact: true,
-          })
-          .count(),
-      ).toBe(1);
+      const defendantDetails = this.defendantsTable.getByRole("cell", {
+        name: defendant,
+        exact: true,
+      });
+      await defendantDetails.isVisible();
+      expect(await defendantDetails.count()).toBe(1);
     }
   }
 
