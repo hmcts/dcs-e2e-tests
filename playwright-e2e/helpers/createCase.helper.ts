@@ -260,7 +260,7 @@ export async function createNewCaseWithRestrictedDocument(
     await sectionsPage.uploadRestrictedSectionDocument(
       key,
       "restrictedSectionUploadDefendantOne",
-      "One, Defendant",
+      ["One, Defendant"],
     );
     await rocaPage.createROCAModelRecord(
       uploadedDocuments,

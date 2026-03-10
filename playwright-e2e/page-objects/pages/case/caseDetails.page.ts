@@ -15,8 +15,6 @@ class CaseDetailsPage extends Base {
   caseDetailsHeading: Locator;
   addDefButton: Locator;
   changeCaseDetailsBtn: Locator;
-  nameDefOne: Locator;
-  nameDefTwo: Locator;
   additionalNotes: Locator;
   removeCaseBtn: Locator;
   invitationOnlyValue: Locator;
@@ -25,6 +23,8 @@ class CaseDetailsPage extends Base {
   hearingDateValue: Locator;
   courtHouseValue: Locator;
   frontPageValue: Locator;
+  defendantsTable: Locator;
+  hearingDatesTable: Locator;
 
   constructor(page) {
     super(page);
@@ -34,14 +34,6 @@ class CaseDetailsPage extends Base {
     this.changeCaseDetailsBtn = page
       .getByRole("link", { name: "Change Case Details" })
       .first();
-    this.nameDefOne = page.getByRole("cell", {
-      name: "Defendant One",
-      exact: true,
-    });
-    this.nameDefTwo = page.getByRole("cell", {
-      name: "Defendant Two",
-      exact: true,
-    });
     this.additionalNotes = page.getByRole("cell", {
       name: "Test additional notes",
     });
@@ -62,6 +54,8 @@ class CaseDetailsPage extends Base {
       .getByRole("row", { name: /Court House/i })
       .locator("td.display-field");
     this.frontPageValue = page.locator(".caseDescription");
+    this.defendantsTable = page.locator(".participantsTable");
+    this.hearingDatesTable = page.locator(".hearingDatesTable");
   }
 
   /**
@@ -92,9 +86,15 @@ class CaseDetailsPage extends Base {
   /**
    * Validates that the correct defendant details are present on the Case Details page (createCase.spec.ts)
    */
-  async validateDefendants() {
-    await expect(this.nameDefOne).toBeVisible();
-    await expect(this.nameDefTwo).toBeVisible();
+  async validateDefendants(defendants: string[]) {
+    for (const defendant of defendants) {
+      const defendantName = this.defendantsTable.locator(
+        "td.case-details-text[style*='bold']",
+        { hasText: defendant },
+      );
+
+      await expect(defendantName).toHaveCount(1, { timeout: 20000 });
+    }
   }
 
   /**
@@ -233,6 +233,62 @@ class CaseDetailsPage extends Base {
         {
           timeout: 120_000,
           message: `Unable to verify Case Merge`,
+        },
+      )
+      .toBe(true);
+  }
+
+  async navigateToEditHearingDate() {
+    const editButton = this.hearingDatesTable.getByRole("link", {
+      name: "Edit",
+    });
+    await editButton.click();
+  }
+
+  async removeFirstDefendant() {
+    const removeButton = this.defendantsTable
+      .getByRole("link", { name: "Remove" })
+      .first();
+
+    let dialogCount = 0;
+
+    const handler = async (dialog) => {
+      dialogCount++;
+      console.log(`Dialog ${dialogCount}:`, dialog.message());
+      await dialog.accept();
+    };
+
+    this.page.on("dialog", handler);
+
+    await removeButton.click();
+
+    await expect.poll(() => dialogCount, { timeout: 5000 }).toBe(2);
+
+    this.page.off("dialog", handler);
+  }
+
+  async verifyHearingDefendants(defendantOne: string, defendantTwo: string) {
+    await expect(this.hearingDatesTable).toContainText(defendantTwo);
+    await expect(this.hearingDatesTable).not.toContainText(defendantOne);
+  }
+
+  async verifyDefendantRemoved(defendantOne: string, defendantTwo: string) {
+    await expect
+      .poll(
+        async () => {
+          const defendantTwoCount = await this.defendantsTable
+            .getByRole("cell", { name: defendantTwo, exact: true })
+            .count();
+
+          const defendantOneCount = await this.defendantsTable
+            .getByRole("cell", { name: defendantOne, exact: true })
+            .count();
+
+          return defendantTwoCount === 1 && defendantOneCount === 0;
+        },
+        {
+          timeout: 60_000,
+          message: `Could not confirm removal of defendant`,
         },
       )
       .toBe(true);

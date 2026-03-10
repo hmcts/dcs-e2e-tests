@@ -23,11 +23,9 @@ export async function uploadAndValidateRestrictedDocumentUpload(
 ) {
   for (const [section, key] of entries) {
     if (filename) {
-      await sectionsPage.uploadRestrictedSectionDocument(
-        key,
-        filename,
+      await sectionsPage.uploadRestrictedSectionDocument(key, filename, [
         defendant,
-      );
+      ]);
     } else {
       await sectionsPage.goToViewDocumentsByKey(key);
     }

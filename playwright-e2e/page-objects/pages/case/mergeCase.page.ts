@@ -36,7 +36,7 @@ class MergeCasePage extends Base {
   async mergeCases(caseName1: string, caseName2: string) {
     await expect(this.newCaseName).toBeEditable();
     await this.newCaseName.clear();
-    await this.newCaseName.fill(caseName1 + "(M)" + "(FT)");
+    await this.newCaseName.fill(caseName1 + "(M)");
     await expect(this.newCaseUrn).toBeEditable();
     await this.newCaseUrn.clear();
     await this.newCaseUrn.fill(caseName1 + "(M)");

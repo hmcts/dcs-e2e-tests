@@ -38,20 +38,19 @@ class UploadDocumentPage extends Base {
    * @param [additionalDefendant] - Optional, the name of an additional defendant to associate the document with.
    */
   async uploadRestrictedSectionDocument(
-    primaryDefendant: string,
+    defendants: string[],
     filename: string,
-    additionalDefendant?: string,
   ) {
     const primaryDefendantCheckbox = this.page.getByRole("checkbox", {
-      name: `${primaryDefendant}`,
+      name: `${defendants[0]}`,
     });
     if (!(await primaryDefendantCheckbox.isChecked())) {
       await primaryDefendantCheckbox.check();
     }
 
-    if (additionalDefendant) {
+    if (defendants[1]) {
       const additionalDefendantCheckbox = this.page.getByRole("checkbox", {
-        name: additionalDefendant,
+        name: defendants[1],
       });
       if (!(await additionalDefendantCheckbox.isChecked())) {
         await additionalDefendantCheckbox.check();
