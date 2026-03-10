@@ -88,12 +88,12 @@ class CaseDetailsPage extends Base {
    */
   async validateDefendants(defendants: string[]) {
     for (const defendant of defendants) {
-      const defendantDetails = this.defendantsTable.getByRole("cell", {
-        name: defendant,
-        exact: true,
-      });
-      await defendantDetails.isVisible();
-      expect(await defendantDetails.count()).toBe(1);
+      const defendantName = this.defendantsTable.locator(
+        "td.case-details-text[style*='bold']",
+        { hasText: defendant },
+      );
+
+      await expect(defendantName).toHaveCount(1, { timeout: 20000 });
     }
   }
 
