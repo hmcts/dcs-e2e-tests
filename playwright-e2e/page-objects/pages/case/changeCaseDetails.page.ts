@@ -64,7 +64,22 @@ class ChangeCaseDetailsPage extends Base {
    */
   async changeCaseDetails(newCaseUrn) {
     await this.selectProsecutedByCPS();
-    await this.caseUrn.fill(newCaseUrn.toString());
+    await expect
+      .poll(
+        async () => {
+          await this.caseUrn.click();
+          await this.caseUrn.fill(newCaseUrn.toString());
+          await this.caseUrn.press("Tab");
+
+          return await this.caseUrn.inputValue();
+        },
+        {
+          timeout: 10000,
+          intervals: [500],
+          message: "Unable to update Case URN",
+        },
+      )
+      .toBe(newCaseUrn.toString());
     await this.dropdownCaseIsInvitationOnly.selectOption({ label: "Yes" });
     await this.frontPageTextFrame.click();
     await this.frontPageTextArea.fill("Update Front Page");
