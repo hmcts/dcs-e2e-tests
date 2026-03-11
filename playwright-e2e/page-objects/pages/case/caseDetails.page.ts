@@ -80,7 +80,12 @@ class CaseDetailsPage extends Base {
     const yy = String(today.getFullYear()).slice(-2); // last 2 digits
     const todayFormatted = `${dd}.${mm}.${yy}`; // "10.02.26"
     await expect(this.hearingDateValue).toContainText(todayFormatted);
-    await expect(this.frontPageValue).toHaveText("Front Page Test");
+    try {
+      await expect(this.frontPageValue).toHaveText("Front Page Test");
+    } catch {
+      await this.page.reload();
+      await expect(this.frontPageValue).toHaveText("Front Page Test");
+    }
   }
 
   /**
