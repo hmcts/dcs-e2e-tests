@@ -1,8 +1,6 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../../base";
 import { expect } from "../../../fixtures";
-import { waitUntilClickable } from "../../../utils";
-import { Dialog } from "@playwright/test";
 
 /**
  * Represents the Case Details page, displaying information about a specific case.
@@ -133,52 +131,21 @@ class CaseDetailsPage extends Base {
    * @param {number} timeoutMs - Maximum time to wait for the removal process to complete.
    */
   async removeCase(timeoutMs = 60000) {
-    await expect
-      .poll(
-        async () => {
-          try {
-            // ---- Step 1: Attach a dialog handler before clicking ----
-            const dialogs: Dialog[] = [];
-            const dialogHandler = (dialog: Dialog) => {
-              dialogs.push(dialog);
-              dialog
-                .accept()
-                .catch((err) =>
-                  console.warn(
-                    "⚠️ Failed to accept case deletion dialog:",
-                    err,
-                  ),
-                );
-            };
-            this.page.on("dialog", dialogHandler);
+    let dialogCount = 0;
 
-            // ---- Step 2: Click the remove button ----
-            await waitUntilClickable(this.removeCaseBtn);
-            await this.removeCaseBtn.click();
+    const handler = async (dialog) => {
+      dialogCount++;
+      console.log(`Dialog ${dialogCount}:`, dialog.message());
+      await dialog.accept();
+    };
 
-            // ---- Step 3: Wait until both dialogs (if any) were handled ----
-            // Assuming max 2 dialogs
-            const maxWait = timeoutMs;
-            const start = Date.now();
-            while (dialogs.length < 2 && Date.now() - start < maxWait) {
-              await this.page.waitForTimeout(300); // small polling
-            }
+    this.page.on("dialog", handler);
 
-            // ---- Step 4: Cleanup listener ----
-            this.page.off("dialog", dialogHandler);
+    await this.removeCaseBtn.click();
 
-            return true;
-          } catch (err) {
-            console.warn("⚠️ removeCase attempt failed:", err);
-            return false; // retry poll
-          }
-        },
-        {
-          timeout: timeoutMs,
-          intervals: [500, 1000, 1500],
-        },
-      )
-      .toBe(true);
+    await expect.poll(() => dialogCount, { timeout: timeoutMs }).toBe(2);
+
+    this.page.off("dialog", handler);
   }
 
   /**

@@ -98,7 +98,19 @@ class CaseSearchPage extends Base {
         break;
       } catch {}
     }
+    return found;
+  }
 
+  async searchForAvailableCase(
+    textFieldInput: string,
+    location: string,
+    hearingDate?: string,
+  ) {
+    const found = await this.searchCaseFile(
+      textFieldInput,
+      location,
+      hearingDate,
+    );
     if (!found) {
       throw new Error(
         `❌ Case "${textFieldInput}" did not appear (with or without hearing) after applying filter`,
@@ -155,16 +167,24 @@ class CaseSearchPage extends Base {
    * Includes retry logic to account for potential UI delays after deletion.
    * @returns {Promise<boolean>} Resolves to true if case deletion is confirmed, otherwise false.
    */
-  async confirmCaseDeletion() {
-    try {
-      await this.applyFilter.click();
-      await this.noCasesText.waitFor({ state: "visible", timeout: 40000 });
-      return await expect(this.noCasesText).toHaveText(
-        /There are no cases on the system/i,
-      );
-    } catch {
-      return false;
+  async confirmCaseDeletion(
+    textFieldInput: string,
+    location: string,
+    hearingDate?: string,
+  ) {
+    const found = await this.searchCaseFile(
+      textFieldInput,
+      location,
+      hearingDate,
+    );
+    if (found) {
+      throw new Error("❌ Case deletion unsuccessful");
     }
+
+    await expect(this.noCasesText).toBeVisible({ timeout: 40000 });
+    await expect(this.noCasesText).toHaveText(
+      /There are no cases on the system/i,
+    );
   }
 }
 

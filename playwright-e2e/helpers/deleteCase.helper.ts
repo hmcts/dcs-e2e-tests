@@ -1,6 +1,5 @@
 import { config } from "../utils";
 import { chromium, Page, BrowserContext } from "playwright";
-import { expect } from "../fixtures";
 import { todaysDate } from "../utils";
 import CaseSearchPage from "../page-objects/pages/case/caseSearch.page";
 import CaseDetailsPage from "../page-objects/pages/case/caseDetails.page";
@@ -103,43 +102,20 @@ export async function deleteCaseByName(caseName: string, timeoutMs = 60000) {
     const caseSearchPage = new CaseSearchPage(page);
     const caseDetailsPage = new CaseDetailsPage(page);
 
-    await expect
-      .poll(
-        async () => {
-          await page.goto(
-            `${config.urls.base}Case/CaseIndex?currentFirst=1&displaySize=10`,
-          );
+    await page.goto(
+      `${config.urls.base}Case/CaseIndex?currentFirst=1&displaySize=10`,
+    );
 
-          let caseExists = true;
+    await caseSearchPage.searchCaseFile(caseName, "Southwark", todaysDate());
+    await caseSearchPage.goToUpdateCase(caseName, todaysDate());
+    await caseDetailsPage.removeCase(timeoutMs);
 
-          try {
-            // If the case cannot be found, consider it already deleted
-            await caseSearchPage.searchCaseFile(
-              caseName,
-              "Southwark",
-              todaysDate(),
-            );
-          } catch {
-            caseExists = false;
-          }
-
-          if (!caseExists) return true; // already deleted
-
-          const onUpdatePage = await caseSearchPage.goToUpdateCase(
-            caseName,
-            todaysDate(),
-          );
-          if (!onUpdatePage) return true; // already deleted
-
-          // Perform deletion
-          await caseDetailsPage.removeCase(timeoutMs);
-
-          // Confirm deletion succeeded
-          return await caseSearchPage.confirmCaseDeletion();
-        },
-        { timeout: timeoutMs, intervals: [500, 1000, 1500] },
-      )
-      .toBe(true);
+    // Confirm deletion succeeded
+    await caseSearchPage.confirmCaseDeletion(
+      caseName,
+      "Southwark",
+      todaysDate(),
+    );
   });
   console.log(`Successfully deleted ${caseName}`);
 }
