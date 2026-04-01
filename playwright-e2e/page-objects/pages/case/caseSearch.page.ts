@@ -1,6 +1,7 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../../base";
 import { expect } from "../../../fixtures";
+import { config } from "../../../utils";
 
 /**
  * Represents the Case Search page, allowing users to find and interact with cases.
@@ -190,13 +191,37 @@ class CaseSearchPage extends Base {
     location: string,
     hearingDate?: string,
   ) {
+    await this.page.goto(
+      `${config.urls.base}Case/CaseIndex?currentFirst=1&displaySize=10`,
+    );
     const found = await this.searchCaseFile(
       textFieldInput,
       location,
       hearingDate,
     );
     if (found) {
-      throw new Error("❌ Case deletion unsuccessful");
+      const rowWithHearing = this.getCaseRowByTextInput(
+        textFieldInput,
+        hearingDate,
+      );
+      const rowWithoutHearing = this.getCaseRowByTextInput(textFieldInput);
+
+      const withHearingCount = await rowWithHearing.count();
+      const withoutHearingCount = await rowWithoutHearing.count();
+
+      const allRows = await this.page.locator("tr").allTextContents();
+      console.log("All rows:", allRows);
+
+      throw new Error(`
+        ❌ Case deletion unsuccessful
+
+        Search Input: ${textFieldInput}
+        Hearing Date: ${hearingDate}
+
+        Results:
+        - With hearing date: ${withHearingCount}
+        - Without hearing date: ${withoutHearingCount}
+      `);
     }
 
     await expect(this.noCasesText).toBeVisible({ timeout: 40000 });
