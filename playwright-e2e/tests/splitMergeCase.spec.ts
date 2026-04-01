@@ -7,6 +7,7 @@ import {
   runCleanupSafely,
 } from "../helpers/deleteCase.helper";
 import { getRandomSectionKey } from "../utils";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Split & Merge – End-to-End Case Integrity Validation
@@ -56,13 +57,13 @@ test.describe("@regression Split & Merge Case Functionality", () => {
       await caseSearchPage.goToCreateCase();
 
       // Seed case with defendants and users
+      const uniqueIdentifier = uuidv4();
       const newCase = await createNewCaseWithDefendantsAndUsers(
         createCasePage,
         caseDetailsPage,
         addDefendantPage,
         peoplePage,
-        "TestCase",
-        "TestURN",
+        uniqueIdentifier,
         "Defence",
       );
       newCaseName = newCase.newCaseName;

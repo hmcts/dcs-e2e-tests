@@ -6,6 +6,7 @@ import {
   deleteCaseByName,
   runCleanupSafely,
 } from "../helpers/deleteCase.helper";
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * PTPH Form Rendering Tests
@@ -45,13 +46,13 @@ test.describe("@nightly @regression PTPH Form Rendering / Photosnaps @ptph", () 
 
       // Create a new case with one defendant and CPS as prosecutor
       // Returns the new case name and URN for use in the test
+      const uniqueIdentifier = uuidv4();
       const newCase = await createNewCaseWithDefendantsAndUsers(
         createCasePage,
         caseDetailsPage,
         addDefendantPage,
         peoplePage,
-        "TestCase",
-        "TestURN",
+        uniqueIdentifier,
         "None", // No specific user access required
         "One", // Single defendant
         "CPS", // Prosecuted by CPS

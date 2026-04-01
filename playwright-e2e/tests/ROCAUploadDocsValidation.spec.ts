@@ -8,6 +8,7 @@ import {
   deleteCaseByName,
   runCleanupSafely,
 } from "../helpers/deleteCase.helper";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * ROCA: Document Upload & Access Validation
@@ -47,13 +48,13 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
       await caseSearchPage.goToCreateCase();
 
       // Create Case with Defendants and Defence Users
+      const uniqueIdentifier = uuidv4();
       const newCase = await createNewCaseWithDefendantsAndUsers(
         createCasePage,
         caseDetailsPage,
         addDefendantPage,
         peoplePage,
-        "TestCase",
-        "TestURN",
+        uniqueIdentifier,
         "Defence",
       );
       newCaseName = newCase.newCaseName;

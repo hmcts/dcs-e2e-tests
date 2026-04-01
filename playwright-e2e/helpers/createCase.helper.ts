@@ -104,30 +104,27 @@ export function getUserDetails(input: string) {
  * This is the foundational setup helper used by most E2E tests.
  * Returns the generated case name and URN for use in subsequent steps.
  */
-
 export async function createNewCaseWithDefendantsAndUsers(
   createCasePage,
   caseDetailsPage,
   addDefendantPage,
   peoplePage,
-  caseName: string,
-  caseUrn: string,
+  uniqueIdentifier: string,
   users: string,
   numberDefendants: "One" | "Two" = "Two",
   prosecutedBy?: string,
 ) {
   let newCaseName: string;
   let newCaseUrn: string;
+
   if (prosecutedBy) {
     ({ newCaseName, newCaseUrn } = await createCasePage.createNewCase(
-      caseName,
-      caseUrn,
+      uniqueIdentifier,
       prosecutedBy,
     ));
   } else {
     ({ newCaseName, newCaseUrn } = await createCasePage.createNewCase(
-      caseName,
-      caseUrn,
+      uniqueIdentifier,
     ));
   }
 
@@ -182,8 +179,7 @@ export async function createNewCaseWithUnrestrictedDocument(
   sectionsPage,
   sectionDocumentsPage,
   rocaPage,
-  caseName: string,
-  caseUrn: string,
+  uniqueIdentifier: string,
   users,
 ) {
   const { newCaseName, newCaseUrn } = await createNewCaseWithDefendantsAndUsers(
@@ -191,8 +187,7 @@ export async function createNewCaseWithUnrestrictedDocument(
     caseDetailsPage,
     addDefendantPage,
     peoplePage,
-    caseName,
-    caseUrn,
+    uniqueIdentifier,
     users,
   );
   const uploadedDocuments: ROCAModel[] = [];
@@ -237,8 +232,7 @@ export async function createNewCaseWithRestrictedDocument(
   sectionsPage,
   sectionDocumentsPage,
   rocaPage,
-  caseName: string,
-  caseUrn: string,
+  uniqueIdentifier: string,
   users,
 ) {
   const { newCaseName, newCaseUrn } = await createNewCaseWithDefendantsAndUsers(
@@ -246,8 +240,7 @@ export async function createNewCaseWithRestrictedDocument(
     caseDetailsPage,
     addDefendantPage,
     peoplePage,
-    caseName,
-    caseUrn,
+    uniqueIdentifier,
     users,
   );
   const uploadedDocuments: ROCAModel[] = [];

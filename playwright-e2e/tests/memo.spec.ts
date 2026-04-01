@@ -4,6 +4,7 @@ import {
   runCleanupSafely,
   deleteCaseByName,
 } from "../helpers/deleteCase.helper";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Memo Validation
@@ -26,10 +27,8 @@ test.describe("@nightly @regression Memo Functionality", () => {
       await homePage.open();
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
-      const caseDetails = await createCasePage.createNewCase(
-        "TestCase",
-        "TestURN",
-      );
+      const uniqueIdentifier = uuidv4();
+      const caseDetails = await createCasePage.createNewCase(uniqueIdentifier);
       newCaseName = caseDetails.newCaseName;
       await expect(caseDetailsPage.caseNameHeading).toBeVisible();
     },

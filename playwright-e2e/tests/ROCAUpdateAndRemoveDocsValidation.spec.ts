@@ -10,6 +10,7 @@ import {
   runCleanupSafely,
 } from "../helpers/deleteCase.helper";
 import { ROCAModel } from "../data/ROCAModel";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * ROCA – End-to-End Document Audit Validation
@@ -65,6 +66,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unre
 
       // Create a new case with unrestricted documents
       // sampleKey tracks section name + section key for ROCA operations
+      const uniqueIdentifier = uuidv4();
       const newCase = await createNewCaseWithUnrestrictedDocument(
         createCasePage,
         caseDetailsPage,
@@ -73,8 +75,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unre
         sectionsPage,
         sectionDocumentsPage,
         rocaPage,
-        "TestCase",
-        "TestURN",
+        uniqueIdentifier,
         "Defence",
       );
       sampleKey = newCase.sampleKey as [string, string][];
@@ -273,7 +274,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
       await homePage.open();
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
-
+      const uniqueIdentifier = uuidv4();
       const newCase = await createNewCaseWithRestrictedDocument(
         createCasePage,
         caseDetailsPage,
@@ -282,8 +283,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
         sectionsPage,
         sectionDocumentsPage,
         rocaPage,
-        "TestCase",
-        "TestURN",
+        uniqueIdentifier,
         "Defence",
       );
       sampleKey = newCase.sampleKey as [string, string][];
