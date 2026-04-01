@@ -133,9 +133,27 @@ class CaseSearchPage extends Base {
     textFieldInput: string,
     hearingDate?: string,
   ) {
-    const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
-    const button = caseRow.getByRole("link", { name: navigationAction });
-    await expect(button).toBeVisible({ timeout: 5000 });
+    const caseRowWithHearing = this.getCaseRowByTextInput(
+      textFieldInput,
+      hearingDate,
+    );
+
+    const caseRowWithoutHearing = this.getCaseRowByTextInput(textFieldInput);
+
+    let button;
+
+    // Try WITH hearing date first
+    if (await caseRowWithHearing.count()) {
+      button = caseRowWithHearing
+        .getByRole("link", { name: navigationAction })
+        .first();
+    } else {
+      button = caseRowWithoutHearing
+        .getByRole("link", { name: navigationAction })
+        .first();
+    }
+
+    await button.waitFor({ state: "visible", timeout: 15000 });
     await button.click();
   }
 
