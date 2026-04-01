@@ -99,6 +99,13 @@ class CaseSearchPage extends Base {
         break;
       } catch {}
     }
+    const allRows = await this.page
+      .locator(".formTable-zebra tr")
+      .allTextContents();
+
+    const cleanedRows = allRows.map((row) => row.replace(/\s+/g, " ").trim());
+
+    console.log("Cleaned rows:", cleanedRows);
     return found;
   }
 
@@ -209,8 +216,13 @@ class CaseSearchPage extends Base {
       const withHearingCount = await rowWithHearing.count();
       const withoutHearingCount = await rowWithoutHearing.count();
 
-      const allRows = await this.page.locator("tr").allTextContents();
-      console.log("All rows:", allRows);
+      const allRows = await this.page
+        .locator(".formTable-zebra tr")
+        .allTextContents();
+
+      const cleanedRows = allRows.map((row) => row.replace(/\s+/g, " ").trim());
+
+      console.log("Cleaned rows:", cleanedRows);
 
       throw new Error(`
         ❌ Case deletion unsuccessful
