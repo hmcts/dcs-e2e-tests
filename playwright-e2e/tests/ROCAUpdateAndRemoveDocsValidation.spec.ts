@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures";
+import { test } from "../fixtures";
 import { config, pushTestResult } from "../utils";
 import {
   createNewCaseWithUnrestrictedDocument,
@@ -105,7 +105,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unre
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.unrestrictedTable).toBeVisible({ timeout: 30_000 });
+    await rocaPage.waitForRocaTablesToLoad();
 
     // Compare expected vs actual ROCA
     const deletionIssues = await rocaPage.validateROCAForUser(
@@ -158,7 +158,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unre
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.unrestrictedTable).toBeVisible({ timeout: 30_000 });
+    await rocaPage.waitForRocaTablesToLoad();
 
     const expectedUnrestrictedROCA = rocaExpected;
     const unrestrictedResult = await rocaPage.validateROCAForUser(
@@ -210,7 +210,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unre
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.unrestrictedTable).toBeVisible({ timeout: 30_000 });
+    await rocaPage.waitForRocaTablesToLoad();
 
     // Compare expected vs actual ROCA
     const editIssues = await rocaPage.validateROCAForUser(
@@ -327,7 +327,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 60_000 });
+    await rocaPage.waitForRocaTablesToLoad();
 
     // Compare expected vs actual ROCA
     const deletionIssues = await rocaPage.validateROCAForUser(
@@ -397,7 +397,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 60_000 });
+    await rocaPage.waitForRocaTablesToLoad();
 
     const expectedRestrictedROCA = rocaExpected;
     const restrictedResult = await rocaPage.validateROCAForUser(
@@ -466,7 +466,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 60_000 });
+    await rocaPage.waitForRocaTablesToLoad();
 
     // Compare expected vs actual ROCA
     const editIssues = await rocaPage.validateROCAForUser(
