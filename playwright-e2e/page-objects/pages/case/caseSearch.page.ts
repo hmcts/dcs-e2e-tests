@@ -23,6 +23,7 @@ class CaseSearchPage extends Base {
   noCasesText: Locator;
   allWordsCheckbox: Locator;
   caseTableLoadIcon: Locator;
+  caseTableDiv: Locator;
   caseTable: Locator;
 
   constructor(page) {
@@ -39,14 +40,14 @@ class CaseSearchPage extends Base {
     this.noCasesText = page.locator("#caseListDiv > h4");
     this.allWordsCheckbox = page.locator("#searchAllWords");
     this.caseTableLoadIcon = page.locator("#spinner");
-    this.caseTable = page.locator("table.formTable-zebra");
+    this.caseTableDiv = page.locator("#caseListDiv");
+    this.caseTable = this.caseTableDiv.locator("table.formTable-zebra");
   }
 
   async waitForCaseTableToLoad() {
     await expect(this.caseTableLoadIcon).toBeHidden({ timeout: 60_000 });
-    await expect(this.caseTable).toBeVisible({
-      timeout: 90_000,
-    });
+    await expect(this.caseTableDiv).toBeVisible({ timeout: 60_000 });
+    await expect(this.caseTable).toBeVisible({ timeout: 40_000 });
     const rowCount = await this.caseTable.locator("tr").count();
     console.log(`📊 Table loaded with ${rowCount} rows`);
   }
