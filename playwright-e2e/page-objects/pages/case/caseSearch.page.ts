@@ -105,7 +105,7 @@ class CaseSearchPage extends Base {
 
     const cleanedRows = allRows.map((row) => row.replace(/\s+/g, " ").trim());
 
-    console.log("Cleaned rows:", cleanedRows);
+    console.log("Cases available after Search", textFieldInput, "ROWS", cleanedRows);
     return found;
   }
 
