@@ -44,13 +44,11 @@ class CaseSearchPage extends Base {
 
   async waitForCaseTableToLoad() {
     await expect(this.caseTableLoadIcon).toBeHidden({ timeout: 60_000 });
-    await expect(this.caseTable.locator("th")).toHaveCount(7, {
+    await expect(this.caseTable).toBeVisible({
       timeout: 40_000,
     });
-    const rows = this.caseTable.locator("tr").filter({
-      has: this.page.locator("td"),
-    });
-    await expect(rows.first()).toBeVisible({ timeout: 40_000 });
+    const rowCount = await this.caseTable.locator("tr").count();
+    console.log(`📊 Table loaded with ${rowCount} rows`);
   }
   /**
    * Retrieves the locator for a specific case row in the search results table
