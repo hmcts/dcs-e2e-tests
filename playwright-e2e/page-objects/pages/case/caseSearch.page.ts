@@ -22,6 +22,8 @@ class CaseSearchPage extends Base {
   toDateCheckbox: Locator;
   noCasesText: Locator;
   allWordsCheckbox: Locator;
+  caseTableLoadIcon: Locator;
+  caseTable: Locator;
 
   constructor(page) {
     super(page);
@@ -36,8 +38,20 @@ class CaseSearchPage extends Base {
     this.toDateCheckbox = page.locator("#toDateCheck");
     this.noCasesText = page.locator("#caseListDiv > h4");
     this.allWordsCheckbox = page.locator("#searchAllWords");
+    this.caseTableLoadIcon = page.locator("#spinner");
+    this.caseTable = page.locator("table.formTable-zebra");
   }
 
+  async waitForCaseTableToLoad() {
+    await expect(this.caseTableLoadIcon).toBeHidden({ timeout: 60_000 });
+    await expect(this.caseTable.locator("th")).toHaveCount(7, {
+      timeout: 40_000,
+    });
+    const rows = this.caseTable.locator("tr").filter({
+      has: this.page.locator("td"),
+    });
+    await expect(rows.first()).toBeVisible({ timeout: 40_000 });
+  }
   /**
    * Retrieves the locator for a specific case row in the search results table
    * based on a text input (e.g., case name or URN) and an optional hearing date.
@@ -79,25 +93,27 @@ class CaseSearchPage extends Base {
     const caseRowNoHearing = this.getCaseRowByTextInput(textFieldInput);
 
     let found = false;
+    let foundWithHearing = false;
+    let foundWithoutHearing = false;
 
     for (let attempt = 0; attempt < 2; attempt++) {
       await this.applyFilter.click();
 
-      // Search case WITH hearing
+      await this.waitForCaseTableToLoad();
+
       try {
-        await expect(caseRow).toHaveCount(1, { timeout: 20_000 });
-        await expect(caseRow).toBeVisible({ timeout: 20_000 });
-        found = true;
-        break;
+        await expect(caseRow).toHaveCount(1, { timeout: 30_000 });
+        foundWithHearing = true;
       } catch {}
 
-      // Try case WITHOUT hearing
-      try {
-        await expect(caseRowNoHearing).toHaveCount(1, { timeout: 20_000 });
-        await expect(caseRowNoHearing).toBeVisible({ timeout: 20_000 });
-        found = true;
-        break;
-      } catch {}
+      if (!foundWithHearing) {
+        try {
+          await expect(caseRowNoHearing).toHaveCount(1, { timeout: 30_000 });
+          foundWithoutHearing = true;
+        } catch {}
+      }
+
+      found = foundWithHearing || foundWithoutHearing;
     }
     const allRows = await this.page
       .locator(".formTable-zebra tr")
@@ -105,7 +121,18 @@ class CaseSearchPage extends Base {
 
     const cleanedRows = allRows.map((row) => row.replace(/\s+/g, " ").trim());
 
-    console.log("Cases available after Search", textFieldInput, "ROWS", cleanedRows);
+    console.log(`
+    🔍 Case Search Debug
+    Search Input: ${textFieldInput}
+    Hearing Date: ${hearingDate ?? "N/A"}
+
+    Results:
+    - With hearing date: ${foundWithHearing ? "✅ Found" : "❌ Not found"}
+    - Without hearing date: ${foundWithoutHearing ? "✅ Found" : "❌ Not found"}
+
+    Rows:
+    ${cleanedRows.map((row, i) => `  ${i + 1}. ${row}`).join("\n")}
+    `);
     return found;
   }
 

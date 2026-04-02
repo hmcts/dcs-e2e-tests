@@ -106,7 +106,14 @@ export async function deleteCaseByName(caseName: string, timeoutMs = 60000) {
       `${config.urls.base}Case/CaseIndex?currentFirst=1&displaySize=10`,
     );
 
-    await caseSearchPage.searchCaseFile(caseName, "Southwark", todaysDate());
+    const found = await caseSearchPage.searchCaseFile(
+      caseName,
+      "Southwark",
+      todaysDate(),
+    );
+    if (!found) {
+      console.warn(`Case ${caseName} not found during Case Search`);
+    }
     await caseSearchPage.goToUpdateCase(caseName, todaysDate());
     await caseDetailsPage.removeCase(timeoutMs);
 
