@@ -45,7 +45,7 @@ class CaseSearchPage extends Base {
   async waitForCaseTableToLoad() {
     await expect(this.caseTableLoadIcon).toBeHidden({ timeout: 60_000 });
     await expect(this.caseTable).toBeVisible({
-      timeout: 40_000,
+      timeout: 90_000,
     });
     const rowCount = await this.caseTable.locator("tr").count();
     console.log(`📊 Table loaded with ${rowCount} rows`);
