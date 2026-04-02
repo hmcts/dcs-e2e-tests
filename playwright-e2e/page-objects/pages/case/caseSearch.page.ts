@@ -136,6 +136,69 @@ class CaseSearchPage extends Base {
     return found;
   }
 
+  async searchUnavailableCaseFile(
+    textFieldInput: string,
+    location: string,
+    hearingDate?: string,
+  ) {
+    await this.locationField.selectOption(location);
+    await this.textField.clear();
+    await this.textField.fill(textFieldInput);
+    if (await this.fromDateCheckbox.isChecked()) {
+      await this.fromDateCheckbox.uncheck();
+    }
+    if (await this.toDateCheckbox.isChecked()) {
+      await this.toDateCheckbox.uncheck();
+    }
+    const allWordsChecked = await this.allWordsCheckbox.isChecked();
+    if (!allWordsChecked) {
+      await this.allWordsCheckbox.check();
+    }
+    const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
+    const caseRowNoHearing = this.getCaseRowByTextInput(textFieldInput);
+
+    let found = false;
+    let foundWithHearing = false;
+    let foundWithoutHearing = false;
+
+    for (let attempt = 0; attempt < 2; attempt++) {
+      await this.applyFilter.click();
+
+      try {
+        await expect(caseRow).toHaveCount(1, { timeout: 30_000 });
+        foundWithHearing = true;
+      } catch {}
+
+      if (!foundWithHearing) {
+        try {
+          await expect(caseRowNoHearing).toHaveCount(1, { timeout: 30_000 });
+          foundWithoutHearing = true;
+        } catch {}
+      }
+
+      found = foundWithHearing || foundWithoutHearing;
+    }
+    const allRows = await this.page
+      .locator(".formTable-zebra tr")
+      .allTextContents();
+
+    const cleanedRows = allRows.map((row) => row.replace(/\s+/g, " ").trim());
+
+    console.log(`
+    🔍 Case Search Debug
+    Search Input: ${textFieldInput}
+    Hearing Date: ${hearingDate ?? "N/A"}
+
+    Results:
+    - With hearing date: ${foundWithHearing ? "✅ Found" : "❌ Not found"}
+    - Without hearing date: ${foundWithoutHearing ? "✅ Found" : "❌ Not found"}
+
+    Rows:
+    ${cleanedRows.map((row, i) => `  ${i + 1}. ${row}`).join("\n")}
+    `);
+    return found;
+  }
+
   async searchForAvailableCase(
     textFieldInput: string,
     location: string,
@@ -228,7 +291,7 @@ class CaseSearchPage extends Base {
     await this.page.goto(
       `${config.urls.base}Case/CaseIndex?currentFirst=1&displaySize=10`,
     );
-    const found = await this.searchCaseFile(
+    const found = await this.searchUnavailableCaseFile(
       textFieldInput,
       location,
       hearingDate,
