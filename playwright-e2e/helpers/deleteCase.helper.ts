@@ -106,16 +106,8 @@ export async function deleteCaseByName(caseName: string, timeoutMs = 60000) {
       `${config.urls.base}Case/CaseIndex?currentFirst=1&displaySize=10`,
     );
 
-    const searchResult = await caseSearchPage
-      .searchCaseFile(caseName, "Southwark", todaysDate())
-      .catch(() => null);
-
-    if (!searchResult?.found) {
-      console.warn(
-        `⚠️ ${caseName} not found during Cleanup, deletion failed, skipping deletion`,
-      );
-      return;
-    }
+    await caseSearchPage.searchCaseFile(caseName, "Southwark", todaysDate());
+        
     await caseSearchPage.goToUpdateCase(caseName, todaysDate());
     await caseDetailsPage.removeCase(timeoutMs);
 
@@ -125,6 +117,6 @@ export async function deleteCaseByName(caseName: string, timeoutMs = 60000) {
       "Southwark",
       todaysDate(),
     );
+    console.log(`Successfully deleted ${caseName}`);
   });
-  console.log(`Successfully deleted ${caseName}`);
 }
