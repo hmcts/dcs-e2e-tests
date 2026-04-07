@@ -497,9 +497,11 @@ test.describe("@regression Split & Merge Case Functionality", () => {
     if (!newCaseName) return;
 
     await runCleanupSafely(async () => {
-      console.log(`Attempting to delete test case: ${newCaseName}`);
+      console.log(
+        `Attempting to delete test case: ${newCaseName} for Test: Split/Merge`,
+      );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(`Cleanup completed for ${newCaseName}`);
+      console.log(`Cleanup completed for ${newCaseName} for Test: Split/Merge`);
     }, 180_000);
   });
 });

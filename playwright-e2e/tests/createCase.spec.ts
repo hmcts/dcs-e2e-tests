@@ -5,7 +5,7 @@ import {
   deleteCaseByName,
 } from "../helpers/deleteCase.helper";
 import { loginAndOpenCase } from "../helpers/login.helper";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Case Creation & End-to-End Setup Test
@@ -47,9 +47,9 @@ test.describe("@regression @nightly Create & Update New Case", () => {
   }) => {
     // Create a brand new case
     await caseSearchPage.goToCreateCase();
-    const uniqueIdentifier = uuidv4(); 
+    const uniqueIdentifier = uuidv4();
     const caseDetails = await createCasePage.createNewCase(
-      uniqueIdentifier, 
+      uniqueIdentifier,
       "Probation",
     );
     newCaseName = caseDetails.newCaseName;
@@ -83,18 +83,19 @@ test.describe("@regression @nightly Create & Update New Case", () => {
     await changeCaseDetailsPage.changeCaseDetails(caseDetails.newCaseUrn);
     await caseDetailsPage.validateCaseUpdate(caseDetails.newCaseUrn);
 
-    // Invite defence users to access case with different defendant access
+    // Invite defence users to access case with different defendant access (admin included for case cleanup)
     await caseDetailsPage.caseNavigation.navigateTo("People");
     const defenceUserDetails = [
       {
         username: config.users.defenceAdvocateB.username,
         defendants: ["Defendant Two"],
-        role: "Defence",
       },
       {
         username: config.users.defenceAdvocateC.username,
         defendants: ["Defendant One", "Defendant Two"],
-        role: "Defence",
+      },
+      {
+        username: config.users.admin.username,
       },
     ];
     for (const defenceDetail of defenceUserDetails) {
@@ -103,6 +104,7 @@ test.describe("@regression @nightly Create & Update New Case", () => {
         defenceDetail?.defendants,
       );
     }
+
     await expect(peoplePage.pageTitle).toBeVisible({ timeout: 40_000 });
 
     // Confirm defence users have been granted the expected access by invite
@@ -136,9 +138,13 @@ test.describe("@regression @nightly Create & Update New Case", () => {
     if (!newCaseName) return;
 
     await runCleanupSafely(async () => {
-      console.log(`Attempting to delete test case: ${newCaseName}`);
+      console.log(
+        `Attempting to delete test case: ${newCaseName} for Test: Create New Case`,
+      );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(`Cleanup completed for ${newCaseName}`);
+      console.log(
+        `Cleanup completed for ${newCaseName} for Test: Create New Case`,
+      );
     }, 180_000);
   });
 });
