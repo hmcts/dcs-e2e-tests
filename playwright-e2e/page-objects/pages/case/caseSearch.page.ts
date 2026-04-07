@@ -114,22 +114,22 @@ class CaseSearchPage extends Base {
         try {
           await expect(caseRowNoHearing).toHaveCount(1, { timeout: 30_000 });
           foundWithoutHearing = true;
-        } catch {}
-      }
+        } catch {
+          if (!foundWithoutHearing) {
+            try {
+              const noResultsMessage = this.page.locator(
+                "text=There are no cases on the system",
+              );
 
-      if (!foundWithoutHearing) {
-        try {
-          const noResultsMessage = this.page.locator(
-            "text=There are no cases on the system",
-          );
-
-          if (await noResultsMessage.isVisible()) {
-            console.warn(
-              "⚠️ 'No results text' was displayed for: ",
-              textFieldInput,
-            );
+              if (await noResultsMessage.isVisible()) {
+                console.warn(
+                  "⚠️ 'No results text' was displayed for: ",
+                  textFieldInput,
+                );
+              }
+            } catch {}
           }
-        } catch {}
+        }
       }
 
       found = foundWithHearing || foundWithoutHearing;
