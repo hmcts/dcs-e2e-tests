@@ -99,7 +99,7 @@ class CaseSearchPage extends Base {
     let foundWithHearing = false;
     let foundWithoutHearing = false;
 
-    for (let attempt = 0; attempt < 2; attempt++) {
+    for (let attempt = 0; attempt < 3; attempt++) {
       await this.applyFilter.click();
       console.log("ATTEMPT", attempt, textFieldInput);
 
