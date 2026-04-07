@@ -117,6 +117,21 @@ class CaseSearchPage extends Base {
         } catch {}
       }
 
+      if (!foundWithoutHearing) {
+        try {
+          const noResultsMessage = this.page.locator(
+            "text=There are no cases on the system",
+          );
+
+          if (await noResultsMessage.isVisible()) {
+            console.warn(
+              "⚠️ 'No results text' was displayed for: ",
+              textFieldInput,
+            );
+          }
+        } catch {}
+      }
+
       found = foundWithHearing || foundWithoutHearing;
     }
     const allRows = await this.page
