@@ -101,6 +101,7 @@ class CaseSearchPage extends Base {
 
     for (let attempt = 0; attempt < 2; attempt++) {
       await this.applyFilter.click();
+      console.log("ATTEMPT", attempt, textFieldInput);
 
       await this.waitForCaseTableToLoad();
 
@@ -214,7 +215,7 @@ class CaseSearchPage extends Base {
     );
     if (!found) {
       throw new Error(
-        `❌ Case "${textFieldInput}" did not appear (with or without hearing) after applying filter`,
+        `❌ "${textFieldInput}" did not appear (with or without hearing) after applying filter`,
       );
     }
   }

@@ -41,8 +41,8 @@ export async function runCleanupSafely(
 
   try {
     await fn();
-  } catch (err) {
-    console.warn(`⚠️ Cleanup failed:`, err);
+  } catch {
+    console.warn(`⚠️ Cleanup failed:`);
   } finally {
     finished = true;
     clearTimeout(timeout);
@@ -76,7 +76,7 @@ export async function runAsAdmin(
     await browser.close();
   } catch (err) {
     if (context) await context.close();
-    console.error("❌ runAsAdmin failed:", err);
+    console.error("❌ Case cleanup failed:", err);
     throw err;
   }
 }
@@ -106,9 +106,13 @@ export async function deleteCaseByName(caseName: string, timeoutMs = 60000) {
       `${config.urls.base}Case/CaseIndex?currentFirst=1&displaySize=10`,
     );
 
-    const found = await caseSearchPage.searchCaseFile(caseName, "Southwark", todaysDate());
+    const found = await caseSearchPage.searchCaseFile(
+      caseName,
+      "Southwark",
+      todaysDate(),
+    );
     if (!found) {
-      console.warn(`Case ${caseName} not found during case search`)
+      console.warn(`${caseName} not found during case search`);
     }
     await caseSearchPage.goToUpdateCase(caseName, todaysDate());
     await caseDetailsPage.removeCase(timeoutMs);
