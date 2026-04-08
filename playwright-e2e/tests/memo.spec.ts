@@ -23,7 +23,13 @@ test.describe("@nightly @regression Memo Functionality", () => {
   let newCaseName: string;
 
   test.beforeEach(
-    async ({ homePage, caseSearchPage, createCasePage, caseDetailsPage }) => {
+    async ({
+      homePage,
+      caseSearchPage,
+      createCasePage,
+      caseDetailsPage,
+      peoplePage,
+    }) => {
       await homePage.open();
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
@@ -31,14 +37,15 @@ test.describe("@nightly @regression Memo Functionality", () => {
       const caseDetails = await createCasePage.createNewCase(uniqueIdentifier);
       newCaseName = caseDetails.newCaseName;
       await expect(caseDetailsPage.caseNameHeading).toBeVisible();
+      // Add Admin user for cleanup purposes
+      await caseDetailsPage.caseNavigation.navigateTo("People");
+      await peoplePage.addUser(config.users.admin.username);
+      await expect(peoplePage.pageTitle).toBeVisible({ timeout: 40_000 });
     },
   );
 
-  test("Add, Change and Remove Memos", async ({
-    caseDetailsPage,
-    memoPage,
-  }) => {
-    await caseDetailsPage.caseNavigation.navigateTo("Memos");
+  test("Add, Change and Remove Memos", async ({ peoplePage, memoPage }) => {
+    await peoplePage.caseNavigation.navigateTo("Memos");
     await expect(memoPage.memoHeading).toContainText("Add a Memorandum");
     const user = config.users.hmctsAdmin;
     const memos = [
