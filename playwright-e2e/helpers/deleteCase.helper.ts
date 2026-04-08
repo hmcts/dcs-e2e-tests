@@ -74,7 +74,10 @@ export async function runAsAdmin(
       await browser.close();
     }
   } catch (err) {
-    console.error("❌ Failed to launch browser or create context for runAsAdmin:", err);
+    console.error(
+      "❌ Failed to launch browser or create context for runAsAdmin:",
+      err,
+    );
     return false;
   }
 }
@@ -97,16 +100,19 @@ export async function deleteCaseByName(caseName: string, timeoutMs = 60000) {
     await caseSearchPage.goToUpdateCase(caseName, todaysDate());
     await caseDetailsPage.removeCase(timeoutMs);
 
-    // Confirm deletion succeeded
-    await caseSearchPage.confirmCaseDeletion(
+    const isDeletionConfirmed = await caseSearchPage.confirmCaseDeletion(
       caseName,
       "Southwark",
       todaysDate(),
     );
+
+    if (!isDeletionConfirmed) {
+      throw new Error(`Case deletion confirmation failed for ${caseName}.`);
+    }
   });
 
   if (success) {
-    console.log(`✅ Successfully attempted to delete ${caseName}`);
+    console.log(`✅ Case successfully deleted and confirmed: ${caseName}`);
   } else {
     console.error(`❌ Failed to delete ${caseName}. Check logs for details.`);
   }
