@@ -223,9 +223,6 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
         `Attempting to delete test case: ${newCaseName} for Test: Section Updates Unrestricted`,
       );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(
-        `Cleanup completed for ${newCaseName} for Test: Section Updates Unrestricted`,
-      );
     }, 180_000);
   });
 });
@@ -466,9 +463,6 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
         `Attempting to delete test case: ${newCaseName} for Test: Section Updates Restricted`,
       );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(
-        `Cleanup completed for ${newCaseName} for Test: Section Updates Restricted`,
-      );
     }, 180_000);
   });
 });

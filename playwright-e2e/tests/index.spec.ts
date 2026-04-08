@@ -151,7 +151,6 @@ test.describe("@nightly @regression Index Page Functionality", () => {
         `Attempting to delete test case: ${newCaseName} for Test: Index`,
       );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(`Cleanup completed for ${newCaseName}: Test - Index`);
     }, 180_000);
   });
 });

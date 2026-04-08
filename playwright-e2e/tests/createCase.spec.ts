@@ -78,11 +78,6 @@ test.describe("@regression @nightly Create & Update New Case", () => {
       "Defendant Two",
     ]);
 
-    // Update case-level details
-    await caseDetailsPage.goToChangeCaseDetails();
-    await changeCaseDetailsPage.changeCaseDetails(caseDetails.newCaseUrn);
-    await caseDetailsPage.validateCaseUpdate(caseDetails.newCaseUrn);
-
     // Invite defence users to access case with different defendant access (admin included for case cleanup)
     await caseDetailsPage.caseNavigation.navigateTo("People");
     const defenceUserDetails = [
@@ -110,8 +105,14 @@ test.describe("@regression @nightly Create & Update New Case", () => {
     // Confirm defence users have been granted the expected access by invite
     await peoplePage.validateUsers(defenceUserDetails);
 
+    // Update case-level details
+    await peoplePage.caseNavigation.navigateTo("CaseHome");
+    await caseDetailsPage.goToChangeCaseDetails();
+    await changeCaseDetailsPage.changeCaseDetails(caseDetails.newCaseUrn);
+    await caseDetailsPage.validateCaseUpdate(caseDetails.newCaseUrn);
+
     // Confirm Defence user access granted by the addition of a Domain email
-    await peoplePage.caseNavigation.navigateTo("Access");
+    await caseDetailsPage.caseNavigation.navigateTo("Access");
     await accessPage.navigateToAddDomain();
     await addEmailDomainPage.addEmailDomain("Defendant One", "pspb.cjsm.co.uk");
     await accessPage.verifyEmailDomain("pspb.cjsm.co.uk");
@@ -142,9 +143,6 @@ test.describe("@regression @nightly Create & Update New Case", () => {
         `Attempting to delete test case: ${newCaseName} for Test: Create New Case`,
       );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(
-        `Cleanup completed for ${newCaseName} for Test: Create New Case`,
-      );
     }, 180_000);
   });
 });

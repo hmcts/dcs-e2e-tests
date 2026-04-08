@@ -68,7 +68,6 @@ test.describe("@nightly @regression Memo Functionality", () => {
         `Attempting to delete test case: ${newCaseName} for Test: Memo`,
       );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(`Cleanup completed for ${newCaseName} for Test: Memo`);
     }, 180_000);
   });
 });

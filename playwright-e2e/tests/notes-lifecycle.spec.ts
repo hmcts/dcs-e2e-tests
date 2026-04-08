@@ -205,9 +205,6 @@ test.describe("@regression @nightly @pagination Notes Lifecycle", () => {
             `Attempting to delete test case: ${newCaseName} for Test: Notes Lifecycle`,
           );
           await deleteCaseByName(newCaseName, 180_000);
-          console.log(
-            `Cleanup completed for ${newCaseName} for Test: Notes Lifecycle`,
-          );
         }, 180_000);
       });
     });

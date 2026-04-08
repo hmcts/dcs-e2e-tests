@@ -501,7 +501,6 @@ test.describe("@regression Split & Merge Case Functionality", () => {
         `Attempting to delete test case: ${newCaseName} for Test: Split/Merge`,
       );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(`Cleanup completed for ${newCaseName} for Test: Split/Merge`);
     }, 180_000);
   });
 });

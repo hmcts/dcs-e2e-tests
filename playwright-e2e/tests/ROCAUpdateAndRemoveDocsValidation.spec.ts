@@ -243,9 +243,6 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unre
         `Attempting to delete test case: ${newCaseName} for Test: ROCA Update Unrestricted`,
       );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(
-        `Cleanup completed for ${newCaseName} for Test: ROCA Update Unrestricted`,
-      );
     }, 180_000);
   });
 });
@@ -504,9 +501,6 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
         `Attempting to delete test case: ${newCaseName} for Test: ROCA Update Restricted`,
       );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(
-        `Cleanup completed for ${newCaseName} for Test: ROCA Update Restricted`,
-      );
     }, 180_000);
   });
 });

@@ -111,7 +111,6 @@ test.describe("@nightly @regression PTPH Form Rendering / Photosnaps @ptph", () 
         `Attempting to delete test case: ${newCaseName} for Test: PTPH`,
       );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(`Cleanup completed for ${newCaseName} for Test: PTPH`);
     }, 180_000);
   });
 });

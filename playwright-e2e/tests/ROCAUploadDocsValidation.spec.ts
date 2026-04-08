@@ -319,7 +319,6 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
         `Attempting to delete test case: ${newCaseName} for Test: ROCA Upload`,
       );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(`Cleanup completed for ${newCaseName} for Test: ROCA Upload`);
     }, 180_000);
   });
 });

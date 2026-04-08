@@ -240,9 +240,6 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
         `Attempting to delete test case: ${newCaseName} for Test: Section Uploads`,
       );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(
-        `Cleanup completed for ${newCaseName} for Test: Section Uploads`,
-      );
     }, 180_000);
   });
 });

@@ -185,9 +185,6 @@ test.describe("@regression @pagination Remove Defendant from Case", () => {
         `Attempting to delete test case: ${newCaseName} for Test: Remove Defendant`,
       );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(
-        `Cleanup completed for ${newCaseName} for Test: Remove Defendant`,
-      );
     }, 180_000);
   });
 });
