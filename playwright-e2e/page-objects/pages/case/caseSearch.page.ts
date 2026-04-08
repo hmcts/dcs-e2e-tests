@@ -355,7 +355,9 @@ class CaseSearchPage extends Base {
       console.log(`✅ Case deletion confirmed for ${textFieldInput}`);
       return true;
     } catch (error) {
-      console.error(`❌ Failed to confirm case deletion for ${textFieldInput}: ${error.message}`);
+      console.error(
+        `❌ Failed to confirm case deletion for ${textFieldInput}: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
       return false;
     }
   }
