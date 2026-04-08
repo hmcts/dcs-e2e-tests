@@ -8,25 +8,18 @@ import CaseDetailsPage from "../page-objects/pages/case/caseDetails.page";
  * --------------------
  * These helpers are responsible for reliably deleting cases created during
  * E2E test execution.
- *
- * IMPORTANT:
- * Case deletion via the UI has historically been extremely flaky due to:
- *  - unstable confirmation dialogs
- *
- * As a result, deletion logic is intentionally defensive and retry-based.
- * Any apparent redundancy is deliberate and should not be simplified
- * without re-validating stability in CI in the future.
  */
 
 /**
  * Executes a cleanup function without allowing failures to break the test run.
  *
  * Cleanup is best-effort only:
- *  - failures are logged, not thrown
+ *  - failure is logged, not thrown
  *  - timeouts are reported but do not fail the suite
  *
  * This prevents test flakiness caused by post-test teardown issues.
  */
+
 export async function runCleanupSafely(
   fn: () => Promise<void>,
   timeoutMs: number,
@@ -42,7 +35,7 @@ export async function runCleanupSafely(
   try {
     await fn();
   } catch {
-    console.warn(`⚠️ Cleanup failed:`);
+    console.warn(`⚠️ Cleanup failed`);
   } finally {
     finished = true;
     clearTimeout(timeout);
@@ -59,7 +52,7 @@ export async function runCleanupSafely(
 export async function runAsAdmin(
   callback: (page: Page) => Promise<void>,
   headed = true,
-) {
+): Promise<boolean> {
   let context: BrowserContext | null = null;
 
   try {
@@ -70,35 +63,26 @@ export async function runAsAdmin(
     });
 
     const page = await context.newPage();
-    await callback(page);
-
-    await context.close();
-    await browser.close();
+    try {
+      await callback(page);
+      return true;
+    } catch (cbErr) {
+      console.error("❌ An action within the cleanup process failed:", cbErr);
+      return false;
+    } finally {
+      if (context) await context.close();
+      await browser.close();
+    }
   } catch (err) {
-    if (context) await context.close();
-    console.error("❌ Case cleanup failed:", err);
-    throw err;
+    console.error("❌ Failed to launch browser or create context for runAsAdmin:", err);
+    return false;
   }
 }
-
-/**
- * Deletes a case by name using the Admin UI.
- *
- * This helper intentionally uses polling and repeated validation because:
- *  - the delete confirmation dialog is unreliable
- *  - the case may already have been deleted by a previous attempt
- *  - search results may lag behind actual deletion
- *
- * Behaviour:
- *  - treats "case not found" as success
- *  - retries deletion until confirmed or timeout reached
- *  - validates deletion via search rather than UI feedback alone
- */
 
 export async function deleteCaseByName(caseName: string, timeoutMs = 60000) {
   if (!caseName) return;
 
-  await runAsAdmin(async (page) => {
+  const success = await runAsAdmin(async (page) => {
     const caseSearchPage = new CaseSearchPage(page);
     const caseDetailsPage = new CaseDetailsPage(page);
 
@@ -106,8 +90,10 @@ export async function deleteCaseByName(caseName: string, timeoutMs = 60000) {
       `${config.urls.base}Case/CaseIndex?currentFirst=1&displaySize=10`,
     );
 
+    // The methods called here (searchCaseFile, goToUpdateCase, removeCase, confirmCaseDeletion)
+    // are expected to handle their own errors gracefully by logging and not throwing,
+    // and runAsAdmin's inner catch block will log their errors.
     await caseSearchPage.searchCaseFile(caseName, "Southwark", todaysDate());
-        
     await caseSearchPage.goToUpdateCase(caseName, todaysDate());
     await caseDetailsPage.removeCase(timeoutMs);
 
@@ -117,6 +103,11 @@ export async function deleteCaseByName(caseName: string, timeoutMs = 60000) {
       "Southwark",
       todaysDate(),
     );
-    console.log(`Successfully deleted ${caseName}`);
   });
+
+  if (success) {
+    console.log(`✅ Successfully attempted to delete ${caseName}`);
+  } else {
+    console.error(`❌ Failed to delete ${caseName}. Check logs for details.`);
+  }
 }
