@@ -1,6 +1,5 @@
 import { Locator } from "playwright-core";
 import { Base } from "../../base";
-import { waitUntilClickable } from "../../../utils";
 import { expect } from "../../../fixtures";
 
 /**
@@ -42,18 +41,22 @@ class UpdateDocumentsPage extends Base {
    * Removes a document from the section.
    * Clicks the "Remove" button and accepts the confirmation dialog.
    */
-  async removeDocument() {
-    // Poll until the remove document button is interactable
-    await waitUntilClickable(this.removeBtn);
-    try {
-      const dialogPromise = this.page.waitForEvent("dialog");
-      await this.removeBtn.click();
-      const dialog = await dialogPromise;
+  async removeDocument(timeoutMs = 60000) {
+    let dialogCount = 0;
+
+    const handler = async (dialog) => {
+      dialogCount++;
+      console.log(`Dialog ${dialogCount}:`, dialog.message());
       await dialog.accept();
-      console.log("Dialog accepted - remove document");
-    } catch {
-      console.log("Issue accepting document deletion dialog");
-    }
+    };
+
+    this.page.on("dialog", handler);
+
+    await this.removeBtn.click();
+
+    await expect.poll(() => dialogCount, { timeout: timeoutMs }).toBe(1);
+
+    this.page.off("dialog", handler);
   }
 
   /**
