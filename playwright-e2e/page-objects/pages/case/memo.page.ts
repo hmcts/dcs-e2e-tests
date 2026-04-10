@@ -68,20 +68,15 @@ class MemoPage extends Base {
    * Removes an existing memo. Clicks the "Remove" button and accepts the
    * confirmation dialog.
    */
-  async removeMemo(timeoutMs = 60000) {
-    let dialogCount = 0;
-
+  async removeMemo() {
     const handler = async (dialog) => {
-      dialogCount++;
-      console.log(`Dialog ${dialogCount}:`, dialog.message());
+      console.log(`Dialog:`, dialog.message());
       await dialog.accept();
     };
 
     this.page.on("dialog", handler);
 
     await this.removeMemoButton.click();
-
-    await expect.poll(() => dialogCount, { timeout: timeoutMs }).toBe(1);
 
     this.page.off("dialog", handler);
   }

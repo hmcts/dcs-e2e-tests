@@ -93,9 +93,6 @@ export async function deleteCaseByName(caseName: string, timeoutMs = 60000) {
       `${config.urls.base}Case/CaseIndex?currentFirst=1&displaySize=10`,
     );
 
-    // The methods called here (searchCaseFile, goToUpdateCase, removeCase, confirmCaseDeletion)
-    // are expected to handle their own errors gracefully by logging and not throwing,
-    // and runAsAdmin's inner catch block will log their errors.
     await caseSearchPage.searchCaseFile(caseName, "Southwark", todaysDate());
     await caseSearchPage.goToUpdateCase(caseName, todaysDate());
     await caseDetailsPage.removeCase(timeoutMs);

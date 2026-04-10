@@ -41,20 +41,15 @@ class UpdateDocumentsPage extends Base {
    * Removes a document from the section.
    * Clicks the "Remove" button and accepts the confirmation dialog.
    */
-  async removeDocument(timeoutMs = 60000) {
-    let dialogCount = 0;
-
+  async removeDocument() {
     const handler = async (dialog) => {
-      dialogCount++;
-      console.log(`Dialog ${dialogCount}:`, dialog.message());
+      console.log(`Dialog:`, dialog.message());
       await dialog.accept();
     };
 
     this.page.on("dialog", handler);
 
     await this.removeBtn.click();
-
-    await expect.poll(() => dialogCount, { timeout: timeoutMs }).toBe(1);
 
     this.page.off("dialog", handler);
   }

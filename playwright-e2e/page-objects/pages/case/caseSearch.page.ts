@@ -163,7 +163,7 @@ class CaseSearchPage extends Base {
       - Rows: ${result.rows.length ? result.rows.map((row, i) => `  ${i + 1}. ${row}`).join("\n") : "  (no rows)"}
     `;
       console.error(errorMessage);
-      return { ...result, found: false }; 
+      return { ...result, found: false };
     }
 
     return result;
@@ -216,7 +216,6 @@ class CaseSearchPage extends Base {
       if (foundWithHearing || foundWithoutHearing) {
         break;
       }
-      await this.page.waitForTimeout(2000);
     }
 
     const allRows = await this.page
@@ -354,10 +353,8 @@ class CaseSearchPage extends Base {
       );
       console.log(`✅ Case deletion confirmed for ${textFieldInput}`);
       return true;
-    } catch (error) {
-      console.error(
-        `❌ Failed to confirm case deletion for ${textFieldInput}: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
+    } catch {
+      console.error(`❌ Failed to confirm case deletion for ${textFieldInput}`);
       return false;
     }
   }
