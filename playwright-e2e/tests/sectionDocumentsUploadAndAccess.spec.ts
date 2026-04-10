@@ -7,6 +7,7 @@ import {
   deleteCaseByName,
   runCleanupSafely,
 } from "../helpers/deleteCase.helper";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Section Document Upload Tests
@@ -50,13 +51,13 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
       await caseSearchPage.goToCreateCase();
 
       // Create Case with Defendants and Defence Users
+      const uniqueIdentifier = uuidv4();
       const newCase = await createNewCaseWithDefendantsAndUsers(
         createCasePage,
         caseDetailsPage,
         addDefendantPage,
         peoplePage,
-        "TestCase",
-        "TestURN",
+        uniqueIdentifier,
         "Defence",
       );
       newCaseName = newCase.newCaseName;
@@ -235,9 +236,10 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
     if (!newCaseName) return;
 
     await runCleanupSafely(async () => {
-      console.log(`Attempting to delete test case: ${newCaseName}`);
+      console.log(
+        `Attempting to delete test case: ${newCaseName} for Test: Section Uploads`,
+      );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(`Cleanup completed for ${newCaseName}`);
     }, 180_000);
   });
 });

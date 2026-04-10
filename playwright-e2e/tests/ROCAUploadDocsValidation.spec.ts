@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures";
+import { test } from "../fixtures";
 import { ROCAModel } from "../data/ROCAModel";
 import { config } from "../utils";
 import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
@@ -8,6 +8,7 @@ import {
   deleteCaseByName,
   runCleanupSafely,
 } from "../helpers/deleteCase.helper";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * ROCA: Document Upload & Access Validation
@@ -47,13 +48,13 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
       await caseSearchPage.goToCreateCase();
 
       // Create Case with Defendants and Defence Users
+      const uniqueIdentifier = uuidv4();
       const newCase = await createNewCaseWithDefendantsAndUsers(
         createCasePage,
         caseDetailsPage,
         addDefendantPage,
         peoplePage,
-        "TestCase",
-        "TestURN",
+        uniqueIdentifier,
         "Defence",
       );
       newCaseName = newCase.newCaseName;
@@ -99,7 +100,7 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
 
     // Navigate to ROCA page and validate unrestricted table
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.unrestrictedTable).toBeVisible({ timeout: 30_000 });
+    await rocaPage.waitForRocaTablesToLoad();
 
     // Compare expected vs actual ROCA
     const expectedROCA = uploadedDocuments;
@@ -215,7 +216,7 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
       );
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
+    await rocaPage.waitForRocaTablesToLoad();
 
     // Validate ROCA table filtered for Defence Advocate B documents
     const expectedROCADefenceB = uploadedDocuments.filter((document) =>
@@ -238,7 +239,7 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
       newCaseName,
     );
     await caseDetailsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
+    await rocaPage.waitForRocaTablesToLoad();
 
     const expectedROCADefenceA = uploadedDocuments.filter((document) =>
       document.defendants!.includes("One Defendant"),
@@ -278,7 +279,7 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
       );
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 30_000 });
+    await rocaPage.waitForRocaTablesToLoad();
 
     // Filter expected ROCA for combined visibility
     const expectedROCADefenceC = uploadedDocuments.filter(
@@ -314,9 +315,10 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
     if (!newCaseName) return;
 
     await runCleanupSafely(async () => {
-      console.log(`Attempting to delete test case: ${newCaseName}`);
+      console.log(
+        `Attempting to delete test case: ${newCaseName} for Test: ROCA Upload`,
+      );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(`Cleanup completed for ${newCaseName}`);
     }, 180_000);
   });
 });

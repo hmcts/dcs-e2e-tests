@@ -1,5 +1,3 @@
-import { expect } from "../fixtures";
-
 export function todaysDate() {
   const today = new Date();
   const day = today.getDate();
@@ -10,7 +8,7 @@ export function todaysDate() {
 
 export async function getRandomSectionKeys(
   sectionsPage,
-  sectionList: string[]
+  sectionList: string[],
 ) {
   const keys = await sectionsPage.getSectionKeys(sectionList);
   return Object.entries(keys)
@@ -20,7 +18,7 @@ export async function getRandomSectionKeys(
 
 export async function getRandomSectionKey(
   sectionsPage,
-  sectionList: string[]
+  sectionList: string[],
 ): Promise<[string, string][]> {
   const keys = (await sectionsPage.getSectionKeys(sectionList)) as Record<
     string,
@@ -30,20 +28,4 @@ export async function getRandomSectionKey(
     .sort(() => Math.random() - 0.5)
     .slice(0, 1); // returns [ [section, key], ... ]
   return randomKey;
-}
-
-export async function waitUntilClickable(locator, timeout = 10000) {
-  await expect
-    .poll(
-      async () => {
-        try {
-          await locator.click({ trial: true });
-          return true;
-        } catch {
-          return false;
-        }
-      },
-      { timeout, intervals: [500] }
-    )
-    .toBe(true);
 }

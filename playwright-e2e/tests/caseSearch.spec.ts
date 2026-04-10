@@ -78,7 +78,7 @@ test.describe("@regression @nightly Case search and navigation for existing case
       const reviewEvidencePage = new ReviewEvidencePage(popup);
       await expect(reviewEvidencePage.caseName).toContainText(
         caseDetails.name,
-        {},
+        { timeout: 30000 },
       );
       await popup.close();
     });

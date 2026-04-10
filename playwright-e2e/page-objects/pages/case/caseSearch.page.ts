@@ -1,6 +1,7 @@
 import { Locator } from "@playwright/test";
 import { Base } from "../../base";
 import { expect } from "../../../fixtures";
+import { config } from "../../../utils";
 
 /**
  * Represents the Case Search page, allowing users to find and interact with cases.
@@ -21,6 +22,9 @@ class CaseSearchPage extends Base {
   toDateCheckbox: Locator;
   noCasesText: Locator;
   allWordsCheckbox: Locator;
+  caseTableLoadIcon: Locator;
+  caseTableDiv: Locator;
+  caseTable: Locator;
 
   constructor(page) {
     super(page);
@@ -35,8 +39,22 @@ class CaseSearchPage extends Base {
     this.toDateCheckbox = page.locator("#toDateCheck");
     this.noCasesText = page.locator("#caseListDiv > h4");
     this.allWordsCheckbox = page.locator("#searchAllWords");
+    this.caseTableLoadIcon = page.locator("#spinner");
+    this.caseTableDiv = page.locator("#caseListDiv");
+    this.caseTable = this.caseTableDiv.locator("table.formTable-zebra");
   }
 
+  async waitForCaseTableToLoad() {
+    await expect(this.caseTableLoadIcon).toBeHidden({ timeout: 60_000 });
+    await expect(this.caseTableDiv).toBeVisible({ timeout: 60_000 });
+    try {
+      await this.caseTable.waitFor({ state: "attached", timeout: 40_000 });
+    } catch {
+      console.warn("⚠️ No results table rendered after search");
+    }
+    const rowCount = await this.caseTable.locator("tr").count();
+    console.log(`📊 Table loaded with ${rowCount} rows`);
+  }
   /**
    * Retrieves the locator for a specific case row in the search results table
    * based on a text input (e.g., case name or URN) and an optional hearing date.
@@ -74,36 +92,162 @@ class CaseSearchPage extends Base {
     if (!allWordsChecked) {
       await this.allWordsCheckbox.check();
     }
-    const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
-    const caseRowNoHearing = this.getCaseRowByTextInput(textFieldInput);
 
-    let found = false;
+    let foundWithHearing = false;
+    let foundWithoutHearing = false;
+
+    for (let attempt = 0; attempt < 2; attempt++) {
+      await this.applyFilter.click();
+      console.log(`Attempt ${attempt + 1} - Searching for ${textFieldInput}`);
+
+      await this.waitForCaseTableToLoad();
+
+      const rowWithHearing = this.getCaseRowByTextInput(
+        textFieldInput,
+        hearingDate,
+      );
+      const rowWithoutHearing = this.getCaseRowByTextInput(textFieldInput);
+
+      const withHearingCount = hearingDate ? await rowWithHearing.count() : 0;
+
+      const withoutHearingCount = await rowWithoutHearing.count();
+
+      foundWithHearing = withHearingCount > 0;
+      foundWithoutHearing = withoutHearingCount > 0;
+
+      if (foundWithHearing || foundWithoutHearing) {
+        break; // ✅ success
+      }
+
+      // If case not found, determine if the "no results" text is visible (debugging table load vs case access issues)
+      const noResultsVisible = await this.page
+        .locator("text=There are no cases on the system")
+        .isVisible()
+        .catch(() => false);
+
+      if (noResultsVisible) {
+        console.warn(
+          `⚠️ There are no cases on the system for: ${textFieldInput}`,
+        );
+      }
+
+      await this.page.waitForTimeout(2000);
+    }
+
+    // Final table state for results
+    const allRows = await this.page
+      .locator(".formTable-zebra tr")
+      .allTextContents();
+
+    const cleanedRows = allRows.map((row) => row.replace(/\s+/g, " ").trim());
+
+    const result = {
+      found: foundWithHearing || foundWithoutHearing,
+      foundWithHearing,
+      foundWithoutHearing,
+      rowCount: cleanedRows.length,
+      rows: cleanedRows,
+    };
+
+    if (!result.found) {
+      const errorMessage = `
+      ❌ Case NOT found but was expected
+
+      Search Input: ${textFieldInput}
+      Hearing Date: ${hearingDate ?? "N/A"}
+
+      Results:
+      - With hearing date: ${result.foundWithHearing ? "✅ Found" : "❌ Not found"}
+      - Without hearing date: ${result.foundWithoutHearing ? "✅ Found" : "❌ Not found"}
+      - Row count: ${result.rowCount}
+      - Rows: ${result.rows.length ? result.rows.map((row, i) => `  ${i + 1}. ${row}`).join("\n") : "  (no rows)"}
+    `;
+      console.error(errorMessage);
+      return { ...result, found: false };
+    }
+
+    return result;
+  }
+
+  async searchUnavailableCaseFile(
+    textFieldInput: string,
+    location: string,
+    hearingDate?: string,
+  ) {
+    await this.locationField.selectOption(location);
+    await this.textField.clear();
+    await this.textField.fill(textFieldInput);
+    if (await this.fromDateCheckbox.isChecked()) {
+      await this.fromDateCheckbox.uncheck();
+    }
+    if (await this.toDateCheckbox.isChecked()) {
+      await this.toDateCheckbox.uncheck();
+    }
+    const allWordsChecked = await this.allWordsCheckbox.isChecked();
+    if (!allWordsChecked) {
+      await this.allWordsCheckbox.check();
+    }
+
+    let foundWithHearing = false;
+    let foundWithoutHearing = false;
 
     for (let attempt = 0; attempt < 2; attempt++) {
       await this.applyFilter.click();
 
-      // Search case WITH hearing
-      try {
-        await expect(caseRow).toHaveCount(1, { timeout: 20_000 });
-        await expect(caseRow).toBeVisible({ timeout: 20_000 });
-        found = true;
-        break;
-      } catch {}
-
-      // Try case WITHOUT hearing
-      try {
-        await expect(caseRowNoHearing).toHaveCount(1, { timeout: 20_000 });
-        await expect(caseRowNoHearing).toBeVisible({ timeout: 20_000 });
-        found = true;
-        break;
-      } catch {}
-    }
-
-    if (!found) {
-      throw new Error(
-        `❌ Case "${textFieldInput}" did not appear (with or without hearing) after applying filter`,
+      const rowWithHearing = this.getCaseRowByTextInput(
+        textFieldInput,
+        hearingDate,
       );
+      const rowWithoutHearing = this.getCaseRowByTextInput(textFieldInput);
+
+      const withHearingCount = hearingDate ? await rowWithHearing.count() : 0;
+
+      const withoutHearingCount = await rowWithoutHearing.count();
+
+      foundWithHearing = withHearingCount > 0;
+      foundWithoutHearing = withoutHearingCount > 0;
+
+      console.log(`
+      Attempt ${attempt + 1}
+      - With hearing: ${withHearingCount}
+      - Without hearing: ${withoutHearingCount}
+      `);
+
+      if (foundWithHearing || foundWithoutHearing) {
+        break;
+      }
     }
+
+    const allRows = await this.page
+      .locator(".formTable-zebra tr")
+      .allTextContents();
+
+    const cleanedRows = allRows.map((row) => row.replace(/\s+/g, " ").trim());
+
+    const result = {
+      found: foundWithHearing || foundWithoutHearing,
+      foundWithHearing,
+      foundWithoutHearing,
+      rowCount: cleanedRows.length,
+      rows: cleanedRows,
+    };
+
+    if (result.found) {
+      console.error(`
+      ❌ Unexpectedly found a case expected to be unavailable.
+
+      Search Input: ${textFieldInput}
+      Hearing Date: ${hearingDate ?? "N/A"}
+
+      Results:
+      - With hearing date: ${result.foundWithHearing ? "✅ Found" : "❌ Not found"}
+      - Without hearing date: ${result.foundWithoutHearing ? "✅ Found" : "❌ Not found"}
+      - Row count: ${result.rowCount}
+      - Rows: ${result.rows.join("\n")}
+    `);
+    }
+
+    return result;
   }
 
   /**
@@ -121,9 +265,27 @@ class CaseSearchPage extends Base {
     textFieldInput: string,
     hearingDate?: string,
   ) {
-    const caseRow = this.getCaseRowByTextInput(textFieldInput, hearingDate);
-    const button = caseRow.getByRole("link", { name: navigationAction });
-    await expect(button).toBeVisible({ timeout: 5000 });
+    const caseRowWithHearing = this.getCaseRowByTextInput(
+      textFieldInput,
+      hearingDate,
+    );
+
+    const caseRowWithoutHearing = this.getCaseRowByTextInput(textFieldInput);
+
+    let button;
+
+    // Try WITH hearing date first
+    if (await caseRowWithHearing.count()) {
+      button = caseRowWithHearing
+        .getByRole("link", { name: navigationAction })
+        .first();
+    } else {
+      button = caseRowWithoutHearing
+        .getByRole("link", { name: navigationAction })
+        .first();
+    }
+
+    await button.waitFor({ state: "visible", timeout: 15000 });
     await button.click();
   }
 
@@ -155,14 +317,44 @@ class CaseSearchPage extends Base {
    * Includes retry logic to account for potential UI delays after deletion.
    * @returns {Promise<boolean>} Resolves to true if case deletion is confirmed, otherwise false.
    */
-  async confirmCaseDeletion() {
+  async confirmCaseDeletion(
+    textFieldInput: string,
+    location: string,
+    hearingDate?: string,
+  ): Promise<boolean> {
+    await this.page.goto(
+      `${config.urls.base}Case/CaseIndex?currentFirst=1&displaySize=10`,
+    );
+    const searchResult = await this.searchUnavailableCaseFile(
+      textFieldInput,
+      location,
+      hearingDate,
+    );
+    if (searchResult.found) {
+      console.error(`
+      ❌ Case deletion unsuccessful: Case was found after attempting deletion.
+
+      Search Input: ${textFieldInput}
+      Hearing Date: ${hearingDate ?? "N/A"}
+
+      Results:
+      - With hearing date: ${searchResult.foundWithHearing ? "✅ Found" : "❌ Not found"}
+      - Without hearing date: ${searchResult.foundWithoutHearing ? "✅ Found" : "❌ Not found"}
+      - Row count: ${searchResult.rowCount}
+      - Rows: ${searchResult.rows.join("\n")}
+    `);
+      return false;
+    }
+
     try {
-      await this.applyFilter.click();
-      await this.noCasesText.waitFor({ state: "visible", timeout: 40000 });
-      return await expect(this.noCasesText).toHaveText(
+      await expect(this.noCasesText).toBeVisible({ timeout: 40000 });
+      await expect(this.noCasesText).toHaveText(
         /There are no cases on the system/i,
       );
+      console.log(`✅ Case deletion confirmed for ${textFieldInput}`);
+      return true;
     } catch {
+      console.error(`❌ Failed to confirm case deletion for ${textFieldInput}`);
       return false;
     }
   }

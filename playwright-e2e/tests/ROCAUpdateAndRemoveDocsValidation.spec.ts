@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures";
+import { test } from "../fixtures";
 import { config, pushTestResult } from "../utils";
 import {
   createNewCaseWithUnrestrictedDocument,
@@ -10,6 +10,7 @@ import {
   runCleanupSafely,
 } from "../helpers/deleteCase.helper";
 import { ROCAModel } from "../data/ROCAModel";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * ROCA – End-to-End Document Audit Validation
@@ -65,6 +66,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unre
 
       // Create a new case with unrestricted documents
       // sampleKey tracks section name + section key for ROCA operations
+      const uniqueIdentifier = uuidv4();
       const newCase = await createNewCaseWithUnrestrictedDocument(
         createCasePage,
         caseDetailsPage,
@@ -73,8 +75,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unre
         sectionsPage,
         sectionDocumentsPage,
         rocaPage,
-        "TestCase",
-        "TestURN",
+        uniqueIdentifier,
         "Defence",
       );
       sampleKey = newCase.sampleKey as [string, string][];
@@ -104,7 +105,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unre
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.unrestrictedTable).toBeVisible({ timeout: 30_000 });
+    await rocaPage.waitForRocaTablesToLoad();
 
     // Compare expected vs actual ROCA
     const deletionIssues = await rocaPage.validateROCAForUser(
@@ -157,7 +158,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unre
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.unrestrictedTable).toBeVisible({ timeout: 30_000 });
+    await rocaPage.waitForRocaTablesToLoad();
 
     const expectedUnrestrictedROCA = rocaExpected;
     const unrestrictedResult = await rocaPage.validateROCAForUser(
@@ -209,7 +210,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unre
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.unrestrictedTable).toBeVisible({ timeout: 30_000 });
+    await rocaPage.waitForRocaTablesToLoad();
 
     // Compare expected vs actual ROCA
     const editIssues = await rocaPage.validateROCAForUser(
@@ -238,9 +239,10 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unre
     if (!newCaseName) return;
 
     await runCleanupSafely(async () => {
-      console.log(`Attempting to delete test case: ${newCaseName}`);
+      console.log(
+        `Attempting to delete test case: ${newCaseName} for Test: ROCA Update Unrestricted`,
+      );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(`Cleanup completed for ${newCaseName}`);
     }, 180_000);
   });
 });
@@ -273,7 +275,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
       await homePage.open();
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
-
+      const uniqueIdentifier = uuidv4();
       const newCase = await createNewCaseWithRestrictedDocument(
         createCasePage,
         caseDetailsPage,
@@ -282,8 +284,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
         sectionsPage,
         sectionDocumentsPage,
         rocaPage,
-        "TestCase",
-        "TestURN",
+        uniqueIdentifier,
         "Defence",
       );
       sampleKey = newCase.sampleKey as [string, string][];
@@ -327,7 +328,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 60_000 });
+    await rocaPage.waitForRocaTablesToLoad();
 
     // Compare expected vs actual ROCA
     const deletionIssues = await rocaPage.validateROCAForUser(
@@ -397,7 +398,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
       await updateDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 60_000 });
+    await rocaPage.waitForRocaTablesToLoad();
 
     const expectedRestrictedROCA = rocaExpected;
     const restrictedResult = await rocaPage.validateROCAForUser(
@@ -466,7 +467,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
-    await expect(rocaPage.restrictedTable).toBeVisible({ timeout: 60_000 });
+    await rocaPage.waitForRocaTablesToLoad();
 
     // Compare expected vs actual ROCA
     const editIssues = await rocaPage.validateROCAForUser(
@@ -496,9 +497,10 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
     if (!newCaseName) return;
 
     await runCleanupSafely(async () => {
-      console.log(`Attempting to delete test case: ${newCaseName}`);
+      console.log(
+        `Attempting to delete test case: ${newCaseName} for Test: ROCA Update Restricted`,
+      );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(`Cleanup completed for ${newCaseName}`);
     }, 180_000);
   });
 });

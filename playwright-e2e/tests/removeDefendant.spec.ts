@@ -8,6 +8,7 @@ import { openReviewPopupAwaitPagination } from "../helpers/reviewEvidencePaginat
 import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page";
 import { loginAndOpenCase } from "../helpers/login.helper";
 import { config } from "../utils";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Remove Defendant Test
@@ -36,7 +37,7 @@ test.describe("@regression @pagination Remove Defendant from Case", () => {
       await homePage.open();
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
-
+      const uniqueIdentifier = uuidv4();
       const newCase = await createNewCaseWithRestrictedDocument(
         createCasePage,
         caseDetailsPage,
@@ -45,8 +46,7 @@ test.describe("@regression @pagination Remove Defendant from Case", () => {
         sectionsPage,
         sectionDocumentsPage,
         rocaPage,
-        "TestCase",
-        "TestURN",
+        uniqueIdentifier,
         "Defence",
       );
       sampleKey = newCase.sampleKey;
@@ -181,9 +181,10 @@ test.describe("@regression @pagination Remove Defendant from Case", () => {
     if (!newCaseName) return;
 
     await runCleanupSafely(async () => {
-      console.log(`Attempting to delete test case: ${newCaseName}`);
+      console.log(
+        `Attempting to delete test case: ${newCaseName} for Test: Remove Defendant`,
+      );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(`Cleanup completed for ${newCaseName}`);
     }, 180_000);
   });
 });

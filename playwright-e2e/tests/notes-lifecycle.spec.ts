@@ -8,6 +8,7 @@ import {
 } from "../helpers/deleteCase.helper";
 import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page";
 import { openReviewPopupAwaitPagination } from "../helpers/reviewEvidencePagination.helper";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Notes Feature – End-to-End Validation (Lifecycle)
@@ -71,7 +72,7 @@ test.describe("@regression @nightly @pagination Notes Lifecycle", () => {
           await homePage.open();
           await homePage.navigation.navigateTo("ViewCaseListLink");
           await caseSearchPage.goToCreateCase();
-
+          const uniqueIdentifier = uuidv4();
           const newCase = await createNewCaseWithUnrestrictedDocument(
             createCasePage,
             caseDetailsPage,
@@ -80,8 +81,7 @@ test.describe("@regression @nightly @pagination Notes Lifecycle", () => {
             sectionsPage,
             sectionDocumentsPage,
             rocaPage,
-            "TestCase",
-            "TestURN",
+            uniqueIdentifier,
             user.group,
           );
 
@@ -201,9 +201,10 @@ test.describe("@regression @nightly @pagination Notes Lifecycle", () => {
         if (!newCaseName) return;
 
         await runCleanupSafely(async () => {
-          console.log(`Attempting to delete test case: ${newCaseName}`);
+          console.log(
+            `Attempting to delete test case: ${newCaseName} for Test: Notes Lifecycle`,
+          );
           await deleteCaseByName(newCaseName, 180_000);
-          console.log(`Cleanup completed for ${newCaseName}`);
         }, 180_000);
       });
     });

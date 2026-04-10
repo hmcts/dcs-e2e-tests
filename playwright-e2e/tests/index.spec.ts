@@ -6,6 +6,7 @@ import {
   deleteCaseByName,
   runCleanupSafely,
 } from "../helpers/deleteCase.helper";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Index Page – Sections & Document Validation
@@ -53,13 +54,13 @@ test.describe("@nightly @regression Index Page Functionality", () => {
       await caseSearchPage.goToCreateCase();
 
       // Create a fully configured case with defendants and defence users
+      const uniqueIdentifier = uuidv4();
       const newCase = await createNewCaseWithDefendantsAndUsers(
         createCasePage,
         caseDetailsPage,
         addDefendantPage,
         peoplePage,
-        "TestCase",
-        "TestURN",
+        uniqueIdentifier,
         "Admin",
       );
       newCaseName = newCase.newCaseName;
@@ -146,9 +147,10 @@ test.describe("@nightly @regression Index Page Functionality", () => {
     if (!newCaseName) return;
 
     await runCleanupSafely(async () => {
-      console.log(`Attempting to delete test case: ${newCaseName}`);
+      console.log(
+        `Attempting to delete test case: ${newCaseName} for Test: Index`,
+      );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(`Cleanup completed for ${newCaseName}`);
     }, 180_000);
   });
 });

@@ -42,20 +42,6 @@ class CreateCasePage extends Base {
   }
 
   /**
-   * Generates a unique case name and URN by appending a random number to the base names.
-   * @param {string} caseName - The base case name.
-   * @param {string} caseUrn - The base case URN.
-   * @returns {{newCaseName: string, newCaseUrn: string}} An object containing the generated unique case name and URN.
-   */
-  async generateCaseNameAndUrn(caseName: string, caseUrn: string) {
-    const randomNumber = Math.floor(Math.random() * 10000) + 1000;
-    const newCaseName = caseName + randomNumber;
-    const newCaseUrn = caseUrn + randomNumber;
-    console.log(newCaseName);
-    return { newCaseName, newCaseUrn };
-  }
-
-  /**
    * Selects a random valid option from a given dropdown locator.
    * @returns {Promise<string>} A Promise that resolves to the label of the randomly selected option.
    */
@@ -96,24 +82,23 @@ class CreateCasePage extends Base {
 
   /**
    * Fills out the form to create a new case and submits it.
-   * Automatically generates unique case name and URN, selects random/specified prosecution details,
-   * a default court house, and today's date for the hearing.
+   * Generates a unique case name and URN using the provided unique identifier.
+   * Selects random/specified prosecution details, a default court house,
+   * and today's date for the hearing.
    * @returns {{newCaseName: string, newCaseUrn: string, prosecutedByLabel: string}} An object containing the generated new case name and URN and prosecution party.
    */
   async createNewCase(
-    caseName: string,
-    caseUrn: string,
+    uniqueIdentifier: string, // This will be the UUID from the test file
     prosecutedBy?: string,
   ): Promise<{
     newCaseName: string;
     newCaseUrn: string;
     prosecutedByLabel: string;
   }> {
-    const { newCaseName, newCaseUrn } = await this.generateCaseNameAndUrn(
-      caseName,
-      caseUrn,
-    );
-    await this.caseName.fill(newCaseName.toString());
+    const newCaseName = `Case-${uniqueIdentifier}`;
+    const newCaseUrn = `URN-${uniqueIdentifier}`;
+
+    await this.caseName.fill(newCaseName);
     const finalProsecutedBy =
       prosecutedBy ??
       (await this.selectRandomOptionFromDropdown(
@@ -137,6 +122,7 @@ class CreateCasePage extends Base {
     await this.createBtn.click();
     return { newCaseName, newCaseUrn, prosecutedByLabel: finalProsecutedBy };
   }
+
 }
 
 export default CreateCasePage;

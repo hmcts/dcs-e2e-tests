@@ -10,6 +10,7 @@ import {
   runCleanupSafely,
 } from "../helpers/deleteCase.helper";
 import { verifyDocumentMove } from "../helpers/sectionDocuments.helper";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Section Document Update & Removal Tests
@@ -61,7 +62,7 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
       await homePage.open();
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
-
+      const uniqueIdentifier = uuidv4();
       const newCase = await createNewCaseWithUnrestrictedDocument(
         createCasePage,
         caseDetailsPage,
@@ -70,8 +71,7 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
         sectionsPage,
         sectionDocumentsPage,
         rocaPage,
-        "TestCase",
-        "TestURN",
+        uniqueIdentifier,
         "Defence",
       );
       // Store section keys and case name for tests
@@ -219,9 +219,10 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
     if (!newCaseName) return;
 
     await runCleanupSafely(async () => {
-      console.log(`Attempting to delete test case: ${newCaseName}`);
+      console.log(
+        `Attempting to delete test case: ${newCaseName} for Test: Section Updates Unrestricted`,
+      );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(`Cleanup completed for ${newCaseName}`);
     }, 180_000);
   });
 });
@@ -258,7 +259,7 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
       await homePage.open();
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
-
+      const uniqueIdentifier = uuidv4();
       const newCase = await createNewCaseWithRestrictedDocument(
         createCasePage,
         caseDetailsPage,
@@ -267,8 +268,7 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
         sectionsPage,
         sectionDocumentsPage,
         rocaPage,
-        "TestCase",
-        "TestURN",
+        uniqueIdentifier,
         "Defence",
       );
       sampleKey = newCase.sampleKey as [string, string][];
@@ -459,9 +459,10 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
     if (!newCaseName) return;
 
     await runCleanupSafely(async () => {
-      console.log(`Attempting to delete test case: ${newCaseName}`);
+      console.log(
+        `Attempting to delete test case: ${newCaseName} for Test: Section Updates Restricted`,
+      );
       await deleteCaseByName(newCaseName, 180_000);
-      console.log(`Cleanup completed for ${newCaseName}`);
     }, 180_000);
   });
 });

@@ -22,8 +22,15 @@ class ROCAPage extends Base {
 
   constructor(page) {
     super(page);
-    this.unrestrictedTable = page.locator("#rodaDiv table").nth(0);
-    this.restrictedTable = page.locator("#rodaDiv table").nth(1);
+    this.restrictedTable = page.locator("#rodaDiv table.formTable-zebra", {
+      has: page.locator("th", { hasText: "Defendants" }),
+    });
+
+    this.unrestrictedTable = page
+      .locator("#rodaDiv table.formTable-zebra")
+      .filter({
+        hasNot: page.locator("th", { hasText: "Defendants" }),
+      });
     this.splitAction = page.getByText("Index: Split", { exact: true });
     this.mergeAction = page.getByText("Index: Merge", { exact: true });
     this.unrestrDocRoca = page.getByText("Name: unrestrictedSectionUpload", {
@@ -343,8 +350,15 @@ class ROCAPage extends Base {
    * indicating that the ROCA page content has fully loaded.
    */
   async waitForRocaTablesToLoad() {
-    await this.unrestrictedTable.waitFor({ state: "visible", timeout: 40000 });
-    await this.restrictedTable.waitFor({ state: "visible", timeout: 40000 });
+    await Promise.all([
+      expect(this.restrictedTable).toHaveCount(1, { timeout: 60_000 }),
+      expect(this.unrestrictedTable).toHaveCount(1, { timeout: 60_000 }),
+    ]);
+
+    await Promise.all([
+      expect(this.restrictedTable).toBeVisible({ timeout: 60_000 }),
+      expect(this.unrestrictedTable).toBeVisible({ timeout: 60_000 }),
+    ]);
   }
 
   async validateSingleRestrictedROCAEntry(
