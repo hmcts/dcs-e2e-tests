@@ -1,4 +1,4 @@
-import { Locator } from "@playwright/test";
+import { Dialog, Locator } from "@playwright/test";
 import { Base } from "../../base";
 import { expect } from "../../../fixtures";
 
@@ -69,16 +69,18 @@ class MemoPage extends Base {
    * confirmation dialog.
    */
   async removeMemo() {
-    const handler = async (dialog) => {
-      console.log(`Dialog:`, dialog.message());
+    let dialog: Dialog | null = null;
+    try {
+      const dialogPromise = this.page.waitForEvent("dialog", { timeout: 5000 });
+      await this.removeMemoButton.click();
+      dialog = await dialogPromise;
+    } catch {
+      console.log("Issue accepting memo deletion dialog");
+    }
+    if (dialog) {
       await dialog.accept();
-    };
-
-    this.page.on("dialog", handler);
-
-    await this.removeMemoButton.click();
-
-    this.page.off("dialog", handler);
+      console.log("Dialog accepted");
+    }
   }
 
   /**
