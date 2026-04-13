@@ -70,7 +70,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
     },
   );
 
-  test(`Split & Merge Cases by HMCTS Admin`, async ({
+  test(`Split Cases by HMCTS Admin`, async ({
     sectionsPage,
     createNewSectionPage,
     sectionDocumentsPage,
