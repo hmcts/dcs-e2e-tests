@@ -87,10 +87,10 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unre
   test(`Validate ROCA: Document removal in unrestricted sections`, async ({
     rocaPage,
     sectionsPage,
-    updateDocumentsPage,
+    sectionDocumentsPage,
   }) => {
     for (const [section, key] of sampleKey) {
-      await sectionsPage.goToUpdateDocuments(key);
+      await sectionsPage.goToViewDocumentsByKey(key);
 
       // Reflect the deletion in the expected ROCA model
       await rocaPage.updateROCAModel(
@@ -101,8 +101,8 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unre
         config.users.hmctsAdmin.username,
       );
 
-      await updateDocumentsPage.removeDocument();
-      await updateDocumentsPage.caseNavigation.navigateTo("Sections");
+      await sectionDocumentsPage.removeDocument("unrestrictedSectionUpload");
+      await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
     await rocaPage.waitForRocaTablesToLoad();
@@ -299,7 +299,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
     caseSearchPage,
     sectionsPage,
     caseDetailsPage,
-    updateDocumentsPage,
+    sectionDocumentsPage,
     rocaPage,
   }) => {
     await sectionsPage.navigation.logOff();
@@ -315,7 +315,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [section, key] of sampleKey) {
       // Reflect the deletion in the expected ROCA model
-      await sectionsPage.goToUpdateDocuments(key);
+      await sectionsPage.goToViewDocumentsByKey(key);
       await rocaPage.updateROCAModel(
         rocaExpected,
         section,
@@ -324,8 +324,10 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
         config.users.defenceAdvocateA.username,
         "One Defendant",
       );
-      await updateDocumentsPage.removeDocument();
-      await updateDocumentsPage.caseNavigation.navigateTo("Sections");
+      await sectionDocumentsPage.removeDocument(
+        "restrictedSectionUploadDefendantOne",
+      );
+      await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
     await sectionsPage.caseNavigation.navigateTo("ROCA");
     await rocaPage.waitForRocaTablesToLoad();

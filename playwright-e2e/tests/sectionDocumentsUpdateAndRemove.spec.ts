@@ -83,16 +83,14 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
   test(`Validate document removal in unrestricted sections for user: HMCTS Admin`, async ({
     sectionsPage,
     sectionDocumentsPage,
-    updateDocumentsPage,
   }) => {
     for (const [section, key] of sampleKey) {
-      await sectionsPage.goToUpdateDocuments(key);
+      await sectionsPage.goToViewDocumentsByKey(key);
 
       // Remove document
-      await updateDocumentsPage.removeDocument();
+      await sectionDocumentsPage.removeDocument("unrestrictedSectionupload");
 
       // Validate removal
-      await updateDocumentsPage.sectionDocumentsBtn.click();
       const removeIssues = await sectionDocumentsPage.verifyDocumentRemoval(
         "HMCTSAdmin",
         section,
@@ -283,7 +281,6 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
     sectionsPage,
     caseDetailsPage,
     sectionDocumentsPage,
-    updateDocumentsPage,
   }) => {
     await sectionsPage.navigation.logOff();
 
@@ -297,13 +294,12 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
     );
     await caseDetailsPage.caseNavigation.navigateTo("Sections");
     for (const [section, key] of sampleKey) {
-      await sectionsPage.goToUpdateDocuments(key);
-
+      await sectionsPage.goToViewDocumentsByKey(key);
       // Remove document
-      await updateDocumentsPage.removeDocument();
-
+      await sectionDocumentsPage.removeDocument(
+        "restrictedSectionUploadDefendantOne",
+      );
       // Verify removal
-      await updateDocumentsPage.sectionDocumentsBtn.click();
       const removeIssues = await sectionDocumentsPage.verifyDocumentRemoval(
         "Defence Advocate A",
         section,
@@ -313,6 +309,7 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
       }
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
     }
+
     // Aggregate Results
     pushTestResult({
       user: config.users.defenceAdvocateA.group,

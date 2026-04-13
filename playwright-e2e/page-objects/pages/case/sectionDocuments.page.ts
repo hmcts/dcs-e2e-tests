@@ -33,16 +33,27 @@ class SectionDocumentsPage extends Base {
    * Waits for the section documents table to load, ensuring the loader is no longer visible.
    */
   async sectionTableLoad() {
+    const allRows = this.page.locator("table.formTable-zebra tbody tr");
+
     await expect
       .poll(
         async () => {
-          const loaderVisible = await this.sectionDocumentsLoader.isVisible();
-          const tableVisible = await this.sectionsTable.isVisible();
-          return !loaderVisible && tableVisible;
+          const loaderVisible = await this.sectionDocumentsLoader
+            .isVisible()
+            .catch(() => false);
+          const tableVisible = await this.sectionsTable
+            .isVisible()
+            .catch(() => false);
+          const rowCount = await allRows.count();
+
+          // Row count should be at least 2:
+          // 1 = section header
+          // 2 = column headers
+          return !loaderVisible && tableVisible && rowCount >= 2;
         },
         {
           timeout: 30000,
-          message: "Waiting for loader to disappear and table to be visible",
+          intervals: [500, 1000],
         },
       )
       .toBe(true);
@@ -52,17 +63,49 @@ class SectionDocumentsPage extends Base {
    * Verifies that a document has been successfully removed from a section.
    * @returns A string message if removal verification fails, otherwise void.
    */
+  async removeDocument(filename, timeoutMs = 40000) {
+    await this.sectionTableLoad();
+    const row = this.page.locator("tr", {
+      has: this.page.locator("td", {
+        hasText: `${filename}`,
+      }),
+    });
+    let dialogCount = 0;
+
+    const handler = async (dialog) => {
+      dialogCount++;
+      console.log(`Dialog ${dialogCount}:`, dialog.message());
+      await dialog.accept();
+    };
+
+    this.page.on("dialog", handler);
+
+    await row.locator('a:has-text("Remove")').click();
+
+    await expect.poll(() => dialogCount, { timeout: timeoutMs }).toBe(2);
+
+    this.page.off("dialog", handler);
+  }
+
+  /**
+   * Verifies that a document has been successfully removed from a section.
+   * @returns A string message if removal verification fails, otherwise void.
+   */
   async verifyDocumentRemoval(user, section) {
     await this.sectionTableLoad();
-    await this.page
-      .locator("table.formTable-zebra tbody tr:nth-child(n+2)")
-      .first()
-      .waitFor({ state: "visible", timeout: 40000 });
-    const rows = this.page.locator(
+    const documentRows = this.page.locator(
       "table.formTable-zebra tbody tr:nth-child(n+3)",
     );
-    const count = await rows.count();
-    if (count > 0) {
+    try {
+      await expect
+        .poll(() => documentRows.count(), {
+          timeout: 60000,
+          intervals: [500, 1000],
+        })
+        .toBe(0);
+
+      return; // ✅ success (undefined)
+    } catch {
       return `Document removal failed for ${user} in Section ${section}`;
     }
   }

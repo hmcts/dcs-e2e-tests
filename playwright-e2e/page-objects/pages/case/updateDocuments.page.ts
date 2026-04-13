@@ -38,23 +38,6 @@ class UpdateDocumentsPage extends Base {
   }
 
   /**
-   * Removes a document from the section.
-   * Clicks the "Remove" button and accepts the confirmation dialog.
-   */
-  async removeDocument() {
-    const handler = async (dialog) => {
-      console.log(`Dialog:`, dialog.message());
-      await dialog.accept();
-    };
-
-    this.page.on("dialog", handler);
-
-    await this.removeBtn.click();
-
-    this.page.off("dialog", handler);
-  }
-
-  /**
    * Moves a document to a new, randomly selected section.
    * This method ensures the new section is not one of the already used or specified new sections.
    * @returns The name of the randomly selected new section.
