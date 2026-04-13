@@ -3,7 +3,7 @@ import { Base } from "../../base";
 
 /**
  * Represents the "Add Email Domain Page" functionality, used for adding
- * a new email domain to the case Defence Email Domains access table. 
+ * a new email domain to the case Defence Email Domains access table.
  */
 class AddEmailDomainPage extends Base {
   domainInputField: Locator;

@@ -4,9 +4,9 @@ import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/review
 
 /**
  * Notes Feature – End-to-End Validation (Visibility & Access Control)
- * ------------------------------------ 
+ * ------------------------------------
  *
- * This test suite validates the Notes functionality on case documents, 
+ * This test suite validates the Notes functionality on case documents,
  * specifically covering:
  *
  * 2) Notes visibility and access control across user roles
@@ -22,9 +22,9 @@ import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/review
 const TEST_USERS = process.env.TEST_USERS || "nightly";
 // Please update TEST_USERS=regression locally to run all users
 
-// ============================================================ 
+// ============================================================
 // Test 2: Notes Visibility & Access Control
-// ============================================================ 
+// ============================================================
 //
 // As a user
 // I should only see Notes that I am permitted to see
@@ -36,6 +36,7 @@ const TEST_USERS = process.env.TEST_USERS || "nightly";
 
 test.describe("@nightly @regression Notes Visibility & Access Control", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
+
   test.beforeEach(async ({ homePage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("LogOn");
@@ -80,7 +81,7 @@ test.describe("@nightly @regression Notes Visibility & Access Control", () => {
 
       // Compare expected Notes (based on role permissions)
       // against actual Notes rendered in the UI
-      const { missingNotes, unexpectedNotes } = 
+      const { missingNotes, unexpectedNotes } =
         await reviewEvidencePage.notes.compareExpectedVsAvailableNotes(
           expectedNotes,
           availableNotes,
@@ -101,8 +102,8 @@ test.describe("@nightly @regression Notes Visibility & Access Control", () => {
       // Fail the test if any issues were found
       if (currentUserIssues.length > 0) {
         throw new Error(
-          `User ${ 
-            user.group 
+          `User ${
+            user.group
           } has missing/unexpected Notes:\n${currentUserIssues.join("\n")}`,
         );
       }

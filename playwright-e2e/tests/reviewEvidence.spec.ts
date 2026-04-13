@@ -40,6 +40,7 @@ const TEST_USERS = process.env.TEST_USERS || "nightly";
 
 test.describe("@nightly @regression Sections and Documents availability", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
+
   test.beforeEach(async ({ homePage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("LogOn");
@@ -119,6 +120,7 @@ test.describe("@nightly @regression Sections and Documents availability", () => 
 
 test.describe("@regression Document rendering / photosnaps", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
+
   test.beforeEach(async ({ homePage }) => {
     await homePage.open();
     await homePage.navigation.navigateTo("LogOn");
