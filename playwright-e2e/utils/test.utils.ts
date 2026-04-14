@@ -1,3 +1,5 @@
+import { expect } from "playwright/test";
+
 export function todaysDate() {
   const today = new Date();
   const day = today.getDate();
@@ -28,4 +30,20 @@ export async function getRandomSectionKey(
     .sort(() => Math.random() - 0.5)
     .slice(0, 1); // returns [ [section, key], ... ]
   return randomKey;
+}
+
+export async function waitUntilClickable(locator, timeout = 10000) {
+  await expect
+    .poll(
+      async () => {
+        try {
+          await locator.click({ trial: true });
+          return true;
+        } catch {
+          return false;
+        }
+      },
+      { timeout, intervals: [500] },
+    )
+    .toBe(true);
 }
