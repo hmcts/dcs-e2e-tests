@@ -1,6 +1,9 @@
 import { test, expect } from "../fixtures";
 import { pushTestResult } from "../utils";
-import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
+import {
+  createNewCaseWithDefendantsAndUsers,
+  createUniqueIdentifier,
+} from "../helpers/createCase.helper";
 import { uploadPTPHForm } from "../helpers/ptph.helper";
 import {
   deleteCaseByName,
@@ -46,7 +49,7 @@ test.describe("@nightly @regression PTPH Form Rendering / Photosnaps @ptph", () 
 
       // Create a new case with one defendant and CPS as prosecutor
       // Returns the new case name and URN for use in the test
-      const uniqueIdentifier = uuidv4();
+      const uniqueIdentifier = createUniqueIdentifier(uuidv4());
       const newCase = await createNewCaseWithDefendantsAndUsers(
         createCasePage,
         caseDetailsPage,

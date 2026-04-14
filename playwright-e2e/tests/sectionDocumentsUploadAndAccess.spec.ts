@@ -1,6 +1,9 @@
 import { test } from "../fixtures";
 import { sections, config, pushTestResult } from "../utils";
-import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
+import {
+  createNewCaseWithDefendantsAndUsers,
+  createUniqueIdentifier,
+} from "../helpers/createCase.helper";
 import { loginAndOpenCase } from "../helpers/login.helper";
 import { uploadAndValidateRestrictedDocumentUpload } from "../helpers/sectionDocuments.helper";
 import {
@@ -51,7 +54,7 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
       await caseSearchPage.goToCreateCase();
 
       // Create Case with Defendants and Defence Users
-      const uniqueIdentifier = uuidv4();
+      const uniqueIdentifier = createUniqueIdentifier(uuidv4());
       const newCase = await createNewCaseWithDefendantsAndUsers(
         createCasePage,
         caseDetailsPage,

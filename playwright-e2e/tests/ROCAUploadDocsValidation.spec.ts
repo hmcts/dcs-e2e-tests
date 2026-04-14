@@ -1,7 +1,10 @@
 import { test } from "../fixtures";
 import { ROCAModel } from "../data/ROCAModel";
 import { config } from "../utils";
-import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
+import {
+  createNewCaseWithDefendantsAndUsers,
+  createUniqueIdentifier,
+} from "../helpers/createCase.helper";
 import { sections, pushTestResult } from "../utils";
 import { loginAndOpenCase } from "../helpers/login.helper";
 import {
@@ -48,7 +51,7 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
       await caseSearchPage.goToCreateCase();
 
       // Create Case with Defendants and Defence Users
-      const uniqueIdentifier = uuidv4();
+      const uniqueIdentifier = createUniqueIdentifier(uuidv4());
       const newCase = await createNewCaseWithDefendantsAndUsers(
         createCasePage,
         caseDetailsPage,

@@ -1,6 +1,9 @@
 import { test, expect, currentUser, eligibleUsers } from "../fixtures";
 import { pushTestResult } from "../utils";
-import { createNewCaseWithUnrestrictedDocument } from "../helpers/createCase.helper";
+import {
+  createNewCaseWithUnrestrictedDocument,
+  createUniqueIdentifier,
+} from "../helpers/createCase.helper";
 import { loginAndOpenCase } from "../helpers/login.helper";
 import {
   deleteCaseByName,
@@ -72,7 +75,7 @@ test.describe("@regression @nightly @pagination Notes Lifecycle", () => {
           await homePage.open();
           await homePage.navigation.navigateTo("ViewCaseListLink");
           await caseSearchPage.goToCreateCase();
-          const uniqueIdentifier = uuidv4();
+          const uniqueIdentifier = createUniqueIdentifier(uuidv4());
           const newCase = await createNewCaseWithUnrestrictedDocument(
             createCasePage,
             caseDetailsPage,

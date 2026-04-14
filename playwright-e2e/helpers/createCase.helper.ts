@@ -48,6 +48,10 @@ const groupPreset = {
   ],
 };
 
+export function createUniqueIdentifier(uuid) {
+  const uniqueIdentifier = uuid.replace(/-/g, "").slice(0, 12);
+  return uniqueIdentifier.replace(/^[a-z]/, (c) => c.toUpperCase());
+}
 /**
  * Resolves users or user group into an array of user accounts to
  * be added to a test case
@@ -123,9 +127,8 @@ export async function createNewCaseWithDefendantsAndUsers(
       prosecutedBy,
     ));
   } else {
-    ({ newCaseName, newCaseUrn } = await createCasePage.createNewCase(
-      uniqueIdentifier,
-    ));
+    ({ newCaseName, newCaseUrn } =
+      await createCasePage.createNewCase(uniqueIdentifier));
   }
 
   // Add Defendants

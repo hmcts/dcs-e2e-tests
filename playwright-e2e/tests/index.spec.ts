@@ -1,5 +1,8 @@
 import { test } from "../fixtures";
-import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
+import {
+  createNewCaseWithDefendantsAndUsers,
+  createUniqueIdentifier,
+} from "../helpers/createCase.helper";
 import { sections, config, pushTestResult } from "../utils";
 import { DocumentModel } from "../data/documentModel";
 import {
@@ -54,7 +57,7 @@ test.describe("@nightly @regression Index Page Functionality", () => {
       await caseSearchPage.goToCreateCase();
 
       // Create a fully configured case with defendants and defence users
-      const uniqueIdentifier = uuidv4();
+      const uniqueIdentifier = createUniqueIdentifier(uuidv4());
       const newCase = await createNewCaseWithDefendantsAndUsers(
         createCasePage,
         caseDetailsPage,

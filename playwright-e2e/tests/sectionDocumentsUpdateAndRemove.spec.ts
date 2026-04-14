@@ -3,6 +3,7 @@ import { config, pushTestResult } from "../utils";
 import {
   createNewCaseWithUnrestrictedDocument,
   createNewCaseWithRestrictedDocument,
+  createUniqueIdentifier,
 } from "../helpers/createCase.helper";
 import { loginAndOpenCase } from "../helpers/login.helper";
 import {
@@ -62,7 +63,7 @@ test.describe("@nightly @regression Unrestricted Document Update and Removal Tes
       await homePage.open();
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
-      const uniqueIdentifier = uuidv4();
+      const uniqueIdentifier = createUniqueIdentifier(uuidv4());
       const newCase = await createNewCaseWithUnrestrictedDocument(
         createCasePage,
         caseDetailsPage,
@@ -257,7 +258,7 @@ test.describe("@nightly @regression Restricted Document Update and Removal Tests
       await homePage.open();
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
-      const uniqueIdentifier = uuidv4();
+      const uniqueIdentifier = createUniqueIdentifier(uuidv4());
       const newCase = await createNewCaseWithRestrictedDocument(
         createCasePage,
         caseDetailsPage,

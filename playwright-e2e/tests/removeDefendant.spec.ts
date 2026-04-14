@@ -1,5 +1,8 @@
 import { test, expect } from "../fixtures";
-import { createNewCaseWithRestrictedDocument } from "../helpers/createCase.helper";
+import {
+  createNewCaseWithRestrictedDocument,
+  createUniqueIdentifier,
+} from "../helpers/createCase.helper";
 import {
   deleteCaseByName,
   runCleanupSafely,
@@ -37,7 +40,7 @@ test.describe("@regression @pagination Remove Defendant from Case", () => {
       await homePage.open();
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
-      const uniqueIdentifier = uuidv4();
+      const uniqueIdentifier = createUniqueIdentifier(uuidv4());
       const newCase = await createNewCaseWithRestrictedDocument(
         createCasePage,
         caseDetailsPage,

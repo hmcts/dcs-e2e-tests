@@ -3,6 +3,7 @@ import { config, pushTestResult } from "../utils";
 import {
   createNewCaseWithUnrestrictedDocument,
   createNewCaseWithRestrictedDocument,
+  createUniqueIdentifier,
 } from "../helpers/createCase.helper";
 import { loginAndOpenCase } from "../helpers/login.helper";
 import {
@@ -66,7 +67,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Unre
 
       // Create a new case with unrestricted documents
       // sampleKey tracks section name + section key for ROCA operations
-      const uniqueIdentifier = uuidv4();
+      const uniqueIdentifier = createUniqueIdentifier(uuidv4());
       const newCase = await createNewCaseWithUnrestrictedDocument(
         createCasePage,
         caseDetailsPage,
@@ -275,7 +276,7 @@ test.describe("@nightly @regression ROCA: Document Update Audit Validation (Rest
       await homePage.open();
       await homePage.navigation.navigateTo("ViewCaseListLink");
       await caseSearchPage.goToCreateCase();
-      const uniqueIdentifier = uuidv4();
+      const uniqueIdentifier = createUniqueIdentifier(uuidv4());
       const newCase = await createNewCaseWithRestrictedDocument(
         createCasePage,
         caseDetailsPage,

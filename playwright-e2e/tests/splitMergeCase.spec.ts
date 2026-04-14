@@ -1,6 +1,9 @@
 import { test, expect } from "../fixtures";
 import { sections, config } from "../utils";
-import { createNewCaseWithDefendantsAndUsers } from "../helpers/createCase.helper";
+import {
+  createNewCaseWithDefendantsAndUsers,
+  createUniqueIdentifier,
+} from "../helpers/createCase.helper";
 import { loginAndOpenCase } from "../helpers/login.helper";
 import {
   deleteCaseByName,
@@ -57,7 +60,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
       await caseSearchPage.goToCreateCase();
 
       // Seed case with defendants and users
-      const uniqueIdentifier = uuidv4();
+      const uniqueIdentifier = createUniqueIdentifier(uuidv4());
       const newCase = await createNewCaseWithDefendantsAndUsers(
         createCasePage,
         caseDetailsPage,

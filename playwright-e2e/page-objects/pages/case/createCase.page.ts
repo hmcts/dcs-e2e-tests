@@ -95,8 +95,8 @@ class CreateCasePage extends Base {
     newCaseUrn: string;
     prosecutedByLabel: string;
   }> {
-    const newCaseName = `Case-${uniqueIdentifier}`;
-    const newCaseUrn = `URN-${uniqueIdentifier}`;
+    const newCaseName = `Case${uniqueIdentifier}`;
+    const newCaseUrn = `URN${uniqueIdentifier}`;
 
     await this.caseName.fill(newCaseName);
     const finalProsecutedBy =
@@ -122,7 +122,6 @@ class CreateCasePage extends Base {
     await this.createBtn.click();
     return { newCaseName, newCaseUrn, prosecutedByLabel: finalProsecutedBy };
   }
-
 }
 
 export default CreateCasePage;

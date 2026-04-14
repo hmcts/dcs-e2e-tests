@@ -6,6 +6,7 @@ import {
 } from "../helpers/deleteCase.helper";
 import { loginAndOpenCase } from "../helpers/login.helper";
 import { v4 as uuidv4 } from "uuid";
+import { createUniqueIdentifier } from "../helpers/createCase.helper";
 
 /**
  * Case Creation & End-to-End Setup Test
@@ -47,7 +48,7 @@ test.describe("@regression @nightly Create & Update New Case", () => {
   }) => {
     // Create a brand new case
     await caseSearchPage.goToCreateCase();
-    const uniqueIdentifier = uuidv4();
+    const uniqueIdentifier = createUniqueIdentifier(uuidv4());
     const caseDetails = await createCasePage.createNewCase(
       uniqueIdentifier,
       "Probation",
