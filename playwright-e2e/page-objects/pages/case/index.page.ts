@@ -3,6 +3,7 @@ import { Base } from "../../base";
 import { DocumentModel } from "../../../data/documentModel";
 import UploadDocumentPage from "./uploadDocument.page";
 import { expect } from "../../../fixtures";
+import ViewDocumentPage from "./viewDocument.page";
 
 /**
  * Represents the "Index" page within a case, which provides an overview of
@@ -41,6 +42,29 @@ class IndexPage extends Base {
     );
     await expect(loaders).toHaveCount(0, { timeout: 180_000 });
     console.log("Successful load of Index Table");
+  }
+
+  async documentLoad() {
+    const uploadStatus = this.page.locator("td img");
+
+    await expect
+      .poll(
+        async () => {
+          await this.page.reload();
+          const indexTable = this.page.locator(".fullContents");
+          const loaders = indexTable.locator(
+            'img[alt="working"][src*="spinning/wait16trans.gif"]:visible',
+          );
+          await expect(loaders).toHaveCount(0, { timeout: 180_000 });
+          console.log("Successful load of Index Table");
+          return await uploadStatus.getAttribute("title");
+        },
+        {
+          timeout: 5 * 60 * 1000,
+          intervals: [5000], // retry every 5s
+        },
+      )
+      .toBe("Successful upload");
   }
 
   /**
@@ -308,6 +332,28 @@ class IndexPage extends Base {
       });
       await expect(cellLocator).toBeHidden();
     }
+  }
+
+  async goToViewDocument() {
+    const viewLink = this.page.locator('a[title="View this document."]');
+
+    await expect
+      .poll(
+        async () => {
+          return await viewLink.count();
+        },
+        {
+          timeout: 5 * 60 * 1000,
+          intervals: [2000],
+        },
+      )
+      .toBeGreaterThan(0);
+
+    const [popup] = await Promise.all([
+      this.page.waitForEvent("popup"),
+      viewLink.click(),
+    ]);
+    return new ViewDocumentPage(popup);
   }
 }
 export default IndexPage;

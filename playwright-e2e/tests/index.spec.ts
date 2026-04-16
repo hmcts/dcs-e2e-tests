@@ -94,7 +94,7 @@ test.describe("@nightly @regression Index Page Functionality", () => {
       await indexPage.goToIndexSectionLink(sectionKey);
       await sectionDocumentsPage.goToUploadDocuments();
       await uploadDocumentPage.uploadUnrestrictedDocument(
-        "unrestrictedSectionUpload",
+        "unrestrictedSectionUpload.pdf",
       );
       await caseDetailsPage.caseNavigation.navigateTo("Index");
       const documentList = await indexPage.getIndexDocuments();
