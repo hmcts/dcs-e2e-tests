@@ -1,3 +1,4 @@
+import { Locator } from "playwright-core";
 import { Base } from "../../base";
 
 /**
@@ -5,8 +6,11 @@ import { Base } from "../../base";
  * This Page Object provides basic functionality to close the document view.
  */
 class ViewDocumentPage extends Base {
+  documentImage: Locator;
+
   constructor(page) {
     super(page);
+    this.documentImage = page.locator("#retrievedDocumentImage");
   }
 
   /**

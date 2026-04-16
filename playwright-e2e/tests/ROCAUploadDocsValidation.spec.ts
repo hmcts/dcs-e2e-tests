@@ -88,7 +88,7 @@ test.describe("@nightly @regression ROCA: Document Audit Validation (Restricted 
     for (const [sectionIndex, sectionKey] of sampleEntries) {
       await sectionsPage.goToUploadDocuments(sectionKey);
       await uploadDocumentPage.uploadUnrestrictedDocument(
-        "unrestrictedSectionUpload",
+        "unrestrictedSectionUpload.pdf",
       );
       await sectionDocumentsPage.caseNavigation.navigateTo("Sections");
       // Track in local ROCA model for later validation

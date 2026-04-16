@@ -1,5 +1,6 @@
 import { Locator } from "playwright-core";
 import { Base } from "../../base";
+import { expect } from "playwright/test";
 
 /**
  * Represents the document upload page within a case section.
@@ -11,6 +12,7 @@ class UploadDocumentPage extends Base {
   startUploadBtn: Locator;
   viewSectionDocsBtn: Locator;
   fileInput: Locator;
+  documentUploadStatus: Locator;
 
   constructor(page) {
     super(page);
@@ -19,14 +21,18 @@ class UploadDocumentPage extends Base {
       name: "View Section Documents",
     });
     this.fileInput = page.locator('input[type="file"]');
+    this.documentUploadStatus = page.locator(".plupload_file_percent");
   }
 
   /**
    * Uploads an unrestricted document (PDF) to the current section.
    */
   async uploadUnrestrictedDocument(filename: string) {
-    await this.fileInput.setInputFiles(`playwright-e2e/data/${filename}.pdf`);
+    await this.fileInput.setInputFiles(`playwright-e2e/data/${filename}`);
     await this.startUploadBtn.click();
+    await expect(this.documentUploadStatus).toHaveText("100%", {
+      timeout: 120000,
+    });
     await this.viewSectionDocsBtn.click();
   }
 
