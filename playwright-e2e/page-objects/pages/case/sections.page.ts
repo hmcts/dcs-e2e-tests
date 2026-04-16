@@ -317,11 +317,10 @@ class SectionsPage extends Base {
   ) {
     await this.goToUploadDocuments(key);
     await this.uploadDocumentPage.uploadUnrestrictedDocument(filename);
-
     const unrestrictedDocument = this.sectionDocumentsPage.page.locator(
       "td.documentInContentsIndex span",
       {
-        hasText: `${filename}`,
+        hasText: "unrestrictedSectionUpload",
       },
     );
     try {
