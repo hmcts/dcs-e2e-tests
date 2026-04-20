@@ -44,6 +44,10 @@ class IndexPage extends Base {
     console.log("Successful load of Index Table");
   }
 
+  /**
+   * Waits for a newly uploaded document to finish loading before interaction,
+   * specifically waiting for the upload status to be 'Successful upload'.
+   */
   async documentLoad() {
     const uploadStatus = this.page.locator("td img");
 
@@ -334,6 +338,11 @@ class IndexPage extends Base {
     }
   }
 
+  /**
+   * Following succesful load of a newly uploaded document, this method
+   * waits for the View link to become available against this document,
+   * then interacts with it. It returns an instance of the View Document page (popup).
+   */
   async goToViewDocument() {
     const viewLink = this.page.locator('a[title="View this document."]');
 
@@ -343,8 +352,8 @@ class IndexPage extends Base {
           return await viewLink.count();
         },
         {
-          timeout: 5 * 60 * 1000,
-          intervals: [2000],
+          timeout: 30000,
+          intervals: [500],
         },
       )
       .toBeGreaterThan(0);

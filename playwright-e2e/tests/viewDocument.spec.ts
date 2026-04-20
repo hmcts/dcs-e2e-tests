@@ -9,6 +9,7 @@ import {
 } from "../helpers/deleteCase.helper";
 import { sections } from "../utils";
 import { v4 as uuidv4 } from "uuid";
+import { getRandomSectionKey } from "../utils";
 
 /**
  * View Document
@@ -58,14 +59,11 @@ test.describe("@nightly @regression Placeholder files", () => {
     indexPage,
   }) => {
     await peoplePage.caseNavigation.navigateTo("Sections");
-    const unrestrictedSections = sections.unrestricted;
-    const unrestrictedSectionKeys =
-      await sectionsPage.getSectionKeys(unrestrictedSections);
-    const sampleEntries = Object.entries(unrestrictedSectionKeys)
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 1);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    for (const [section, key] of sampleEntries) {
+    const sampleEntry = await getRandomSectionKey(
+      sectionsPage,
+      sections.unrestricted,
+    );
+    for (const [, key] of sampleEntry) {
       await sectionsPage.uploadUnrestrictedSectionDocument(
         key,
         "placeholderTest.mp4",
