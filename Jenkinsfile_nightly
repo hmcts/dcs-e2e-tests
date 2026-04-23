@@ -158,8 +158,9 @@ withNightlyPipeline(type, product, component, 600) {
             reportFiles: 'index.html',
             reportName: "${params.TAGS_TO_RUN} E2E Tests for ${params.BROWSER_TO_RUN}"
           ])
+          // USE TO UPDATE SCREENSHOTS
           // archiveArtifacts artifacts: 'playwright-e2e/tests/**/*-snapshots/**/*.png',
-          //          allowEmptyArchive: true
+          // allowEmptyArchive: true
         }
       }
     } else {
@@ -222,6 +223,20 @@ withNightlyPipeline(type, product, component, 600) {
 
       stage('Generate & Publish Allure Report') {
         try {
+          // Determine environment from BASE_URL
+          def environmentName = "Unknown"
+          if (env.BASE_URL.contains("preprod")) {
+            environmentName = "Pre-production"
+          } else if (env.BASE_URL.contains("uat")) {
+            environmentName = "UAT"
+          }
+          echo "Allure Report Environment: ${environmentName}"
+          
+          // Ensure allure-results directory exists
+          sh "mkdir -p allure-results"
+          // Create environment.properties file for Allure
+          sh "echo 'Environment=${environmentName}' > allure-results/environment.properties"
+
           sh 'yarn allure:post-process'
           sh 'yarn allure:generate || true'
         } catch (Error) {

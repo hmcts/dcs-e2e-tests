@@ -105,7 +105,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
     for (const [section, sectionKey] of sampleKey) {
       await sectionsPage.uploadAndValidateUnrestrictedSectionDocument(
         sectionKey,
-        "unrestrictedSectionUpload",
+        "unrestrictedSectionUpload.pdf",
         section,
       );
       await sectionDocumentsPage.navigation.navigateTo("LogOff");
@@ -310,7 +310,7 @@ test.describe("@regression Split & Merge Case Functionality", () => {
     for (const [section, sectionKey] of sampleKey) {
       await sectionsPage.uploadAndValidateUnrestrictedSectionDocument(
         sectionKey,
-        "unrestrictedSectionUpload",
+        "unrestrictedSectionUpload.pdf",
         section,
       );
       await sectionDocumentsPage.navigation.navigateTo("LogOff");

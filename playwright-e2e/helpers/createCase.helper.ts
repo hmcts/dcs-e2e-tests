@@ -202,7 +202,7 @@ export async function createNewCaseWithUnrestrictedDocument(
   for (const [sectionIndex, sectionKey] of sampleKey) {
     await sectionsPage.uploadAndValidateUnrestrictedSectionDocument(
       sectionKey,
-      "unrestrictedSectionUpload",
+      "unrestrictedSectionUpload.pdf",
       sectionIndex,
     );
     await sectionDocumentsPage.caseNavigation.navigateTo("Sections");

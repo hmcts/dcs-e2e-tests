@@ -83,7 +83,7 @@ test.describe("@nightly @regression Document Upload Tests @cleanup", () => {
       const uploadIssues =
         await sectionsPage.uploadAndValidateUnrestrictedSectionDocument(
           key,
-          "unrestrictedSectionUpload",
+          "unrestrictedSectionUpload.pdf",
           section,
         );
       if (uploadIssues) {
