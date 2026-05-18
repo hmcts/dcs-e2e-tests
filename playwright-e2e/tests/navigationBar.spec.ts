@@ -1,10 +1,10 @@
-import { test, expect } from "../fixtures";
+import { test, expect } from "../fixtures.ts";
 import {
   publicNavigationLinks,
   authenticatedNavigationLinks,
   externalLinks,
-} from "../data/navLinks";
-import { config } from "../utils";
+} from "../data/navLinks.ts";
+import { config } from "../utils/index.ts";
 
 /**
  * Global Navigation Validation

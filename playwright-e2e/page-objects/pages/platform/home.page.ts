@@ -1,5 +1,5 @@
-import { Base } from "../../base";
-import { config } from "../../../utils";
+import { Base } from "../../base.ts";
+import { config } from "../../../utils/config.utils.ts";
 import { Locator } from "playwright-core";
 
 /**

@@ -1,6 +1,6 @@
 import { Locator } from "playwright-core";
-import { Base } from "../../base";
-import { expect } from "../../../fixtures";
+import { Base } from "../../base.ts";
+import { expect } from "../../../fixtures.ts";
 
 /**
  * Represents the "Update All Documents" page, allowing users to perform bulk actions

@@ -1,6 +1,6 @@
-import { test, expect, currentUser, eligibleUsers } from "../fixtures";
-import { pushTestResult } from "../utils";
-import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page";
+import { test, expect, currentUser, eligibleUsers } from "../fixtures.ts";
+import { pushTestResult } from "../utils/index.ts";
+import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page.ts";
 
 /**
  * Notes Feature – End-to-End Validation (Visibility & Access Control)

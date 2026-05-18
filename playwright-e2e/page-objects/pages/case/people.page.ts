@@ -1,4 +1,4 @@
-import { Base } from "../../base";
+import { Base } from "../../base.ts";
 import { Locator } from "playwright-core";
 import { expect } from "playwright/test";
 

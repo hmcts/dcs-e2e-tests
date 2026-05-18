@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { test, expect } from "../fixtures";
-import { UserCredentials, config, invalidUsers } from "../utils";
+import { test, expect } from "../fixtures.ts";
+import { UserCredentials, config, invalidUsers } from "../utils/index.ts";
 
 /**
  * Authentication – Login Validation

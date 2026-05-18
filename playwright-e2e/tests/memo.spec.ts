@@ -1,11 +1,11 @@
-import { test, expect } from "../fixtures";
-import { config } from "../utils";
+import { test, expect } from "../fixtures.ts";
+import { config } from "../utils/index.ts";
 import {
   runCleanupSafely,
   deleteCaseByName,
-} from "../helpers/deleteCase.helper";
+} from "../helpers/deleteCase.helper.ts";
 import { v4 as uuidv4 } from "uuid";
-import { createUniqueIdentifier } from "../helpers/createCase.helper";
+import { createUniqueIdentifier } from "../helpers/createCase.helper.ts";
 
 /**
  * Memo Validation

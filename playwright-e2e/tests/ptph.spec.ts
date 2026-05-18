@@ -1,14 +1,14 @@
-import { test, expect } from "../fixtures";
-import { pushTestResult } from "../utils";
+import { test, expect } from "../fixtures.ts";
+import { pushTestResult } from "../utils/index.ts";
 import {
   createNewCaseWithDefendantsAndUsers,
   createUniqueIdentifier,
-} from "../helpers/createCase.helper";
-import { uploadPTPHForm } from "../helpers/ptph.helper";
+} from "../helpers/createCase.helper.ts";
+import { uploadPTPHForm } from "../helpers/ptph.helper.ts";
 import {
   deleteCaseByName,
   runCleanupSafely,
-} from "../helpers/deleteCase.helper";
+} from "../helpers/deleteCase.helper.ts";
 import { v4 as uuidv4 } from "uuid";
 
 /**

@@ -1,5 +1,5 @@
-import { test, expect } from "../fixtures";
-import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page";
+import { test, expect } from "../fixtures.ts";
+import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page.ts";
 
 /**
  * Case Search & Entry

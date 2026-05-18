@@ -1,16 +1,16 @@
-import { test } from "../fixtures";
-import { config, pushTestResult } from "../utils";
+import { test } from "../fixtures.ts";
+import { config, pushTestResult } from "../utils/index.ts";
 import {
   createNewCaseWithUnrestrictedDocument,
   createNewCaseWithRestrictedDocument,
   createUniqueIdentifier,
-} from "../helpers/createCase.helper";
-import { loginAndOpenCase } from "../helpers/login.helper";
+} from "../helpers/createCase.helper.ts";
+import { loginAndOpenCase } from "../helpers/login.helper.ts";
 import {
   deleteCaseByName,
   runCleanupSafely,
-} from "../helpers/deleteCase.helper";
-import { verifyDocumentMove } from "../helpers/sectionDocuments.helper";
+} from "../helpers/deleteCase.helper.ts";
+import { verifyDocumentMove } from "../helpers/sectionDocuments.helper.ts";
 import { v4 as uuidv4 } from "uuid";
 
 /**

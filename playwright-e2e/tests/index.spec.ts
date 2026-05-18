@@ -1,14 +1,14 @@
-import { test } from "../fixtures";
+import { test } from "../fixtures.ts";
 import {
   createNewCaseWithDefendantsAndUsers,
   createUniqueIdentifier,
-} from "../helpers/createCase.helper";
-import { sections, config, pushTestResult } from "../utils";
-import { DocumentModel } from "../data/documentModel";
+} from "../helpers/createCase.helper.ts";
+import { sections, config, pushTestResult } from "../utils/index.ts";
+import { DocumentModel } from "../data/documentModel.ts";
 import {
   deleteCaseByName,
   runCleanupSafely,
-} from "../helpers/deleteCase.helper";
+} from "../helpers/deleteCase.helper.ts";
 import { v4 as uuidv4 } from "uuid";
 
 /**

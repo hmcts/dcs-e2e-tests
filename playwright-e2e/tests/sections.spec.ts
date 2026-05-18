@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { test, currentUser, eligibleUsers } from "../fixtures";
-import { UserCredentials, config, pushTestResult } from "../utils";
+import { test, currentUser, eligibleUsers } from "../fixtures.ts";
+import { UserCredentials, config, pushTestResult } from "../utils/index.ts";
 
 const TEST_USERS = process.env.TEST_USERS || "nightly";
 // Please update TEST_USERS=regression locally to run all eligible users

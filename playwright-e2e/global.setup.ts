@@ -1,9 +1,9 @@
-import { test as setup } from "./fixtures";
+import { test as setup } from "./fixtures.ts";
 import fs from "fs";
 import { Cookie } from "@playwright/test";
-import { CookieUtils } from "./utils/cookie.utils";
+import { CookieUtils } from "./utils/cookie.utils.ts";
 const cookieUtils = new CookieUtils();
-import { clearResultsFile } from "./utils";
+import { clearResultsFile } from "./utils/index.ts";
 
 function isSessionValid(sessionFile: string, cookieName: string): boolean {
   // In the case the file doesn't exist, it should attempt to login
@@ -12,7 +12,7 @@ function isSessionValid(sessionFile: string, cookieName: string): boolean {
   try {
     const data = JSON.parse(fs.readFileSync(sessionFile, "utf-8"));
     const cookie = data.cookies.find(
-      (cookie: Cookie) => cookie.name === cookieName
+      (cookie: Cookie) => cookie.name === cookieName,
     );
     if (!cookie) return false;
     if (cookie.expires === -1) return true; // treat session cookies as valid
@@ -22,6 +22,7 @@ function isSessionValid(sessionFile: string, cookieName: string): boolean {
     return false;
   }
 }
+
 setup.describe("Set up user session", () => {
   const sessionsPath = "./playwright-e2e/.sessions";
   fs.mkdirSync(sessionsPath, { recursive: true });
@@ -29,6 +30,7 @@ setup.describe("Set up user session", () => {
 
   clearResultsFile();
   console.log("Cleared previous test results.");
+
   /**
    * Signs in as a HMCTS Admin and stores session data.
    * Skips login if a valid session already exists.
@@ -45,6 +47,7 @@ setup.describe("Set up user session", () => {
     await loginPage.page.context().storageState({ path: user.sessionFile });
     await cookieUtils.addUserAnalyticsCookie(user.sessionFile!);
   });
+
   setup("Admin user", async ({ config, loginPage, homePage }) => {
     const user = config.users.admin;
     if (isSessionValid(user.sessionFile!, user.cookieName!)) {
@@ -58,7 +61,7 @@ setup.describe("Set up user session", () => {
     await cookieUtils.addUserAnalyticsCookie(user.sessionFile!);
     console.log(
       "Current sessions folder contents:",
-      fs.readdirSync(sessionsPath)
+      fs.readdirSync(sessionsPath),
     );
   });
 });

@@ -1,15 +1,15 @@
-import { test, expect } from "../fixtures";
-import { sections, config } from "../utils";
+import { test, expect } from "../fixtures.ts";
+import { sections, config } from "../utils/index.ts";
 import {
   createNewCaseWithDefendantsAndUsers,
   createUniqueIdentifier,
-} from "../helpers/createCase.helper";
-import { loginAndOpenCase } from "../helpers/login.helper";
+} from "../helpers/createCase.helper.ts";
+import { loginAndOpenCase } from "../helpers/login.helper.ts";
 import {
   deleteCaseByName,
   runCleanupSafely,
-} from "../helpers/deleteCase.helper";
-import { getRandomSectionKey } from "../utils";
+} from "../helpers/deleteCase.helper.ts";
+import { getRandomSectionKey } from "../utils/index.ts";
 import { v4 as uuidv4 } from "uuid";
 
 /**

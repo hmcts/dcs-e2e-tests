@@ -1,16 +1,16 @@
-import { test, expect, currentUser, eligibleUsers } from "../fixtures";
-import { pushTestResult } from "../utils";
+import { test, expect, currentUser, eligibleUsers } from "../fixtures.ts";
+import { pushTestResult } from "../utils/index.ts";
 import {
   createNewCaseWithUnrestrictedDocument,
   createUniqueIdentifier,
-} from "../helpers/createCase.helper";
-import { loginAndOpenCase } from "../helpers/login.helper";
+} from "../helpers/createCase.helper.ts";
+import { loginAndOpenCase } from "../helpers/login.helper.ts";
 import {
   deleteCaseByName,
   runCleanupSafely,
-} from "../helpers/deleteCase.helper";
-import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page";
-import { openReviewPopupAwaitPagination } from "../helpers/reviewEvidencePagination.helper";
+} from "../helpers/deleteCase.helper.ts";
+import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page.ts";
+import { openReviewPopupAwaitPagination } from "../helpers/reviewEvidencePagination.helper.ts";
 import { v4 as uuidv4 } from "uuid";
 
 /**

@@ -1,5 +1,5 @@
-import { test, expect } from "../fixtures";
-import { caseLinks } from "../data/navLinks";
+import { test, expect } from "../fixtures.ts";
+import { caseLinks } from "../data/navLinks.ts";
 
 /**
  * Case Navigation Links

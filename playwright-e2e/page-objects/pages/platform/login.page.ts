@@ -1,6 +1,6 @@
 import { Locator, expect } from "@playwright/test";
-import { Base } from "../../base";
-import { UserCredentials, config } from "../../../utils";
+import { Base } from "../../base.ts";
+import { UserCredentials, config } from "../../../utils/index.ts";
 
 /**
  * Represents the application's Login Page.

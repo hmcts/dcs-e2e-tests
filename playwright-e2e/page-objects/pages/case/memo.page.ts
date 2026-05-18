@@ -1,7 +1,7 @@
 import { Dialog, Locator } from "@playwright/test";
-import { Base } from "../../base";
-import { expect } from "../../../fixtures";
-import { waitUntilClickable } from "../../../utils/test.utils";
+import { Base } from "../../base.ts";
+import { expect } from "../../../fixtures.ts";
+import { waitUntilClickable } from "../../../utils/test.utils.ts";
 
 /**
  * Represents the "Memos" page within a case, where users can create, edit,
@@ -81,7 +81,10 @@ class MemoPage extends Base {
     }
     if (dialog) {
       try {
-        await dialog.accept();
+        await Promise.race([
+          dialog.accept(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Dialog accept operation timed out after 5000ms')), 5000))
+        ]);
         console.log("Dialog accepted");
       } catch (err) {
         throw new Error("Failed to handle remove memo dialog: " + err);

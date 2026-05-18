@@ -1,5 +1,5 @@
 import { Locator } from "@playwright/test";
-import { Base } from "../../base";
+import { Base } from "../../base.ts";
 
 /**
  * Represents the "Create New Section" page, allowing the creation of new document sections

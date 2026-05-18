@@ -1,9 +1,9 @@
-import SectionDocumentsPage from "./sectionDocuments.page";
+import SectionDocumentsPage from "./sectionDocuments.page.ts";
 import { Page } from "@playwright/test";
-import { Base } from "../../base";
+import { Base } from "../../base.ts";
 import { Locator } from "@playwright/test";
-import { DocumentModel, documents } from "../../../data/documentModel";
-import UploadDocumentPage from "./uploadDocument.page";
+import { DocumentModel, documents } from "../../../data/documentModel.ts";
+import UploadDocumentPage from "./uploadDocument.page.ts";
 import { expect } from "@playwright/test";
 
 /**

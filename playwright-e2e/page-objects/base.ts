@@ -9,8 +9,8 @@
  * All specific page and component Page Objects should extend this `Base` class.
  */
 import { Page } from "@playwright/test";
-import NavigationBar from "./components/navigationBar";
-import CaseNavigationBar from "./components/caseNavigationBar";
+import NavigationBar from "./components/navigationBar.ts";
+import CaseNavigationBar from "./components/caseNavigationBar.ts";
 
 export abstract class Base {
   public readonly page: Page;
