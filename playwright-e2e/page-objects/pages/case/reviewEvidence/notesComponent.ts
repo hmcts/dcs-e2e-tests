@@ -1,8 +1,8 @@
-import { Base } from "../../../base";
+import { Base } from "../../../base.ts";
 import { Locator } from "playwright-core";
-import { NotesModel } from "../../../../data/notesModel";
-import { expect } from "../../../../fixtures";
-import { notes } from "../../../../data/notesModel";
+import { NotesModel } from "../../../../data/notesModel.ts";
+import { expect } from "../../../../fixtures.ts";
+import { notes } from "../../../../data/notesModel.ts";
 
 /**
  * This NotesComponent Page Object represents the Notes panel on the Review Evidence page,

@@ -1,5 +1,5 @@
 import { expect, Locator } from "@playwright/test";
-import { Base } from "../../../base";
+import { Base } from "../../../base.ts";
 
 /**
  * Represents the "Register User" page, where new users can create an account.
@@ -21,6 +21,7 @@ class RegisterUserPage extends Base {
   confirmPassword: Locator;
   agreeTermsCheckBox: Locator;
   saveRegisterForm: Locator;
+  passwordError: Locator;
 
   constructor(page) {
     super(page);
@@ -37,6 +38,7 @@ class RegisterUserPage extends Base {
     this.confirmPassword = page.locator("#ConfirmPassword");
     this.agreeTermsCheckBox = page.locator("#agreeTermsCheckBox");
     this.saveRegisterForm = page.locator("#saveRegisterForm");
+    this.passwordError = page.locator("#passwordMessage .messageText.error");
   }
 
   /**
@@ -57,7 +59,7 @@ class RegisterUserPage extends Base {
     // Random selection - Self Inviting or Invitation Only user roles
     const isSelfInviteRole = Math.random() < 0.5;
     const domains: string[] = isSelfInviteRole
-      ? ["@justice.gov.uk", "@cps.gov.uk", "@judiciary.gsi.gov.uk"]
+      ? ["@justice.gov.uk", "@cps.gov.uk", "@ejudiciary.net"]
       : ["@pspb.cjsm.co.uk"];
 
     const labelsToExclude: string[] = isSelfInviteRole
@@ -85,6 +87,7 @@ class RegisterUserPage extends Base {
     if (await this.otherEmail1.isVisible()) {
       await this.otherEmail1.fill(`${userName}@cjsm.com`);
     }
+
     await this.password.fill(process.env.USER_REG_PASSWORD!);
     await this.confirmPassword.fill(process.env.USER_REG_PASSWORD!);
     await this.agreeTermsCheckBox.check();

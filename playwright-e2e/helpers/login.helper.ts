@@ -1,4 +1,4 @@
-import { todaysDate } from "../utils";
+import { todaysDate } from "../utils/index.ts";
 
 /**
  * Logs in a user and navigates to and opens a specific case.

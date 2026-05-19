@@ -1,6 +1,6 @@
 import { Locator } from "@playwright/test";
-import { Base } from "../../../base";
-import { expect } from "../../../../fixtures";
+import { Base } from "../../../base.ts";
+import { expect } from "../../../../fixtures.ts";
 
 /**
  * Represents the "User Settings" or "People List" page in the application,

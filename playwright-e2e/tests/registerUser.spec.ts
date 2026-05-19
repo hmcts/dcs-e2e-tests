@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures";
+import { test, expect } from "../fixtures.ts";
 
 /**
  * New User Registration Test Suite

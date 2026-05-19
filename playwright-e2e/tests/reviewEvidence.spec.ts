@@ -1,6 +1,6 @@
-import { test, expect, currentUser, eligibleUsers } from "../fixtures";
-import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page";
-import { pushTestResult } from "../utils";
+import { test, expect, currentUser, eligibleUsers } from "../fixtures.ts";
+import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/reviewEvidence.page.ts";
+import { pushTestResult } from "../utils/index.ts";
 
 /**
  * Review Evidence: Sections & Documents – End-to-End Validation

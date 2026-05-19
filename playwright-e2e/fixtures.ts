@@ -1,7 +1,7 @@
 import { test as baseTest } from "@playwright/test";
-import { PageFixtures, pageFixtures } from "./page-objects/pages";
-import { UtilsFixtures, utilsFixtures } from "./utils";
-import { config, UserCredentials } from "./utils";
+import { PageFixtures, pageFixtures } from "./page-objects/pages/index.ts";
+import { UtilsFixtures, utilsFixtures } from "./utils/index.ts";
+import { config, UserCredentials } from "./utils/index.ts";
 
 /**
  * @file This file defines custom Playwright fixtures for the test suite.
@@ -14,7 +14,7 @@ import { config, UserCredentials } from "./utils";
 // that may have overly broad permissions and skew test results.
 const excludedGroups = ["AccessCoordinator", "Admin"];
 export const eligibleUsers: UserCredentials[] = Object.values(
-  config.users
+  config.users,
 ).filter((u) => !excludedGroups.includes(u.group));
 
 // Determine the single user for a nightly run.

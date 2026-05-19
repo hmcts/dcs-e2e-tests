@@ -1,4 +1,4 @@
-import { config } from "../utils";
+import { config } from "../utils/index.ts";
 import { Page, Locator } from "playwright-core";
 /**
  * Navigation link models

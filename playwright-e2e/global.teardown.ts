@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { logFinalSummary } from "./utils";
+import { logFinalSummary } from "./utils/index.ts";
 
 export default async function globalTeardown() {
   //tears down user session and deletes session files

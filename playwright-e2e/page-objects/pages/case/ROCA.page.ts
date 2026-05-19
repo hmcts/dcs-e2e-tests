@@ -1,8 +1,8 @@
-import { Base } from "../../base";
+import { Base } from "../../base.ts";
 import { Locator } from "playwright-core";
-import { ROCAModel } from "../../../data/ROCAModel";
-import { expect } from "../../../fixtures";
-import { sections } from "../../../utils";
+import { ROCAModel } from "../../../data/ROCAModel.ts";
+import { expect } from "../../../fixtures.ts";
+import { sections } from "../../../utils/config.utils.ts";
 
 /**
  * Represents the "Record of Case Activity" (ROCA) page, which logs actions

@@ -1,6 +1,6 @@
 import { Locator } from "@playwright/test";
-import { Base } from "../../base";
-import { expect } from "../../../fixtures";
+import { Base } from "../../base.ts";
+import { expect } from "../../../fixtures.ts";
 
 /**
  * Represents the "Create Case" page, used for initiating a new case in the application.

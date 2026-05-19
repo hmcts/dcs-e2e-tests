@@ -1,7 +1,7 @@
 import { Locator } from "@playwright/test";
-import { Base } from "../../base";
-import { expect } from "../../../fixtures";
-import { config } from "../../../utils";
+import { Base } from "../../base.ts";
+import { expect } from "../../../fixtures.ts";
+import { config } from "../../../utils/index.ts";
 
 /**
  * Represents the Case Search page, allowing users to find and interact with cases.

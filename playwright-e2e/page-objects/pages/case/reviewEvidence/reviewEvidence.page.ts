@@ -1,8 +1,8 @@
-import { expect } from "../../../../fixtures";
+import { expect } from "../../../../fixtures.ts";
 import { Locator } from "@playwright/test";
-import { Base } from "../../../base";
-import { DocumentModel, documents } from "../../../../data/documentModel";
-import NotesComponent from "./notesComponent";
+import { Base } from "../../../base.ts";
+import { DocumentModel, documents } from "../../../../data/documentModel.ts";
+import NotesComponent from "./notesComponent.ts";
 
 /**
  * Represents the "Review Evidence" page, which is a core part of the application

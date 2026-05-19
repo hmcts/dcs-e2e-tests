@@ -1,7 +1,7 @@
-import { Base } from "../../base";
-import { DocumentModel } from "../../../data/documentModel";
-import ViewDocumentPage from "./viewDocument.page";
-import { expect } from "../../../fixtures";
+import { Base } from "../../base.ts";
+import { DocumentModel } from "../../../data/documentModel.ts";
+import ViewDocumentPage from "./viewDocument.page.ts";
+import { expect } from "../../../fixtures.ts";
 import { Locator } from "playwright-core";
 
 interface DocumentCheck {

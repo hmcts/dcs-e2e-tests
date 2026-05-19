@@ -1,16 +1,16 @@
-import { test } from "../fixtures";
-import { ROCAModel } from "../data/ROCAModel";
-import { config } from "../utils";
+import { test } from "../fixtures.ts";
+import { ROCAModel } from "../data/ROCAModel.ts";
+import { config } from "../utils/index.ts";
 import {
   createNewCaseWithDefendantsAndUsers,
   createUniqueIdentifier,
-} from "../helpers/createCase.helper";
-import { sections, pushTestResult } from "../utils";
-import { loginAndOpenCase } from "../helpers/login.helper";
+} from "../helpers/createCase.helper.ts";
+import { sections, pushTestResult } from "../utils/index.ts";
+import { loginAndOpenCase } from "../helpers/login.helper.ts";
 import {
   deleteCaseByName,
   runCleanupSafely,
-} from "../helpers/deleteCase.helper";
+} from "../helpers/deleteCase.helper.ts";
 import { v4 as uuidv4 } from "uuid";
 
 /**

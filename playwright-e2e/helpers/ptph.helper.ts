@@ -1,6 +1,6 @@
-import { expect } from "../fixtures";
+import { expect } from "../fixtures.ts";
 import { BrowserContext } from "@playwright/test";
-import { config } from "../utils";
+import { config } from "../utils/index.ts";
 
 /**
  * PTPH form ingestion helpers

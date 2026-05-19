@@ -1,5 +1,5 @@
 import { Locator } from "playwright-core";
-import { Base } from "../../base";
+import { Base } from "../../base.ts";
 
 /**
  * Represents a page that displays a document, typically opened as a popup or new tab.

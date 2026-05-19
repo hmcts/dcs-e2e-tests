@@ -1,8 +1,8 @@
-import { config } from "../utils";
-import { expect } from "../fixtures";
-import { sections } from "../utils";
-import { ROCAModel } from "../data/ROCAModel";
-import { getRandomSectionKey } from "../utils";
+import { config } from "../utils/index.ts";
+import { expect } from "../fixtures.ts";
+import { sections } from "../utils/index.ts";
+import { ROCAModel } from "../data/ROCAModel.ts";
+import { getRandomSectionKey } from "../utils/index.ts";
 
 /**
  * Case creation helpers

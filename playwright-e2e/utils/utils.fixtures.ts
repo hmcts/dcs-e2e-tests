@@ -1,6 +1,6 @@
 import { SessionUtils } from "@hmcts/playwright-common";
-import { Config, config } from "./config.utils";
-import { CookieUtils } from "./cookie.utils";
+import { Config, config } from "./config.utils.ts";
+import { CookieUtils } from "./cookie.utils.ts";
 import { AxeUtils } from "@hmcts/playwright-common";
 
 export interface UtilsFixtures {

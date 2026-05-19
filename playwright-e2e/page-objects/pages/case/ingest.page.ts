@@ -1,6 +1,6 @@
 import { Locator } from "@playwright/test";
-import { Base } from "../../base";
-import { expect } from "../../../fixtures";
+import { Base } from "../../base.ts";
+import { expect } from "../../../fixtures.ts";
 
 // PLEASE NOTE DUE TO LENGTHY EXECUTION TIMES INGESTION HAS NOT BEEN USED
 // FOR TEST SETUP

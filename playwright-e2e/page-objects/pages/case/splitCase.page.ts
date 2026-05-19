@@ -1,5 +1,5 @@
 import { Locator, expect } from "@playwright/test";
-import { Base } from "../../base";
+import { Base } from "../../base.ts";
 
 /**
  * Represents the "Split Case" page, enabling the division of an existing case

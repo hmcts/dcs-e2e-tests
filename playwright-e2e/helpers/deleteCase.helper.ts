@@ -1,8 +1,8 @@
-import { config } from "../utils";
+import { config } from "../utils/index.ts";
 import { chromium, Page, BrowserContext } from "playwright";
-import { todaysDate } from "../utils";
-import CaseSearchPage from "../page-objects/pages/case/caseSearch.page";
-import CaseDetailsPage from "../page-objects/pages/case/caseDetails.page";
+import { todaysDate } from "../utils/index.ts";
+import CaseSearchPage from "../page-objects/pages/case/caseSearch.page.ts";
+import CaseDetailsPage from "../page-objects/pages/case/caseDetails.page.ts";
 /**
  * Case cleanup helpers
  * --------------------

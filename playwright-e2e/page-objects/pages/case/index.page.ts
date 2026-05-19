@@ -1,9 +1,9 @@
 import { Locator } from "@playwright/test";
-import { Base } from "../../base";
-import { DocumentModel } from "../../../data/documentModel";
-import UploadDocumentPage from "./uploadDocument.page";
-import { expect } from "../../../fixtures";
-import ViewDocumentPage from "./viewDocument.page";
+import { Base } from "../../base.ts";
+import { DocumentModel } from "../../../data/documentModel.ts";
+import UploadDocumentPage from "./uploadDocument.page.ts";
+import { expect } from "../../../fixtures.ts";
+import ViewDocumentPage from "./viewDocument.page.ts";
 
 /**
  * Represents the "Index" page within a case, which provides an overview of
