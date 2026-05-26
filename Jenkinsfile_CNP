@@ -24,5 +24,43 @@ withNightlyPipeline(type, product, component) {
           unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
         }
       }
+    stage('Run Changed Playwright Tests') {
+      try {
+
+        sh 'git fetch origin master'
+
+        def changedTests = sh(
+          script: """
+            git diff --name-only origin/master...HEAD | grep 'tests/.*\\.spec\\.ts\$' || true
+          """,
+          returnStdout: true
+        ).trim()
+
+        if (changedTests) {
+
+          echo "Running changed Playwright tests:"
+          echo changedTests
+
+          changedTests.split("\\n").each { testFile ->
+
+            yarnBuilder.yarn("""
+              playwright test '${testFile}' \
+              --project=chrome \
+              --grep-invert='(@a11y)|(@performance)|(@visual)'
+            """)
+          }
+
+        } else {
+
+          echo "No changed spec files detected"
+          echo "Running smoke suite instead"
+
+          yarnBuilder.yarn('test:smoke')
+        }
+
+      } catch (Error) {
+        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+      }
+    }
   }
 }
