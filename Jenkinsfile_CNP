@@ -60,16 +60,16 @@ withNightlyPipeline(type, product, component) {
           throw new Exception("NO_CHANGED_TESTS")
         }
 
-      } catch (Error) {
+      } catch (Exception err) {
 
-        echo "Falling back to smoke tests"
+        echo "Falling back to smoke tests due to: ${err}"
 
         stage('Smoke Tests') {
           try {
             yarnBuilder.yarn('setup')
             yarnBuilder.yarn('test:smoke')
-          } catch (Error) {
-            unstable("Smoke tests had failures")
+          } catch (Exception smokeErr) {
+            unstable("Smoke tests had failures: ${smokeErr}")
           }
         }
       }
