@@ -8,58 +8,70 @@ def channel = "#dcs-automation"
 
 def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
-
-/**
-* As this repo is not a part of any service or application, withNightlyPipeline is used
-* Typically, withPipeline would be used as it contains additional steps needed to release & deploy
-* See https://github.com/hmcts/cnp-jenkins-library for more info on the opinionated pipeline
-*/
 withNightlyPipeline(type, product, component) {
+
   enableSlackNotifications(channel)
+
   afterAlways('DependencyCheckNightly') {
+
     stage('Lint') {
-        try {
-          yarnBuilder.yarn('lint')
-        } catch (Error) {
-          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-        }
+      try {
+        yarnBuilder.yarn('lint')
+      } catch (Error) {
+        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       }
+    }
+
     stage('Run Changed Playwright Tests') {
       try {
 
-        sh 'git fetch origin master'
-
         def changedTests = sh(
           script: """
-            git diff --name-only origin/master...HEAD | grep 'tests/.*\\.spec\\.ts\$' || true
+            git fetch origin master:master
+            BASE=\$(git merge-base HEAD master)
+            git diff --name-only \$BASE...HEAD \
+              | grep 'tests/.*\\.spec\\.ts\$' || true
           """,
           returnStdout: true
         ).trim()
 
-        if (changedTests) {
+        echo "Changed test files detected:"
+        echo "${changedTests}"
 
-          echo "Running changed Playwright tests:"
-          echo changedTests
+        if (changedTests?.trim()) {
 
-          changedTests.split("\\n").each { testFile ->
+          def testFiles = changedTests
+            .split("\\n")
+            .collect { it.trim() }
+            .findAll { it }
 
-            yarnBuilder.yarn("""
-              playwright test '${testFile}' \
+          echo "Running Playwright tests:"
+          echo testFiles.join(", ")
+
+          yarnBuilder.yarn("""
+            playwright test ${testFiles.join(' ')} \
               --project=chrome \
               --grep-invert='(@a11y)|(@performance)|(@visual)'
-            """)
-          }
+          """)
 
         } else {
 
           echo "No changed spec files detected"
-          echo "Running smoke suite instead"
-
-          yarnBuilder.yarn('test:smoke')
+          throw new Exception("NO_CHANGED_TESTS")
         }
 
       } catch (Error) {
-        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+
+        echo "Falling back to smoke tests"
+
+        stage('Smoke Tests') {
+          try {
+            yarnBuilder.yarn('setup')
+            yarnBuilder.yarn('test:smoke')
+          } catch (Error) {
+            unstable("Smoke tests had failures")
+          }
+        }
       }
     }
   }
