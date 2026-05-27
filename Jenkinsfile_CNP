@@ -8,6 +8,12 @@ def channel = "#dcs-automation"
 
 def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
+/**
+* Lightweight PR/CNP pipeline
+* Runs only changed Playwright spec files where possible
+* Falls back to smoke tests if no spec files changed
+*/
+
 withNightlyPipeline(type, product, component) {
 
   enableSlackNotifications(channel)
@@ -17,59 +23,76 @@ withNightlyPipeline(type, product, component) {
     stage('Lint') {
       try {
         yarnBuilder.yarn('lint')
-      } catch (Error) {
-        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+      } catch (Exception err) {
+        unstable("${STAGE_NAME} is unstable: ${err}")
       }
     }
 
-    stage('Run Changed Playwright Tests') {
+    stage('Set up Playwright') {
       try {
+        yarnBuilder.yarn('setup')
+      } catch (Exception err) {
+        unstable("${STAGE_NAME} is unstable: ${err}")
+      }
+    }
 
-        def changedTests = sh(
-          script: """
-            git fetch origin master:master
-            BASE=\$(git merge-base HEAD master)
-            git diff --name-only \$BASE...HEAD \
-              | grep 'tests/.*\\.spec\\.ts\$' || true
-          """,
-          returnStdout: true
-        ).trim()
+    stage('Detect Changed Playwright Tests') {
 
-        echo "Changed test files detected:"
-        echo "${changedTests}"
+      def changedTests = sh(
+        script: """
+          git fetch origin master:master
+          BASE=\$(git merge-base HEAD master)
 
-        if (changedTests?.trim()) {
+          git diff --name-only \$BASE...HEAD \
+            | grep 'tests/.*\\.spec\\.ts\$' || true
+        """,
+        returnStdout: true
+      ).trim()
 
-          def testFiles = changedTests
-            .split("\\n")
-            .collect { it.trim() }
-            .findAll { it }
+      echo "Changed test files detected:"
+      echo "${changedTests}"
 
-          echo "Running Playwright tests:"
-          echo testFiles.join(", ")
+      if (changedTests?.trim()) {
 
-          yarnBuilder.yarn("""
-            playwright test ${testFiles.join(' ')} \
-              --project=chrome \
-              --grep-invert='(@a11y)|(@performance)|(@visual)'
-          """)
+        env.TEST_ONLY_FILES = changedTests
+          .split("\\n")
+          .collect { it.trim() }
+          .findAll { it }
+          .join(' ')
 
-        } else {
+        echo "Running changed Playwright tests:"
+        echo env.TEST_ONLY_FILES
 
-          echo "No changed spec files detected"
-          throw new Exception("NO_CHANGED_TESTS")
+        stage('Changed Chrome Tests') {
+          try {
+
+            sh """
+              yarn playwright test ${env.TEST_ONLY_FILES} \
+                --project=chrome \
+                --grep-invert='(@smoke)|(@a11y)|(@performance)|(@visual)'
+            """
+
+          } catch (Exception err) {
+
+            // Real test failures should fail pipeline
+            error("Changed Playwright tests failed: ${err}")
+          }
         }
 
-      } catch (Exception err) {
+      } else {
 
-        echo "Falling back to smoke tests due to: ${err}"
+        echo "No changed spec files detected"
+        echo "Falling back to smoke tests"
 
         stage('Smoke Tests') {
           try {
-            yarnBuilder.yarn('setup')
+
+            yarnBuilder.yarn('setup:edge')
             yarnBuilder.yarn('test:smoke')
-          } catch (Exception smokeErr) {
-            unstable("Smoke tests had failures: ${smokeErr}")
+
+          } catch (Exception err) {
+
+            unstable("Smoke tests had failures: ${err}")
           }
         }
       }
