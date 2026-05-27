@@ -16,6 +16,9 @@ def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
 withNightlyPipeline(type, product, component) {
 
+  env.BASE_URL = 'https://ccdcspreprod.caselines.co.uk/'
+  env.TEST_USERS = 'nightly'
+
   enableSlackNotifications(channel)
 
   afterAlways('DependencyCheckNightly') {
