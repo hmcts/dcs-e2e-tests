@@ -53,7 +53,7 @@ export const externalLinks: NavLink[] = [
     name: "Guidance",
     expectedTitle: "CCDCS",
     expectedUrl:
-      "https://www.gov.uk/guidance/crown-court-digital-case-system-guidance",
+      "https://www.gov.uk/guidance/crown-court-digital-case-system-guidance-register-and-access-case-material",
   },
 ];
 
