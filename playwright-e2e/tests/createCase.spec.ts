@@ -30,7 +30,9 @@ test.describe("@regression @nightly Create & Update New Case", () => {
   let newCaseName: string;
 
   test.beforeEach(async ({ homePage }) => {
+    test.setTimeout(0);
     await homePage.open();
+    await homePage.page.pause();
     await homePage.navigation.navigateTo("ViewCaseListLink");
   });
 
