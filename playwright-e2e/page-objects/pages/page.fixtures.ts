@@ -41,6 +41,7 @@ import PTPHPage from "./case/ptph.page.ts";
 import AccessPage from "./case/access.page.ts";
 import AddEmailDomainPage from "./case/addEmailDomain.page.ts";
 import EditHearingDatePage from "./case/editHearingDate.page.ts";
+import EmailVerificationRequiredPage from "./platform/register/emailVerificationRequired.page.ts";
 
 /**
  * Interface defining the types of all available Page Object fixtures.
@@ -80,6 +81,7 @@ export interface PageFixtures {
   accessPage: AccessPage;
   addEmailDomainPage: AddEmailDomainPage;
   editHearingDatePage: EditHearingDatePage;
+  emailVerificationRequiredPage: EmailVerificationRequiredPage;
 }
 
 /**
@@ -184,5 +186,8 @@ export const pageFixtures = {
   },
   editHearingDatePage: async ({ page }, use) => {
     await use(new EditHearingDatePage(page));
+  },
+  emailVerificationRequiredPage: async ({ page }, use) => {
+    await use(new EmailVerificationRequiredPage(page));
   },
 };
