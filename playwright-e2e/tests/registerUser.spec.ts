@@ -54,6 +54,7 @@ test.describe("@nightly @regression Register New user in CCDCS", () => {
     approvalRequestsPage,
     approveAccessRequestPage,
     rejectAccessRequestPage,
+    emailVerificationRequiredPage,
   }) => {
     // New user completes registration form
 
@@ -61,11 +62,23 @@ test.describe("@nightly @regression Register New user in CCDCS", () => {
     await expect(registerUserPage.registerHeading).toContainText("Register");
     const { userName, userEmail, userRole, userLocation, isSelfInviteRole } =
       await registerUserPage.submitUserRegDetails();
-    await homePage.navigation.logOff();
+
+    // Ensure newly registered users do not have access to the platform prior to
+    // email verification
+
+    // 'Verification required' shown immediately after submitting registration details
+    await emailVerificationRequiredPage.confirmAccountAwaitingEmailVerification(
+      userEmail,
+    );
+    await emailVerificationRequiredPage.navigation.navigateTo("LogOn");
+    await loginPage.loginAsNewUserRegistered(userEmail);
+    // 'Verification required' shown after any login attempt prior to email verification
+    await emailVerificationRequiredPage.confirmAccountAwaitingEmailVerification(
+      userEmail,
+    );
 
     // Access Coordinator verifies the new user's email
-
-    await homePage.navigation.navigateTo("LogOn");
+    await emailVerificationRequiredPage.navigation.navigateTo("LogOn");
     await loginPage.loginAsAccessCoordinator();
     await homePage.navigation.navigateTo("Admin");
     await expect(adminPage.adminHeading).toContainText(
