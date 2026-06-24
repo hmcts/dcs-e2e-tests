@@ -10,17 +10,26 @@ import { Base } from "../../../base.ts";
  */
 
 class EmailVerificationRequiredPage extends Base {
-  requiresEmailVerificationText: Locator;
+  requiresEmailVerificationTextSingular: Locator;
+  requiresEmailVerificationTextPlural: Locator;
 
   constructor(page) {
     super(page);
-    this.requiresEmailVerificationText = page.getByText(
+    this.requiresEmailVerificationTextSingular = this.page.getByText(
       "We need to verify your email address. We have sent a verification email to the following address:",
+    );
+
+    this.requiresEmailVerificationTextPlural = this.page.getByText(
+      "We need to verify your email addresses. We have sent verification emails to the following addresses:",
     );
   }
 
   async confirmAccountAwaitingEmailVerification(emailAddress: string) {
-    await expect(this.requiresEmailVerificationText).toBeVisible();
+    await expect(
+      this.requiresEmailVerificationTextSingular.or(
+        this.requiresEmailVerificationTextPlural,
+      ),
+    ).toBeVisible();
     await expect(this.page.getByText(emailAddress)).toBeVisible();
     await expect(this.navigation.links.LogOn).toBeVisible();
   }
