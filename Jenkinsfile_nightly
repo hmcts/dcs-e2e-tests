@@ -28,7 +28,7 @@ properties([
   ])
 ])
 
-@Library("Infrastructure")
+@Library("Infrastructure@2.0.0") _
 
 def type = "nodejs"
 def product = "dcs-automation"
