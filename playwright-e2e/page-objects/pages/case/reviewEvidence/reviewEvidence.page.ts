@@ -3,6 +3,7 @@ import { Locator } from "@playwright/test";
 import { Base } from "../../../base.ts";
 import { DocumentModel, documents } from "../../../../data/documentModel.ts";
 import NotesComponent from "./notesComponent.ts";
+import PagesComponent from "./pagesComponent.ts";
 
 /**
  * Represents the "Review Evidence" page, which is a core part of the application
@@ -17,10 +18,12 @@ class ReviewEvidencePage extends Base {
   sections: Locator;
   caseName: Locator;
   notes: NotesComponent;
+  pages: PagesComponent;
 
   constructor(page) {
     super(page);
     this.notes = new NotesComponent(page);
+    this.pages = new PagesComponent(page);
     this.sectionPanel = page.locator("#bundleIndexDiv");
     this.documentTextName = page.locator(".docTextName");
     this.sections = page.locator("li.sectionLi");
@@ -31,6 +34,11 @@ class ReviewEvidencePage extends Base {
   // Review Evidence Index: Section Methods
   // ======================================================================
 
+  async getCurrentDocumentKey(): Promise<string | null> {
+    return this.page
+      .locator(".documentPageImage")
+      .getAttribute("data-documentrowkey");
+  }
   /**
    * Waits for the section panel to load and become visible, specifically ensuring
    * that all "Please wait..." loaders within the panel have disappeared.
@@ -393,6 +401,70 @@ class ReviewEvidencePage extends Base {
 
     if (!result.success) {
       throw new Error(result.message);
+    }
+  }
+
+  async waitForHighResImageLoadByDocument(
+    docId: string,
+    docName: string,
+    timeoutMs = 45000,
+  ) {
+    const imageLocator = this.page.locator(
+      `img.documentPageImage[data-documentrowkey="${docId}"]`,
+    );
+
+    // Wait for image to exist
+    await expect(imageLocator).toHaveCount(1, {
+      timeout: 60000,
+    });
+
+    // Wait for high-res image to load (r=i)
+    await expect
+      .poll(
+        async () => {
+          return await this.page.evaluate((documentId) => {
+            const img = document.querySelector<HTMLImageElement>(
+              `img.documentPageImage[data-documentrowkey="${documentId}"]`,
+            );
+
+            return !!img && img.src.includes("r=i");
+          }, docId);
+        },
+        {
+          timeout: timeoutMs,
+          intervals: [250],
+        },
+      )
+      .toBe(true);
+
+    console.log(`✅ High-res image loaded for Document: ${docName}`);
+  }
+
+  async confirmDocumentPage(documentKey) {
+    const durationMs = 3_000;
+    const intervalMs = 200;
+    const start = Date.now();
+
+    while (Date.now() - start < durationMs) {
+      expect(await this.getCurrentDocumentKey()).toBe(documentKey);
+
+      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+    }
+  }
+
+  /**
+   * Ensures that a specific document is currently open in the Review Evidence viewer.
+   * If the target document is not already open, it will navigate to it by clicking its link.
+   */
+  async ensureDocumentIsOpen(targetDocumentKey: string, targetDocumentName: string) {
+    const currentDocumentKey = await this.getCurrentDocumentKey();
+    if (currentDocumentKey !== targetDocumentKey) {
+      console.log(`Navigating to document: ${targetDocumentName} (${targetDocumentKey})`);
+      const documentLink = this.page.locator(`[id='${targetDocumentKey}']`);
+      await documentLink.click();
+      await this.waitForHighResImageLoadByDocument(targetDocumentKey, targetDocumentName);
+    } else {
+      console.log(`Document: ${targetDocumentName} (${targetDocumentKey}) is already open.`);
     }
   }
 }

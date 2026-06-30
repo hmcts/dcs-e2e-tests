@@ -81,19 +81,19 @@ export async function tryOpenReviewPopup(
  * @throws {Error} If the Review popup is not ready within the specified timeout.
  */
 export async function openReviewPopupAwaitPagination(
-  caseDetailsPage,
+  platformPage,
   maxWaitMs = 90000,
 ): Promise<Page> {
   const start = Date.now();
   let popup: Page | null = null;
 
   while (Date.now() - start < maxWaitMs) {
-    popup = await tryOpenReviewPopup(caseDetailsPage);
+    popup = await tryOpenReviewPopup(platformPage);
 
     if (popup) return popup;
 
-    // retry loop — avoids creating multiple popups
-    await caseDetailsPage.page.waitForTimeout(1000);
+    // retry loop — small wait before next retry
+    await platformPage.page.waitForTimeout(2000);
   }
 
   throw new Error(
