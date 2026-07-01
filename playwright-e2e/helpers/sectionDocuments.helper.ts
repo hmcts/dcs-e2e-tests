@@ -1,4 +1,4 @@
-import { config, sections, getRandomSectionKey } from "../utils/index.ts";
+import { sections, getRandomSectionKey } from "../utils/index.ts";
 import { loginAndOpenCase } from "./login.helper.ts";
 
 /**
