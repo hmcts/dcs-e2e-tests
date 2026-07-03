@@ -64,6 +64,11 @@ class ChangeCaseDetailsPage extends Base {
    */
   async changeCaseDetails(newCaseUrn) {
     await this.selectProsecutedByCPS();
+    await this.dropdownCaseIsInvitationOnly.selectOption({ label: "Yes" });
+    await this.frontPageTextFrame.click();
+    await this.frontPageTextArea.fill("Update Front Page");
+    await this.isCaseCompleteCheckBox.check();
+    await this.additionalNotes.fill("Test additional notes");
     await expect
       .poll(
         async () => {
@@ -80,11 +85,7 @@ class ChangeCaseDetailsPage extends Base {
         },
       )
       .toBe(newCaseUrn.toString());
-    await this.dropdownCaseIsInvitationOnly.selectOption({ label: "Yes" });
-    await this.frontPageTextFrame.click();
-    await this.frontPageTextArea.fill("Update Front Page");
-    await this.isCaseCompleteCheckBox.check();
-    await this.additionalNotes.fill("Test additional notes");
+
     await this.saveChangeCaseButton.click();
   }
 }

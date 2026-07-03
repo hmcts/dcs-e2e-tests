@@ -288,6 +288,28 @@ class SectionDocumentsPage extends Base {
     });
     await uploadButton.click();
   }
+
+  async getDocumentKey() {
+    const href = await this.page
+      .locator("a.fieldAuditTrail[name]")
+      .getAttribute("href");
+    console.log(href);
+
+    const matches = href?.match(/'([^']+)'/g);
+
+    if (!matches || matches.length < 3) {
+      throw new Error("Could not extract key");
+    }
+
+    const documentKey = matches[2].replace(/'/g, "");
+    return documentKey;
+  }
+
+  async getCaseKey() {
+    const url = this.page.url();
+    const caseKey = new URL(url).searchParams.get("caseKey");
+    return caseKey;
+  }
 }
 
 export default SectionDocumentsPage;

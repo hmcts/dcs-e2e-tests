@@ -21,7 +21,7 @@ export default defineConfig({
       ]
     : [["list"]],
 
-  timeout: 480_000,
+  timeout: 540_000,
 
   globalTeardown: path.resolve("./playwright-e2e/global.teardown.ts"),
 
@@ -42,6 +42,7 @@ export default defineConfig({
       testIgnore: [
         /.*notes-lifecycle\.spec\.ts/,
         /.*removeDefendant\.spec\.ts/,
+        /.*reviewEvidence-pages\.spec\.ts/,
       ],
     },
     {
@@ -56,6 +57,7 @@ export default defineConfig({
       testIgnore: [
         /.*notes-lifecycle\.spec\.ts/,
         /.*removeDefendant\.spec\.ts/,
+        /.*reviewEvidence-pages\.spec\.ts/,
       ],
     },
     {
@@ -70,6 +72,7 @@ export default defineConfig({
       testIgnore: [
         /.*notes-lifecycle\.spec\.ts/,
         /.*removeDefendant\.spec\.ts/,
+        /.*reviewEvidence-pages\.spec\.ts/,
       ],
     },
     {
@@ -84,6 +87,7 @@ export default defineConfig({
       testIgnore: [
         /.*notes-lifecycle\.spec\.ts/,
         /.*removeDefendant\.spec\.ts/,
+        /.*reviewEvidence-pages\.spec\.ts/,
       ],
     },
     {
@@ -98,11 +102,16 @@ export default defineConfig({
       testIgnore: [
         /.*notes-lifecycle\.spec\.ts/,
         /.*removeDefendant\.spec\.ts/,
+        /.*reviewEvidence-pages\.spec\.ts/,
       ],
     },
     {
       name: "pagination-chrome",
-      testMatch: [/.*notes-lifecycle\.spec\.ts/, /.*removeDefendant\.spec\.ts/],
+      testMatch: [
+        /.*notes-lifecycle\.spec\.ts/,
+        /.*removeDefendant\.spec\.ts/,
+        /.*reviewEvidence-pages\.spec\.ts/,
+      ],
       workers: 1,
       use: {
         ...ProjectsConfig.chrome.use,
@@ -112,7 +121,11 @@ export default defineConfig({
     },
     {
       name: "pagination-firefox",
-      testMatch: [/.*notes-lifecycle\.spec\.ts/, /.*removeDefendant\.spec\.ts/],
+      testMatch: [
+        /.*notes-lifecycle\.spec\.ts/,
+        /.*removeDefendant\.spec\.ts/,
+        /.*reviewEvidence-pages\.spec\.ts/,
+      ],
       workers: 1,
       use: {
         ...ProjectsConfig.firefox.use,

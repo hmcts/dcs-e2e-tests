@@ -1,3 +1,6 @@
+import { sections, getRandomSectionKey } from "../utils/index.ts";
+import { loginAndOpenCase } from "./login.helper.ts";
+
 /**
  * Uploads a restricted document to specified sections and validates its visibility.
  * This helper is used to test role-based access control for restricted documents.
@@ -78,4 +81,47 @@ export async function verifyDocumentMove(
   } catch (error) {
     return `Move: Document not found in new Section: ${section}. Error: ${error}`;
   }
+}
+
+/**
+ * Helper function to log in a user, navigate to sections, upload a restricted document,
+ * capture the document key, and then log off. Returns the section name, section key, and document key.
+ */
+export async function uploadRestrictedDocument(
+  homePage,
+  loginPage,
+  caseSearchPage,
+  caseDetailsPage,
+  sectionsPage,
+  sectionDocumentsPage,
+  user,
+  newCaseName: string,
+  documentName: string,
+  defendantNames: string[],
+): Promise<{ sectionName: string; sectionKey: string; documentKey: string }> {
+  await loginAndOpenCase(
+    homePage,
+    loginPage,
+    caseSearchPage,
+    user,
+    newCaseName,
+  );
+  await caseDetailsPage.caseNavigation.navigateTo("Sections");
+
+  const restrictedSections = sections.restricted;
+  const randomSection = await getRandomSectionKey(
+    sectionsPage,
+    restrictedSections,
+  );
+  const [sectionName, sectionKey] = randomSection[0];
+
+  await sectionsPage.uploadRestrictedSectionDocument(
+    sectionKey,
+    documentName,
+    defendantNames,
+  );
+
+  const documentKey = await sectionDocumentsPage.getDocumentKey();
+
+  return { sectionName, sectionKey, documentKey };
 }
