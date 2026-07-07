@@ -36,6 +36,7 @@ test.describe("@regression Document Access Validation via Pages", () => {
   let documentKeyDefenceA: string;
   let documentKeyDefenceB: string;
   let sectionDefenceA: string;
+  let sectionDefenceB: string;
 
   test.beforeEach(
     async ({
@@ -93,19 +94,21 @@ test.describe("@regression Document Access Validation via Pages", () => {
       // a) To enable the Review Evidence Page to open (otherwise Defence Advocate B will have no accesible documents to review)
       // b) To enable distinction between accessible and inaccessible documents
       // Access to this document is restricted to Defence Advocates for Defendant Two (B, C)
-      const { documentKey: docKeyDefB } = await uploadRestrictedDocument(
-        homePage,
-        loginPage,
-        caseSearchPage,
-        caseDetailsPage,
-        sectionsPage,
-        sectionDocumentsPage,
-        config.users.defenceAdvocateB,
-        newCaseName,
-        docDefendantTwo,
-        [nameDefendantTwo],
-      );
+      const { sectionName: sectionDefenceB_name, documentKey: docKeyDefB } =
+        await uploadRestrictedDocument(
+          homePage,
+          loginPage,
+          caseSearchPage,
+          caseDetailsPage,
+          sectionsPage,
+          sectionDocumentsPage,
+          config.users.defenceAdvocateB,
+          newCaseName,
+          docDefendantTwo,
+          [nameDefendantTwo],
+        );
       documentKeyDefenceB = docKeyDefB;
+      sectionDefenceB = sectionDefenceB_name;
     },
   );
 
@@ -249,6 +252,185 @@ test.describe("@regression Document Access Validation via Pages", () => {
 
     // Use the Go To Page input to navigate to Defence Advocate A's document
     await reviewEvidencePageDefenceC.pages.goToPage(sectionDefenceA + "1");
+
+    await reviewEvidencePageDefenceC.waitForHighResImageLoadByDocument(
+      documentKeyDefenceA,
+      docDefendantOne,
+    );
+
+    expect(await reviewEvidencePageDefenceC.getCurrentDocumentKey()).toBe(
+      documentKeyDefenceA,
+    );
+  });
+
+  // ============================================================
+  // Scenario 3
+  // ============================================================
+
+  // When Defence Advocate A uploads a restricted document
+  // If Defence Advocate B uses the Next & Previous Document functionality - Then Defence Advocate B should not be able to navigate to the restricted document
+  // If Defence Advocate C uses the Next & Previous Document functionality - Then Defence Advocate C should be able to navigate to the restricted document
+
+  test("Document Access Validation via the Pages 'Next' & 'Previous' Page Functionality", async ({
+    loginPage,
+    homePage,
+    caseDetailsPage,
+    caseSearchPage,
+    sectionDocumentsPage,
+  }) => {
+    // Open the Review Evidence page as Defence Advocate B
+
+    const popup = await openReviewPopupAwaitPagination(sectionDocumentsPage);
+    const reviewEvidencePage = new ReviewEvidencePage(popup);
+
+    await reviewEvidencePage.sectionPanelLoad();
+    await reviewEvidencePage.waitForHighResImageLoadByDocument(
+      documentKeyDefenceB,
+      docDefendantTwo,
+    );
+
+    // Attempt to navigate to an unathorised document page as Defence Advocate B via Next and Previous page links
+
+    const direction = await reviewEvidencePage.pages.getNavigationDirection(
+      sectionDefenceB,
+      sectionDefenceA,
+    );
+
+    await {
+      next: () => reviewEvidencePage.pages.goToNextDocument(),
+      previous: () => reviewEvidencePage.pages.goToPreviousDocument(),
+    }[direction]();
+
+    await reviewEvidencePage.confirmDocumentPage(documentKeyDefenceB);
+
+    await popup.close();
+    await sectionDocumentsPage.navigation.navigateTo("LogOff");
+
+    // Validate Defence Advocate C can access Defence Advocate A's document via Next & Previous link functionalilty
+    await loginAndOpenCase(
+      homePage,
+      loginPage,
+      caseSearchPage,
+      config.users.defenceAdvocateC,
+      newCaseName,
+    );
+
+    // Open the Review page
+    const popupDefenceC = await openReviewPopupAwaitPagination(caseDetailsPage);
+    const reviewEvidencePageDefenceC = new ReviewEvidencePage(popupDefenceC);
+
+    await reviewEvidencePageDefenceC.sectionPanelLoad();
+
+    // Ensure we start from Defence Advocate B's document before attempting Next document functionality
+    await reviewEvidencePageDefenceC.ensureDocumentIsOpen(
+      documentKeyDefenceB,
+      docDefendantTwo,
+    );
+
+    await {
+      next: () => reviewEvidencePageDefenceC.pages.goToNextDocument(),
+      previous: () => reviewEvidencePageDefenceC.pages.goToPreviousDocument(),
+    }[direction]();
+
+    await reviewEvidencePageDefenceC.waitForHighResImageLoadByDocument(
+      documentKeyDefenceA,
+      docDefendantOne,
+    );
+
+    expect(await reviewEvidencePageDefenceC.getCurrentDocumentKey()).toBe(
+      documentKeyDefenceA,
+    );
+  });
+
+  // ============================================================
+  // Scenario 4
+  // ============================================================
+
+  // When Defence Advocate A uploads a restricted document
+  // If Defence Advocate A uses the 'Page Direction' functionality - Then Defence Advocate B should not be able to navigate to the restricted document via the Page Direction popup
+  // If Defence Advocate A uses the 'Page Direction' functionality - Then Defence Advocate C should be able to navigate to the restricted document via the Page Direction popup
+
+  test("Document Access Validation via the Pages 'Page Direction' Functionality", async ({
+    loginPage,
+    homePage,
+    caseDetailsPage,
+    caseSearchPage,
+    sectionDocumentsPage,
+  }) => {
+    await sectionDocumentsPage.navigation.logOff();
+
+    // Login as Defence Advocate A
+    await loginAndOpenCase(
+      homePage,
+      loginPage,
+      caseSearchPage,
+      config.users.defenceAdvocateA,
+      newCaseName,
+    );
+
+    // Open the Review page
+    const popupDefenceA = await openReviewPopupAwaitPagination(caseDetailsPage);
+    const reviewEvidencePageDefenceA = new ReviewEvidencePage(popupDefenceA);
+
+    await reviewEvidencePageDefenceA.sectionPanelLoad();
+
+    // Navigate to Page panel, and click the Page Direction button
+
+    await reviewEvidencePageDefenceA.pages.selectPageDirection();
+    await popupDefenceA.close();
+    await sectionDocumentsPage.navigation.logOff();
+
+    // Login as Defence Advocate B
+
+    await loginAndOpenCase(
+      homePage,
+      loginPage,
+      caseSearchPage,
+      config.users.defenceAdvocateB,
+      newCaseName,
+    );
+
+    // Open the Review Evidence page
+
+    const popupDefenceB =
+      await openReviewPopupAwaitPagination(sectionDocumentsPage);
+    const reviewEvidencePageDefenceB = new ReviewEvidencePage(popupDefenceB);
+
+    await reviewEvidencePageDefenceB.sectionPanelLoad();
+    await reviewEvidencePageDefenceB.waitForHighResImageLoadByDocument(
+      documentKeyDefenceB,
+      docDefendantTwo,
+    );
+
+    // Attempt to navigate to an unathorised document as Defence Advocate B via Page Direction popup
+    //TBC awaiting Bug Ticket review and confirmed approach to popup visbility.
+    // await reviewEvidencePageDefenceB.pages.validateNoPageDirection();
+
+    await popupDefenceB.close();
+    await sectionDocumentsPage.navigation.logOff();
+
+    // Validate Defence Advocate C can access Defence Advocate A's document via Page Direction popup
+    await loginAndOpenCase(
+      homePage,
+      loginPage,
+      caseSearchPage,
+      config.users.defenceAdvocateC,
+      newCaseName,
+    );
+
+    // Open the Review page
+    const popupDefenceC = await openReviewPopupAwaitPagination(caseDetailsPage);
+    const reviewEvidencePageDefenceC = new ReviewEvidencePage(popupDefenceC);
+
+    await reviewEvidencePageDefenceC.sectionPanelLoad();
+
+    // Ensure we start from Defence Advocate B's document before attempting Next document functionality
+    await reviewEvidencePageDefenceC.ensureDocumentIsOpen(
+      documentKeyDefenceB,
+      docDefendantTwo,
+    );
+
+    await reviewEvidencePageDefenceC.pages.acceptPageDirection();
 
     await reviewEvidencePageDefenceC.waitForHighResImageLoadByDocument(
       documentKeyDefenceA,
