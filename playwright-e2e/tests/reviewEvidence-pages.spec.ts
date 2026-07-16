@@ -403,8 +403,13 @@ test.describe("@regression Document Access Validation via Pages", () => {
     );
 
     // Attempt to navigate to an unathorised document as Defence Advocate B via Page Direction popup
-    //TBC awaiting Bug Ticket review and confirmed approach to popup visbility.
+    // This approach will change - issue raised that Defence B should not receive page direction popup.
+    // Once changes are made update to the line below.
     // await reviewEvidencePageDefenceB.pages.validateNoPageDirection();
+
+    await reviewEvidencePageDefenceB.pages.acceptPageDirection();
+
+    await reviewEvidencePageDefenceB.confirmDocumentPage(documentKeyDefenceB);
 
     await popupDefenceB.close();
     await sectionDocumentsPage.navigation.logOff();
