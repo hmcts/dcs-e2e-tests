@@ -25,6 +25,7 @@ class CaseSearchPage extends Base {
   caseTableLoadIcon: Locator;
   caseTableDiv: Locator;
   caseTable: Locator;
+  filterByViewedOrInvited: Locator;
 
   constructor(page) {
     super(page);
@@ -42,6 +43,9 @@ class CaseSearchPage extends Base {
     this.caseTableLoadIcon = page.locator("#spinner");
     this.caseTableDiv = page.locator("#caseListDiv");
     this.caseTable = this.caseTableDiv.locator("table.formTable-zebra");
+    this.filterByViewedOrInvited = page.locator(
+      "#restrictToPreviousAndInvited",
+    );
   }
 
   async waitForCaseTableToLoad() {
@@ -91,6 +95,9 @@ class CaseSearchPage extends Base {
     const allWordsChecked = await this.allWordsCheckbox.isChecked();
     if (!allWordsChecked) {
       await this.allWordsCheckbox.check();
+    }
+    if (await this.filterByViewedOrInvited.isChecked()) {
+      await this.filterByViewedOrInvited.uncheck();
     }
 
     let foundWithHearing = false;
