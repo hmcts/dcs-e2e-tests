@@ -72,7 +72,7 @@ class CreateCasePage extends Base {
   }
 
   async handleUrnField(prosecutedBy: string, newCaseUrn: string) {
-    if (prosecutedBy === "CPS") {
+    if (prosecutedBy === "CPS" || prosecutedBy === "NSL Test") {
       await expect(this.caseUrn).toBeEnabled({ timeout: 10_000 });
       await this.caseUrn.fill(newCaseUrn);
     } else {
