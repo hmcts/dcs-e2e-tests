@@ -103,7 +103,7 @@ class RegisterUserPage extends Base {
     );
     await this.password.fill("TestPassword1"); // no special character
     await expect(this.passwordError).toContainText(
-      "Please use at least one special character.",
+      "Please use one of the following special characters: ! @ # $ % ^ * _ ( )",
     );
     await this.password.fill("TestPassword!"); // no number
     await expect(this.passwordError).toContainText(
