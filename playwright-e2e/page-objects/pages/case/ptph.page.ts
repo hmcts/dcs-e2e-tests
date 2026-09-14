@@ -70,6 +70,7 @@ class PTPHPage extends Base {
         ),
       },
     );
+    // ADD NEW SECTIONS HERE
   }
 
   /**

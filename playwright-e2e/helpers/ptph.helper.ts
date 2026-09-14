@@ -28,7 +28,7 @@ export async function editPayloadForm(page, caseUrn) {
 
   await page
     .locator('input[name="uploadFile"]')
-    .setInputFiles("playwright-e2e/data/PTPH.docx");
+    .setInputFiles("playwright-e2e/data/PTPH3 Single Defendant.docx");
 
   await page.locator('input[type="submit"][value="Submit"]').click();
 }
