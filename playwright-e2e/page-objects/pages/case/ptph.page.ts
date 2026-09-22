@@ -21,6 +21,11 @@ class PTPHPage extends Base {
   prosecutionWitnesses: Locator;
   intermediary: Locator;
   pageLoader: Locator;
+  prosecution: Locator;
+  allPartiesInfoAboutPriority: Locator;
+  priorityInfo: Locator;
+  judicialAssessment: Locator;
+  trialListingDirections: Locator;
 
   constructor(page) {
     super(page);
@@ -58,10 +63,21 @@ class PTPHPage extends Base {
       "div[ng-if=\"section.type=='TableContainer'\"]",
       {
         has: page.locator(
-          "div.heading-small:has-text('Prosecution Witnesses Required to Attend')",
-        ),
+         "div.heading-small:has-text('Prosecution Witnesses Required to Attend')",
+       )
       },
     );
+    this.prosecution = page.locator("table.composite-table", {
+      has: page.locator("td.bigtitle", { hasText: /^Prosecution$/ }),
+    });this.allPartiesInfoAboutPriority = page.locator("table.composite-table", {
+      has: page.locator("td.bigtitle", { hasText: /All Parties: Information about priority/i }),
+    });this.priorityInfo = page.locator("table.composite-table", {
+      has: page.locator("td.bigtitle", { hasText: /Priority Information/i }),
+    });this.judicialAssessment = page.locator("table.composite-table", {
+      has: page.locator("td.bigtitle", { hasText: /Judicial Assessment/i }),
+    });this.trialListingDirections = page.locator("table.composite-table", {
+      has: page.locator("td.bigtitle", { hasText: /Trial Listing Directions/i }),
+    });
     this.intermediary = page.locator(
       "div[ng-if=\"section.type=='ExpandableTableContainer'\"]",
       {
@@ -108,6 +124,11 @@ class PTPHPage extends Base {
       { name: "all-parties-information", locator: this.allPartiesInfo },
       { name: "prosecution-witnesses", locator: this.prosecutionWitnesses },
       { name: "intermediary", locator: this.intermediary },
+      { name: 'prosecution', locator: this.prosecution },
+      { name: 'allPartiesInfoAboutPriority', locator: this.allPartiesInfoAboutPriority },
+      { name: 'priorityInfo', locator: this.priorityInfo },
+      { name: 'judicialAssessment', locator: this.judicialAssessment },
+      { name: 'trialListingDirections', locator: this.trialListingDirections },
     ];
   }
 }

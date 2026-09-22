@@ -1,0 +1,14 @@
+[
+  {
+    "user": "HMCTSAdmin",
+    "heading": "Verify PTPH Rendering for HMCTSAdmin",
+    "category": "PTPH",
+    "issues": [
+      "Screenshot mismatch for PTPH form section: prosecution",
+      "Screenshot mismatch for PTPH form section: allPartiesInfoAboutPriority",
+      "Screenshot mismatch for PTPH form section: priorityInfo",
+      "Screenshot mismatch for PTPH form section: judicialAssessment",
+      "Screenshot mismatch for PTPH form section: trialListingDirections"
+    ]
+  }
+]
