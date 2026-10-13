@@ -69,15 +69,24 @@ class PTPHPage extends Base {
     );
     this.prosecution = page.locator("table.composite-table", {
       has: page.locator("td.bigtitle", { hasText: /^Prosecution$/ }),
-    });this.allPartiesInfoAboutPriority = page.locator("table.composite-table", {
-      has: page.locator("td.bigtitle", { hasText: /All Parties: Information about priority/i }),
-    });this.priorityInfo = page.locator("table.composite-table", {
+    });
+
+    this.allPartiesInfoAboutPriority = page.locator("div").filter({
+      hasText: /All Parties:\s*Information about priority/i,
+    }).first();
+
+    this.priorityInfo = page.locator("table.composite-table", {
       has: page.locator("td.bigtitle", { hasText: /Priority Information/i }),
-    });this.judicialAssessment = page.locator("table.composite-table", {
+    });
+
+    this.judicialAssessment = page.locator("table.composite-table", {
       has: page.locator("td.bigtitle", { hasText: /Judicial Assessment/i }),
-    });this.trialListingDirections = page.locator("table.composite-table", {
+    });
+
+    this.trialListingDirections = page.locator("table.composite-table", {
       has: page.locator("td.bigtitle", { hasText: /Trial Listing Directions/i }),
     });
+
     this.intermediary = page.locator(
       "div[ng-if=\"section.type=='ExpandableTableContainer'\"]",
       {
