@@ -77,25 +77,16 @@ test.describe("@nightly @regression PTPH Form Rendering / Photosnaps @ptph", () 
     const formSections = await ptphPage.ptphFormSections();
 
     for (const section of formSections) {
-      const count = await section.locator.count();
-      console.log(
-        `PTPH section element count for '${section.name}': ${count}`,
-      );
       try {
         // Compare live section screenshot with baseline image
         await expect(section.locator).toHaveScreenshot(`${section.name}.png`, {
           maxDiffPixelRatio: 0.01,
-        });
-        console.log(
-          `Successful screenshot match found for PTPH section: ${section.name}`,
-        );
+         });
       } catch (error) {
-        console.error(
-          `Error during screenshot comparison for PTPH section '${section.name}':`,
-          error,
-        );
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
         currentUserIssues.push(
-          `Screenshot mismatch for PTPH form section: ${section.name}`,
+          `Screenshot mismatch for PTPH form section: '${section.name}': ${errorMessage.split('\n')[0]}`,
         );
       }
     }
