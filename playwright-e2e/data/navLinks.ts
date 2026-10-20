@@ -221,7 +221,7 @@ export const caseLinks: CaseLink[] = [
   },
   {
     name: "PTPH",
-    expectedUrl: `${config.urls.base}OnlineForms/Index2`,
+    expectedUrl: `${config.urls.base}OnlineForms/Index3`,
     pageIdentifier: (page: Page) =>
       page.locator("h1", { hasText: "Plea & Trial Preparation Hearing Form" }),
     mode: "same-page",
