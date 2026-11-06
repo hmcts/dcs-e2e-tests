@@ -88,6 +88,32 @@ class RegisterUserPage extends Base {
       await this.otherEmail1.fill(`${userName}@cjsm.com`);
     }
 
+    // Password Complexity
+    await this.password.fill("Test"); // under 12 characters
+    await expect(this.passwordError).toContainText(
+      "Please use 12 or more characters.",
+    );
+    await this.password.fill("TESTPASSWORD"); // no lowercase letter
+    await expect(this.passwordError).toContainText(
+      "Please use at least one lower case character.",
+    );
+    await this.password.fill("testpassword"); // no uppercase letter
+    await expect(this.passwordError).toContainText(
+      "Please use at least one upper case character.",
+    );
+    await this.password.fill("TestPassword1"); // no special character
+    await expect(this.passwordError).toContainText(
+      "Please use one of the following special characters: ! @ # $ % ^ * _ ( )",
+    );
+    await this.password.fill("TestPassword!"); // no number
+    await expect(this.passwordError).toContainText(
+      "Please use at least one number.",
+    );
+    await this.password.fill("TestPassword!2"); // contains easily guessable words
+    await expect(this.passwordError).toContainText(
+      "Your chosen password contains commonly used and easily guessable words. Please try another.",
+    );
+
     await this.password.fill(process.env.USER_REG_PASSWORD!);
     await this.confirmPassword.fill(process.env.USER_REG_PASSWORD!);
     await this.agreeTermsCheckBox.check();
