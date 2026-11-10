@@ -21,6 +21,11 @@ class PTPHPage extends Base {
   prosecutionWitnesses: Locator;
   intermediary: Locator;
   pageLoader: Locator;
+  prosecution: Locator;
+  allPartiesInfoAboutPriority: Locator;
+  priorityInfo: Locator;
+  judicialAssessment: Locator;
+  trialListingDirections: Locator;
 
   constructor(page) {
     super(page);
@@ -58,18 +63,31 @@ class PTPHPage extends Base {
       "div[ng-if=\"section.type=='TableContainer'\"]",
       {
         has: page.locator(
-          "div.heading-small:has-text('Prosecution Witnesses Required to Attend')",
-        ),
+         "div.heading-small:has-text('Prosecution Witnesses Required to Attend')",
+       )
       },
     );
-    this.intermediary = page.locator(
-      "div[ng-if=\"section.type=='ExpandableTableContainer'\"]",
-      {
-        has: page.locator(
-          "div.heading-small:has-text('Intermediary Known at PTPH')",
-        ),
-      },
-    );
+    this.prosecution = page.locator("table.composite-table", {
+      has: page.locator("td.bigtitle", { hasText: /^Prosecution$/ }),
+    });
+
+    this.allPartiesInfoAboutPriority = page
+  .locator('div', { hasText: 'All Parties: Information about priority' })
+  .locator("xpath=ancestor::div[contains(@ng-repeat, 'section')][1]");
+
+    this.priorityInfo = page.locator("table.composite-table", {
+      has: page.locator("td.bigtitle", { hasText: /Priority Information/i }),
+    });
+
+    this.judicialAssessment = page.locator("#judicial-assessment-section");
+
+    this.trialListingDirections = page.locator("table.composite-table", {
+      has: page.locator("td.bigtitle", { hasText: /Trial Listing Directions/i }),
+    });
+
+   this.intermediary = page
+      .locator("div.heading-small", { hasText: "Intermediary Known at PTPH" })
+      .locator("xpath=ancestor::div[contains(@ng-repeat, 'section')][1]");
   }
 
   /**
@@ -90,6 +108,58 @@ class PTPHPage extends Base {
         },
       )
       .toBe(true);
+  // Group the Judicial Assessment sibling blocks together (stops before Trial Listing)
+    await this.page.evaluate(() => {
+      const headerTitle = document.evaluate(
+        "//td[contains(@class, 'bigtitle') and contains(., 'Judicial Assessment')]",
+        document,
+        null,
+        XPathResult.FIRST_ORDERED_NODE_TYPE,
+        null,
+      ).singleNodeValue as HTMLElement;
+
+      const firstBlock = headerTitle?.closest(
+        "div[ng-repeat*='section in survey.content.form.section']",
+      );
+
+      if (firstBlock && !document.getElementById("judicial-assessment-section")) {
+        const wrapper = document.createElement("div");
+        wrapper.id = "judicial-assessment-section";
+        firstBlock.parentNode?.insertBefore(wrapper, firstBlock);
+
+        let cur: Element | null = firstBlock;
+        while (cur) {
+          const next = cur.nextElementSibling;
+
+          const currentTitle =
+            cur.querySelector("td.bigtitle, .heading-small")?.textContent || "";
+          if (cur !== firstBlock && /Trial Listing|Stage/i.test(currentTitle)) {
+            break;
+          }
+
+          wrapper.appendChild(cur);
+
+          const nextTitle =
+            next?.querySelector("td.bigtitle, .heading-small")?.textContent || "";
+          if (/Trial Listing|Stage/i.test(nextTitle)) {
+            break;
+          }
+
+          cur = next;
+        }
+      }
+    });
+  }
+
+  /**
+   * Expands the Intermediary section if collapsed and waits for the contents to display.
+   */
+ async expandIntermediary() {
+    const expandBtn = this.intermediary.locator('img[title="Expand"]');
+    if (await expandBtn.isVisible()) {
+      await expandBtn.click();
+      await this.page.locator("#s15div").waitFor({ state: "visible" });
+    }
   }
 
   /**
@@ -107,6 +177,11 @@ class PTPHPage extends Base {
       { name: "all-parties-information", locator: this.allPartiesInfo },
       { name: "prosecution-witnesses", locator: this.prosecutionWitnesses },
       { name: "intermediary", locator: this.intermediary },
+      { name: 'prosecution', locator: this.prosecution },
+      { name: 'allPartiesInfoAboutPriority', locator: this.allPartiesInfoAboutPriority },
+      { name: 'priorityInfo', locator: this.priorityInfo },
+      { name: 'judicialAssessment', locator: this.judicialAssessment },
+      { name: 'trialListingDirections', locator: this.trialListingDirections },
     ];
   }
 }

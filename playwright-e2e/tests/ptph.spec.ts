@@ -73,6 +73,7 @@ test.describe("@nightly @regression PTPH Form Rendering / Photosnaps @ptph", () 
     await sectionsPage.caseNavigation.navigateTo("PTPH");
     await ptphPage.ptphFormLoad();
     await ptphPage.page.waitForTimeout(30000);
+    await ptphPage.expandIntermediary();
 
     const formSections = await ptphPage.ptphFormSections();
 
@@ -81,13 +82,12 @@ test.describe("@nightly @regression PTPH Form Rendering / Photosnaps @ptph", () 
         // Compare live section screenshot with baseline image
         await expect(section.locator).toHaveScreenshot(`${section.name}.png`, {
           maxDiffPixelRatio: 0.01,
-        });
-        console.log(
-          `Successful screenshot match found for PTPH section: ${section.name}`,
-        );
-      } catch {
+         });
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
         currentUserIssues.push(
-          `Screenshot mismatch for PTPH form section: ${section.name}`,
+          `Screenshot mismatch for PTPH form section: '${section.name}': ${errorMessage.split('\n')[0]}`,
         );
       }
     }
