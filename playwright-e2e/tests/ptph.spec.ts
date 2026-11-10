@@ -73,6 +73,7 @@ test.describe("@nightly @regression PTPH Form Rendering / Photosnaps @ptph", () 
     await sectionsPage.caseNavigation.navigateTo("PTPH");
     await ptphPage.ptphFormLoad();
     await ptphPage.page.waitForTimeout(30000);
+    await ptphPage.expandIntermediary();
 
     const formSections = await ptphPage.ptphFormSections();
 
