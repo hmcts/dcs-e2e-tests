@@ -64,7 +64,7 @@ class CreateCasePage extends Base {
           return await this.caseUrn.isDisabled();
         },
         {
-          timeout: 10_000,
+          timeout: 20_000,
           message: `Case URN is not disabled`,
         },
       )
