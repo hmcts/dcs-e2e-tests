@@ -26,7 +26,7 @@ import ReviewEvidencePage from "../page-objects/pages/case/reviewEvidence/review
  */
 
 const cases = [
-  { URN: "01AD111111", name: "Auto Case1 - DO NOT AMEND" },
+  { URN: "01AD111111", name: "Auto Case 1 - DO NOT AMEND" },
   { URN: "01SJ1111", name: "Comment Case - DO NOT AMEND" },
 ];
 

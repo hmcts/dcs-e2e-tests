@@ -19,9 +19,14 @@ export async function tryOpenReviewPopup(
   if (existingPopups.length > 0) {
     popupPage = existingPopups[0];
   } else {
-    const popupPromise = caseDetailsPage.page.waitForEvent("popup");
-    await caseDetailsPage.caseNavigation.navigateTo("Review");
-    popupPage = await popupPromise;
+try {
+      [popupPage] = await Promise.all([
+        caseDetailsPage.page.waitForEvent("popup", { timeout: 30000 }),
+        caseDetailsPage.caseNavigation.navigateTo("Review"),
+      ]);
+    } catch {
+      return null; // Lets the 90s loop retry cleanly instead of failing on Attempt 1
+    }
   }
 
   try {

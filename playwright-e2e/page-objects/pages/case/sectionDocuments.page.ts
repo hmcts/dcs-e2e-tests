@@ -52,7 +52,7 @@ class SectionDocumentsPage extends Base {
           return !loaderVisible && tableVisible && rowCount >= 2;
         },
         {
-          timeout: 30000,
+          timeout: 4000,
           intervals: [500, 1000],
         },
       )
